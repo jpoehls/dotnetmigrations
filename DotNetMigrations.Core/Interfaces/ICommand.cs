@@ -6,8 +6,8 @@ namespace DotNetMigrations.Core
     [InheritedExport("Commands", typeof(ICommand))]
     public interface ICommand
     {
-        string CommandName { get; set; }
-        string HelpText { get; set; }
+        string CommandName { get; }
+        string HelpText { get; }
         IList<ICommand> SubCommands { get; set; }
         ILogger Log { get; set; }
         IArgumentRepository Arguments { get; set; }

@@ -9,16 +9,13 @@ namespace DotNetMigrations.Commands
     internal class GenerateScriptCommand : CommandBase
     {
         private const string DEFAULT_MIGRATION_SCRIPT_PATH = @".\migrate\";
-        private string _commandName = "generate";
-        private string _helpText = "Generates a new migration script in the migration directory."
-                                   + "\r\nExample: generate <MigrateName>";
+
         /// <summary>
         /// The name of the command that is typed as a command line argument.
         /// </summary>
         public override string CommandName
         {
-            get { return _commandName; }
-            set { _commandName = value; }
+            get { return "generate"; }
         }
 
         /// <summary>
@@ -26,8 +23,11 @@ namespace DotNetMigrations.Commands
         /// </summary>
         public override string HelpText
         {
-            get { return _helpText; }
-            set { _helpText = value; }
+            get
+            {
+                return "Generates a new migration script in the migration directory."
+                                 + "\r\nExample: generate <MigrateName>";
+            }
         }
 
         /// <summary>

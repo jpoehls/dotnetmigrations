@@ -7,19 +7,14 @@ namespace DotNetMigrations.UnitTests.MockCommands
     [Export("MockSubcommand", typeof(ICommand))]
     internal class MockSubcommand : CommandBase
     {
-        private string _commandName = "TestSubcommand";
-        private string _helpText = "This is the help text for MockSubcommand.";
-
         public override string CommandName
         {
-            get { return _commandName; }
-            set { _commandName = value; }
+            get { return "TestSubcommand"; }
         }
 
         public override string HelpText
         {
-            get { return _helpText; }
-            set { _helpText = value; }
+            get { return "This is the help text for MockSubcommand."; }
         }
 
         protected override bool ValidateArguments()
@@ -29,7 +24,7 @@ namespace DotNetMigrations.UnitTests.MockCommands
 
         protected override void RunCommand()
         {
-            
+
         }
     }
 }

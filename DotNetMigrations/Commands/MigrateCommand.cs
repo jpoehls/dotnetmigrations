@@ -13,9 +13,7 @@ namespace DotNetMigrations.Commands
     internal class MigrateCommand : CommandBase
     {
         private const string DEFAULT_MIGRATION_SCRIPT_PATH = @".\migrate\";
-        private string _commandName = "migrate";
-        private string _helpText = "Migrates the database up and down the versions."
-                                   + "\r\nExample: migrate <MigrateName> [Version] [ConnectionString]";
+
         private DataAccess _da;
 
         /// <summary>
@@ -23,8 +21,7 @@ namespace DotNetMigrations.Commands
         /// </summary>
         public override string CommandName
         {
-            get { return _commandName; }
-            set { _commandName = value; }
+            get { return "migrate"; }
         }
 
         /// <summary>
@@ -32,8 +29,11 @@ namespace DotNetMigrations.Commands
         /// </summary>
         public override string HelpText
         {
-            get { return _helpText; }
-            set { _helpText = value; }
+            get
+            {
+                return "Migrates the database up and down the versions."
+                                 + "\r\nExample: migrate <MigrateName> [Version] [ConnectionString]";
+            }
         }
 
         /// <summary>
@@ -173,7 +173,7 @@ namespace DotNetMigrations.Commands
             {
                 return targetVersion;
             }
-         
+
             return fileDictionary.Keys.First();
         }
 
@@ -189,7 +189,7 @@ namespace DotNetMigrations.Commands
             var files = (from f in fileDictionary
                          orderby f.Key
                          where f.Key > currentVersion && f.Key <= targetVersion
-                         select new { Version = f.Key, Path = f.Value } ).ToList();
+                         select new { Version = f.Key, Path = f.Value }).ToList();
 
             StringBuilder scriptLines;
 
@@ -253,7 +253,7 @@ namespace DotNetMigrations.Commands
         private void MigrateDown(long currentVersion, long targetVersion, Dictionary<long, string> fileDictionary, string connectionString)
         {
             var files = (from f in fileDictionary
-                         orderby f.Key descending 
+                         orderby f.Key descending
                          where f.Key <= currentVersion && f.Key > targetVersion
                          select new { Version = f.Key, Path = f.Value }).ToList();
 
@@ -338,7 +338,7 @@ namespace DotNetMigrations.Commands
         /// <returns>a Dictionary containing the version and the file path.</returns>
         private Dictionary<long, string> CreateScriptFileDictionary(string migrationName)
         {
-            
+
             var scriptNamePattern = "*" + migrationName + ".sql";
             var migrationDirectory = ConfigurationManager.AppSettings["migrateFolder"];
 
@@ -361,7 +361,7 @@ namespace DotNetMigrations.Commands
             var dictionary = new Dictionary<long, string>();
             long key;
 
-            foreach(var file in files)
+            foreach (var file in files)
             {
                 key = GetVersionFromFileName(file);
                 dictionary.Add(key, file);

@@ -7,8 +7,8 @@ namespace DotNetMigrations.Core
         protected abstract void RunCommand();
         protected abstract bool ValidateArguments();
 
-        public abstract string CommandName { get; set; }
-        public abstract string HelpText { get; set; }
+        public abstract string CommandName { get; }
+        public abstract string HelpText { get; }
 
         public IArgumentRepository Arguments { get; set; }
         public ILogger Log { get; set; }

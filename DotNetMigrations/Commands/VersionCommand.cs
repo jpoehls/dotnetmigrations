@@ -13,21 +13,18 @@ namespace DotNetMigrations.Commands
         /// <summary>
         /// The name of the command that is typed as a command line argument.
         /// </summary>
-        public override string CommandName { get; set;}
+        public override string CommandName { get { return "version"; } }
 
         /// <summary>
         /// The help text information for the command.
         /// </summary>
-        public override string HelpText { get; set; }
-
-        /// <summary>
-        /// Instantiates a new instance of the VersionCommand class.
-        /// </summary>
-        public VersionCommand()
+        public override string HelpText
         {
-            CommandName = "version";
-            HelpText = "Displays the latest version of the database and the migration scripts."
-                                   + "\r\nExample: version <MigrateName> [ConnectionString]";
+            get
+            {
+                return "Displays the latest version of the database and the migration scripts."
+                       + "\r\nExample: version <MigrateName> [ConnectionString]";
+            }
         }
 
         /// <summary>
@@ -107,7 +104,7 @@ namespace DotNetMigrations.Commands
 
             string connArg = null;
 
-            if(Arguments.Count == 3)
+            if (Arguments.Count == 3)
             {
                 connArg = Arguments.GetArgument(2);
             }
@@ -130,6 +127,6 @@ namespace DotNetMigrations.Commands
             }
             return version;
         }
-        
+
     }
 }

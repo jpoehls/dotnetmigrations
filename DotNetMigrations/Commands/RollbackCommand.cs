@@ -7,9 +7,6 @@ namespace DotNetMigrations.Commands
 {
     internal class RollbackCommand : CommandBase
     {
-        private string _commandName = "rollback";
-        private string _helpText = "Rolls back the database by one version."
-                                   + "\r\nExample: rollback <MigrateName> [ConnectionString]";
         private DataAccess _da;
 
         /// <summary>
@@ -17,8 +14,7 @@ namespace DotNetMigrations.Commands
         /// </summary>
         public override string CommandName
         {
-            get { return _commandName; }
-            set { _commandName = value; }
+            get { return "rollback"; }
         }
 
         /// <summary>
@@ -26,8 +22,11 @@ namespace DotNetMigrations.Commands
         /// </summary>
         public override string HelpText
         {
-            get { return _helpText; }
-            set { _helpText = value; }
+            get
+            {
+                return "Rolls back the database by one version."
+                       + "\r\nExample: rollback <MigrateName> [ConnectionString]";
+            }
         }
 
         /// <summary>
