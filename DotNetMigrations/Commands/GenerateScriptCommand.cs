@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Configuration;
-using System.ComponentModel.Composition;
 using System.IO;
 using DotNetMigrations.Core;
 
@@ -8,7 +7,7 @@ namespace DotNetMigrations.Commands
 {
     internal class GenerateScriptCommand : CommandBase
     {
-        private const string DEFAULT_MIGRATION_SCRIPT_PATH = @".\migrate\";
+        private const string DefaultMigrationScriptPath = @".\migrate\";
 
         /// <summary>
         /// The name of the command that is typed as a command line argument.
@@ -69,7 +68,7 @@ namespace DotNetMigrations.Commands
             if (string.IsNullOrEmpty(path))
             {
                 Log.WriteWarning("The migration folder path was not present in the configuration file and the default .\\migrate\\ folder will be used instead.");
-                path = DEFAULT_MIGRATION_SCRIPT_PATH;
+                path = DefaultMigrationScriptPath;
             }
 
             return path;

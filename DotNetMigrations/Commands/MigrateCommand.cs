@@ -12,8 +12,6 @@ namespace DotNetMigrations.Commands
 {
     internal class MigrateCommand : CommandBase
     {
-        private const string DEFAULT_MIGRATION_SCRIPT_PATH = @".\migrate\";
-
         private DataAccess _da;
 
         /// <summary>
