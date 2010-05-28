@@ -23,7 +23,7 @@ namespace DotNetMigrations.Commands
             get
             {
                 return "Rolls back the database by one version."
-                       + "\r\nExample: rollback <MigrateName> [ConnectionString]";
+                       + "\r\nUsage: db rollback <connection_string>";
             }
         }
 

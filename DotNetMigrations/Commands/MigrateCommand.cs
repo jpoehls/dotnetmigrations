@@ -27,7 +27,7 @@ namespace DotNetMigrations.Commands
             get
             {
                 return "Migrates the database up and down the versions."
-                       + "\r\nExample: migrate <MigrateName> [Version] [ConnectionString]";
+                       + "\r\nUsage: db migrate <connection_string> [target_version]";
             }
         }
 

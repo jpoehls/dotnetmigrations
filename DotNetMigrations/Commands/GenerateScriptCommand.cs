@@ -22,7 +22,7 @@ namespace DotNetMigrations.Commands
             get
             {
                 return "Generates a new migration script in the migration directory."
-                       + "\r\nExample: generate <MigrateName>";
+                       + "\r\nUsage: db generate <connection_string> <migration_name>";
             }
         }
 

@@ -5,8 +5,10 @@ using DotNetMigrations.Core.Data;
 namespace DotNetMigrations.Core
 {
     /// <summary>
-    /// Base class for commands that will interact
-    /// with the database.
+    /// Base class for commands that will interact with the database.
+    /// 
+    /// Using this base class adds the requirement that the 2nd
+    /// command argument must always be the connection string.
     /// </summary>
     public abstract class DatabaseCommandBase : CommandBase
     {

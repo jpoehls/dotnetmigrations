@@ -22,7 +22,7 @@ namespace DotNetMigrations.Commands
             get
             {
                 return "Displays the latest version of the database and the migration scripts."
-                       + "\r\nExample: version <MigrateName> [ConnectionString]";
+                       + "\r\nUsage: db version <connection_string>";
             }
         }
 
