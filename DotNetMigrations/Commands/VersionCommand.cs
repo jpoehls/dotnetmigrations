@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
 using System.Linq;
 using DotNetMigrations.Core;
 
@@ -37,10 +34,10 @@ namespace DotNetMigrations.Commands
             base.RunCommand();
 
             // Obtain Latest Script Version
-            string scriptVersion = GetLatestScriptVersion().Trim();
+            long scriptVersion = GetLatestScriptVersion();
 
             // Obtain Latest Database Version
-            GetLatestDatabaseVersion().Trim();
+            GetDatabaseVersion();
 
             Log.WriteLine("Current Script Version:".PadRight(30) + scriptVersion);
         }
@@ -49,33 +46,19 @@ namespace DotNetMigrations.Commands
         /// Retrieves the latest migration script version from the migration directory.
         /// </summary>
         /// <returns>The latest script version</returns>
-        private static string GetLatestScriptVersion()
+        private static long GetLatestScriptVersion()
         {
-            const string scriptNamePattern = "*.sql";
-            string migrationDirectory = ConfigurationManager.AppSettings["migrateFolder"];
+            IOrderedEnumerable<MigrationScriptFile> files = MigrationScriptHelper.GetScriptFiles()
+                .OrderByDescending(x => x);
 
-            if (!Directory.Exists(migrationDirectory))
+            MigrationScriptFile latestFile = files.FirstOrDefault();
+
+            if (latestFile != null)
             {
-                return "Migration directory not found.";
+                return latestFile.Version;
             }
 
-            var files = new List<string>(Directory.GetFiles(migrationDirectory, scriptNamePattern));
-            files.Sort();
-            files.Reverse();
-
-            string[] pathParts = files[0].Split(Path.PathSeparator);
-            string fileName = pathParts[pathParts.Length - 1].Split('_')[0];
-
-            return fileName;
-        }
-
-        /// <summary>
-        /// Retrieves the current Database version.
-        /// </summary>
-        /// <returns>The current version of the database.</returns>
-        private string GetLatestDatabaseVersion()
-        {
-            return GetDatabaseVersion().ToString();
+            return -1;
         }
     }
 }

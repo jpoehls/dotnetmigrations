@@ -79,6 +79,8 @@
   <ItemGroup>
     <Compile Include="Commands\GenerateScriptCommand.cs" />
     <Compile Include="Commands\MigrateCommand.cs" />
+    <Compile Include="Commands\MigrationScriptFile.cs" />
+    <Compile Include="Commands\MigrationScriptHelper.cs" />
     <Compile Include="Commands\RollbackCommand.cs" />
     <Compile Include="Commands\Special\HelpCommand.cs" />
     <Compile Include="Commands\VersionCommand.cs" />

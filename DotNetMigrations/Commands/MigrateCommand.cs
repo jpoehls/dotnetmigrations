@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data.Common;
 using System.IO;
 using System.Linq;
@@ -39,9 +38,16 @@ namespace DotNetMigrations.Commands
         {
             base.RunCommand();
 
-            Dictionary<long, string> fileDictionary = CreateScriptFileDictionary();
+            IOrderedEnumerable<MigrationScriptFile> files = MigrationScriptHelper.GetScriptFiles()
+                .OrderByDescending(x => x);
+
+            if (files.Count() == 0)
+            {
+                return;
+            }
+
             long currentVersion = GetDatabaseVersion();
-            long targetVersion = GetTargetScriptVersion(fileDictionary);
+            long targetVersion = GetTargetScriptVersion(files);
 
             if (currentVersion == -1 || targetVersion == -1 || currentVersion == targetVersion)
             {
@@ -50,12 +56,12 @@ namespace DotNetMigrations.Commands
 
             if (currentVersion < targetVersion)
             {
-                MigrateUp(currentVersion, targetVersion, fileDictionary);
+                MigrateUp(currentVersion, targetVersion, files);
             }
 
             if (currentVersion > targetVersion)
             {
-                MigrateDown(currentVersion, targetVersion, fileDictionary);
+                MigrateDown(currentVersion, targetVersion, files);
             }
 
             Log.WriteLine("Database is now on version:".PadRight(30) + targetVersion);
@@ -88,9 +94,8 @@ namespace DotNetMigrations.Commands
         /// Returns the target version to migrate the database too. If the version is not provided
         /// from the command line arguments, the most recent script version will be used.
         /// </summary>
-        /// <param name="fileDictionary">The directy of file names and versions</param>
         /// <returns>Returns the targeted version.</returns>
-        private long GetTargetScriptVersion(Dictionary<long, string> fileDictionary)
+        private long GetTargetScriptVersion(IEnumerable<MigrationScriptFile> scriptFiles)
         {
             long targetVersion;
 
@@ -99,7 +104,7 @@ namespace DotNetMigrations.Commands
                 return targetVersion;
             }
 
-            return fileDictionary.Keys.First();
+            return scriptFiles.Select(x => x.Version).First();
         }
 
         /// <summary>
@@ -107,20 +112,17 @@ namespace DotNetMigrations.Commands
         /// </summary>
         /// <param name="currentVersion">The current version of the database.</param>
         /// <param name="targetVersion">The targeted version of the database.</param>
-        /// <param name="fileDictionary">The dictionary containing versions and file paths.</param>
-        private void MigrateUp(long currentVersion, long targetVersion, Dictionary<long, string> fileDictionary)
+        private void MigrateUp(long currentVersion, long targetVersion, IEnumerable<MigrationScriptFile> files)
         {
-            var files = (from f in fileDictionary
-                         orderby f.Key
-                         where f.Key > currentVersion && f.Key <= targetVersion
-                         select new {Version = f.Key, Path = f.Value}).ToList();
+            IEnumerable<MigrationScriptFile> filesToUse = files.OrderBy(x => x)
+                .Where(x => x.Version > currentVersion && x.Version <= targetVersion);
 
             StringBuilder scriptLines;
 
-            foreach (var file in files)
+            foreach (MigrationScriptFile file in filesToUse)
             {
                 scriptLines = new StringBuilder();
-                using (StreamReader reader = File.OpenText(file.Path))
+                using (StreamReader reader = File.OpenText(file.FilePath))
                 {
                     string line = reader.ReadLine();
                     bool started = false;
@@ -190,20 +192,17 @@ namespace DotNetMigrations.Commands
         /// </summary>
         /// <param name="currentVersion">The current version of the database.</param>
         /// <param name="targetVersion">The targeted version of the database.</param>
-        /// <param name="fileDictionary">The dictionary containing versions and file paths.</param>
-        private void MigrateDown(long currentVersion, long targetVersion, Dictionary<long, string> fileDictionary)
+        private void MigrateDown(long currentVersion, long targetVersion, IEnumerable<MigrationScriptFile> files)
         {
-            var files = (from f in fileDictionary
-                         orderby f.Key descending
-                         where f.Key <= currentVersion && f.Key > targetVersion
-                         select new {Version = f.Key, Path = f.Value}).ToList();
+            IEnumerable<MigrationScriptFile> filesToUse = files.OrderBy(x => x)
+                .Where(x => x.Version <= currentVersion && x.Version > targetVersion);
 
             StringBuilder scriptLines;
 
-            foreach (var file in files)
+            foreach (MigrationScriptFile file in filesToUse)
             {
                 scriptLines = new StringBuilder();
-                using (StreamReader reader = File.OpenText(file.Path))
+                using (StreamReader reader = File.OpenText(file.FilePath))
                 {
                     string line = reader.ReadLine();
                     bool started = false;
@@ -296,59 +295,6 @@ namespace DotNetMigrations.Commands
                 cmd.CommandText = string.Format(sql, version);
                 cmd.ExecuteNonQuery();
             }
-        }
-
-        /// <summary>
-        /// Reviews the migration directory and generates a Dictionary containing the version and the file path.
-        /// </summary>
-        /// <returns>a Dictionary containing the version and the file path.</returns>
-        private Dictionary<long, string> CreateScriptFileDictionary()
-        {
-            const string scriptNamePattern = "*.sql";
-            string migrationDirectory = ConfigurationManager.AppSettings["migrateFolder"];
-
-            if (!Directory.Exists(migrationDirectory))
-            {
-                Log.WriteError("Migration directory not found.");
-                return null;
-            }
-
-            List<string> files = Directory.GetFiles(migrationDirectory, scriptNamePattern).ToList();
-
-            if (files.Count == 0)
-            {
-                return null;
-            }
-
-            files.Sort();
-            files.Reverse(); // place the list in descending order
-
-            var dictionary = new Dictionary<long, string>();
-            long key;
-
-            foreach (string file in files)
-            {
-                key = GetVersionFromFileName(file);
-                dictionary.Add(key, file);
-            }
-
-            return dictionary;
-        }
-
-        /// <summary>
-        /// Retrieves the version number from the supplied file name.
-        /// </summary>
-        /// <param name="fileName">The file path and name of the file</param>
-        /// <returns>The version number from the file name.</returns>
-        private static long GetVersionFromFileName(string fileName)
-        {
-            string[] pathParts = fileName.Split(Path.PathSeparator);
-            string version = pathParts[pathParts.Length - 1].Split('_')[0];
-
-            long returnValue;
-            long.TryParse(version, out returnValue);
-
-            return returnValue;
         }
     }
 }

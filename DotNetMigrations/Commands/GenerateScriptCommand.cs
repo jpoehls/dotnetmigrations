@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using System.IO;
 using DotNetMigrations.Core;
 
@@ -7,8 +6,6 @@ namespace DotNetMigrations.Commands
 {
     internal class GenerateScriptCommand : CommandBase
     {
-        private const string DefaultMigrationScriptPath = @".\migrate\";
-
         /// <summary>
         /// The name of the command that is typed as a command line argument.
         /// </summary>
@@ -25,7 +22,7 @@ namespace DotNetMigrations.Commands
             get
             {
                 return "Generates a new migration script in the migration directory."
-                                 + "\r\nExample: generate <MigrateName>";
+                       + "\r\nExample: generate <MigrateName>";
             }
         }
 
@@ -34,10 +31,7 @@ namespace DotNetMigrations.Commands
         /// </summary>
         protected override void RunCommand()
         {
-            string scriptPath = GetScriptPath();
-
-            VerifyAndCreatePath(scriptPath);
-
+            string scriptPath = MigrationScriptHelper.GetScriptPath(Log);
             GenerateScript(scriptPath);
         }
 
@@ -55,57 +49,6 @@ namespace DotNetMigrations.Commands
             }
 
             return true;
-        }
-
-        /// <summary>
-        /// Used to determine the directory to place the migration scripts.
-        /// </summary>
-        /// <returns>The file path for the migration scripts.</returns>
-        private string GetScriptPath()
-        {
-            string path = GetScriptPathFromConfig();
-
-            if (string.IsNullOrEmpty(path))
-            {
-                Log.WriteWarning("The migration folder path was not present in the configuration file and the default .\\migrate\\ folder will be used instead.");
-                path = DefaultMigrationScriptPath;
-            }
-
-            return path;
-        }
-
-        /// <summary>
-        /// Checks the config file to ensure the migration path is there
-        /// </summary>
-        /// <returns>Null if the path is null or empty</returns>
-        private static string GetScriptPathFromConfig()
-        {
-            string path = ConfigurationManager.AppSettings["migrateFolder"];
-
-            if (string.IsNullOrEmpty(path))
-            {
-                return null;
-            }
-
-            // append the trailing backslash if needed
-            if (path.Substring(path.Length - 1) != "\\")
-            {
-                path += "\\";
-            }
-
-            return path;
-        }
-
-        /// <summary>
-        /// Verify the path exists and creates it if it's missing.
-        /// </summary>
-        /// <param name="path">The path to verify.</param>
-        private static void VerifyAndCreatePath(string path)
-        {
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
         }
 
         /// <summary>

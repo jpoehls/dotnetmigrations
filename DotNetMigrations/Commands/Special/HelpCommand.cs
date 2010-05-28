@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using DotNetMigrations.Logs;
 using DotNetMigrations.Core;
+using DotNetMigrations.Logs;
 
 namespace DotNetMigrations.Commands.Special
 {
     internal class HelpCommand
     {
-        private ILogger log;
+        private readonly ILogger log;
 
         /// <summary>
         /// Instantiates a new instance of the HelpCommand class.
@@ -37,9 +37,9 @@ namespace DotNetMigrations.Commands.Special
             log.WriteLine(FormatHelpText(command));
             log.WriteLine(string.Empty);
 
-            var subcommands = command.SubCommands;
-            
-            if(subcommands != null && subcommands.Count > 0)
+            IList<ICommand> subcommands = command.SubCommands;
+
+            if (subcommands != null && subcommands.Count > 0)
             {
                 log.WriteLine(string.Empty);
                 log.WriteLine("Subcommands for " + command.CommandName + ":");
@@ -55,7 +55,7 @@ namespace DotNetMigrations.Commands.Special
         /// <param name="commands">The command collection to display information about.</param>
         internal void ShowHelp(IEnumerable<ICommand> commands)
         {
-            foreach (var command in commands)
+            foreach (ICommand command in commands)
             {
                 log.WriteLine(FormatHelpText(command));
                 log.WriteLine(string.Empty);
@@ -67,9 +67,9 @@ namespace DotNetMigrations.Commands.Special
         /// </summary>
         /// <param name="command">The command whose help text will be used.</param>
         /// <returns>A formatted strign.</returns>
-        private string FormatHelpText(ICommand command)
+        private static string FormatHelpText(ICommand command)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.AppendLine(command.CommandName);
             sb.AppendLine(string.Empty); //empty line
 
@@ -85,26 +85,25 @@ namespace DotNetMigrations.Commands.Special
         /// </summary>
         /// <param name="text">The text to split.</param>
         /// <returns>A list of the split text.</returns>
-        private List<string> SplitText(string text)
+        private static List<string> SplitText(string text)
         {
             const int LINE_LENGTH = 55;
             int length = text.Length;
-            List<string> output = new List<string>();
+            var output = new List<string>();
 
-            for (int i = 0; i * LINE_LENGTH < length; i++)
+            for (int i = 0; i*LINE_LENGTH < length; i++)
             {
-                if (i * LINE_LENGTH + LINE_LENGTH <= length)
+                if (i*LINE_LENGTH + LINE_LENGTH <= length)
                 {
-                    output.Add(text.Substring(i * LINE_LENGTH, LINE_LENGTH).Trim().PadRight(55, ' ').PadLeft(60, ' '));
+                    output.Add(text.Substring(i*LINE_LENGTH, LINE_LENGTH).Trim().PadRight(55, ' ').PadLeft(60, ' '));
                 }
                 else
                 {
-                    output.Add(text.Substring(i * LINE_LENGTH).Trim().PadRight(55, ' ').PadLeft(60, ' '));
+                    output.Add(text.Substring(i*LINE_LENGTH).Trim().PadRight(55, ' ').PadLeft(60, ' '));
                 }
             }
 
             return output;
         }
-
     }
 }

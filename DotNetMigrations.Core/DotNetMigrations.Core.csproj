@@ -58,15 +58,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandBase.cs" />
-    <Compile Include="DatabaseCommandBase.cs" />
+    <Compile Include="BaseClasses\CommandBase.cs" />
+    <Compile Include="BaseClasses\DatabaseCommandBase.cs" />
     <Compile Include="Data\DatabaseInitializer.cs" />
     <Compile Include="Data\DbTransactionExtensions.cs" />
-    <Compile Include="LoggerBase.cs" />
+    <Compile Include="BaseClasses\LoggerBase.cs" />
     <Compile Include="Data\ConnectionStringFactory.cs" />
     <Compile Include="Data\DataAccess.cs" />
     <Compile Include="Data\DbCommandExtensions.cs" />
-    <Compile Include="Enum.cs" />
+    <Compile Include="CommandResults.cs" />
     <Compile Include="Interfaces\ILogRepository.cs" />
     <Compile Include="Interfaces\IArgumentRepository.cs" />
     <Compile Include="Interfaces\ICommand.cs" />
