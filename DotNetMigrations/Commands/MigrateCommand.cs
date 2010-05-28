@@ -1,19 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Text;
-using DotNetMigrations.Commands.Special;
 using DotNetMigrations.Core;
 using DotNetMigrations.Core.Data;
 
 namespace DotNetMigrations.Commands
 {
-    internal class MigrateCommand : CommandBase
+    internal class MigrateCommand : DatabaseCommandBase
     {
-        private DataAccess _da;
-
         /// <summary>
         /// The name of the command that is typed as a command line argument.
         /// </summary>
@@ -30,16 +28,8 @@ namespace DotNetMigrations.Commands
             get
             {
                 return "Migrates the database up and down the versions."
-                                 + "\r\nExample: migrate <MigrateName> [Version] [ConnectionString]";
+                       + "\r\nExample: migrate <MigrateName> [Version] [ConnectionString]";
             }
-        }
-
-        /// <summary>
-        /// Instantiates a new instance of teh MigrateCommand Class.
-        /// </summary>
-        public MigrateCommand()
-        {
-            _da = new DataAccess();
         }
 
         /// <summary>
@@ -47,11 +37,11 @@ namespace DotNetMigrations.Commands
         /// </summary>
         protected override void RunCommand()
         {
-            var migrationName = GetMigrationName();
-            var connectionString = GetConnectionString(migrationName);
-            var fileDictionary = CreateScriptFileDictionary(migrationName);
-            var currentVersion = GetDatabaseVersion(migrationName, connectionString);
-            var targetVersion = GetTargetScriptVersion(fileDictionary);
+            base.RunCommand();
+
+            Dictionary<long, string> fileDictionary = CreateScriptFileDictionary();
+            long currentVersion = GetDatabaseVersion();
+            long targetVersion = GetTargetScriptVersion(fileDictionary);
 
             if (currentVersion == -1 || targetVersion == -1 || currentVersion == targetVersion)
             {
@@ -60,12 +50,12 @@ namespace DotNetMigrations.Commands
 
             if (currentVersion < targetVersion)
             {
-                MigrateUp(currentVersion, targetVersion, fileDictionary, connectionString);
+                MigrateUp(currentVersion, targetVersion, fileDictionary);
             }
 
             if (currentVersion > targetVersion)
             {
-                MigrateDown(currentVersion, targetVersion, fileDictionary, connectionString);
+                MigrateDown(currentVersion, targetVersion, fileDictionary);
             }
 
             Log.WriteLine("Database is now on version:".PadRight(30) + targetVersion);
@@ -81,14 +71,10 @@ namespace DotNetMigrations.Commands
         /// </remarks>
         protected override bool ValidateArguments()
         {
-            // The 1st argument is the command name and the 2nd is the migration script name.
-            if (Arguments.Count < 2)
-            {
-                Log.WriteError("The number of arguments for the migrate command is too few.");
+            bool valid = base.ValidateArguments();
+            if (!valid)
                 return false;
-            }
 
-            // The 1st argument is the command name and the 2nd is the migration script name.
             if (Arguments.Count > 4)
             {
                 Log.WriteError("There are too many arguments for the migrate command.");
@@ -96,65 +82,6 @@ namespace DotNetMigrations.Commands
             }
 
             return true;
-        }
-
-        /// <summary>
-        /// Retrieves the Migration name from the arguments.
-        /// </summary>
-        /// <returns>The migration name as string.</returns>
-        private string GetMigrationName()
-        {
-            return Arguments.GetArgument(1);
-        }
-
-        /// <summary>
-        /// Retrieves the connection string from the command arguments or the config file.
-        /// </summary>
-        /// <param name="migrationName">The migration name used to identify the string in the config file.</param>
-        /// <returns>The connection string.</returns>
-        private string GetConnectionString(string migrationName)
-        {
-            string connArg = null;
-
-            if (Arguments.Count == 4)
-            {
-                connArg = Arguments.GetArgument(3);
-            }
-
-            return _da.GetConnectionString(migrationName, connArg);
-        }
-
-        /// <summary>
-        /// Retrieves the current schema version of the database.
-        /// </summary>
-        /// <param name="migrationName">The migration name of the database to check.</param>
-        /// <param name="connectionString">The connection string to use.</param>
-        /// <returns>The current version of the database.</returns>
-        /// <remarks>If the [schema_migrations] database table doesn't exist, it will be created.</remarks>
-        private long GetDatabaseVersion(string migrationName, string connectionString)
-        {
-            string command = "SELECT MAX([version]) FROM [schema_migrations]";
-
-            long currentVersion = -1;
-            string version = string.Empty;
-
-            try
-            {
-                new CreateCommand(Log).Create(migrationName, connectionString);
-                version = _da.ExecuteScalar<string>(connectionString, command).Trim();
-                long.TryParse(version, out currentVersion);
-            }
-            catch (DbException ex)
-            {
-                Log.WriteError(ex.Message);
-            }
-
-            if (currentVersion != -1)
-            {
-                Log.WriteLine("Current Database Version:".PadRight(30) + version);
-            }
-
-            return currentVersion;
         }
 
         /// <summary>
@@ -181,20 +108,19 @@ namespace DotNetMigrations.Commands
         /// <param name="currentVersion">The current version of the database.</param>
         /// <param name="targetVersion">The targeted version of the database.</param>
         /// <param name="fileDictionary">The dictionary containing versions and file paths.</param>
-        /// <param name="connectionString">The connection string to use.</param>
-        private void MigrateUp(long currentVersion, long targetVersion, Dictionary<long, string> fileDictionary, string connectionString)
+        private void MigrateUp(long currentVersion, long targetVersion, Dictionary<long, string> fileDictionary)
         {
             var files = (from f in fileDictionary
                          orderby f.Key
                          where f.Key > currentVersion && f.Key <= targetVersion
-                         select new { Version = f.Key, Path = f.Value }).ToList();
+                         select new {Version = f.Key, Path = f.Value}).ToList();
 
             StringBuilder scriptLines;
 
             foreach (var file in files)
             {
                 scriptLines = new StringBuilder();
-                using (var reader = File.OpenText(file.Path))
+                using (StreamReader reader = File.OpenText(file.Path))
                 {
                     string line = reader.ReadLine();
                     bool started = false;
@@ -224,20 +150,38 @@ namespace DotNetMigrations.Commands
 
                 if (scriptLines.ToString().Trim().Length == 0)
                 {
-                    Log.WriteWarning("SETUP was not found in migration version " + file.Version.ToString());
+                    Log.WriteWarning("SETUP was not found in migration version " + file.Version);
                 }
 
-                var sqlScripts = scriptLines.ToString().Split('|');
-                foreach (var sql in sqlScripts)
+                string[] sqlScripts = scriptLines.ToString().Split('|');
+                using (DbTransaction tran = DataAccess.BeginTransaction())
                 {
-                    if (!string.IsNullOrEmpty(sql.Trim()))
+                    try
                     {
-                        _da.ExecuteNonQuery(connectionString, sql);
+                        foreach (string sql in sqlScripts)
+                        {
+                            if (!string.IsNullOrEmpty(sql.Trim()))
+                            {
+                                using (DbCommand cmd = tran.CreateCommand())
+                                {
+                                    cmd.CommandText = sql;
+                                    cmd.ExecuteNonQuery();
+                                }
+                            }
+                        }
+
+                        UpdateSchemaVersionUp(tran, file.Version);
+
+                        tran.Commit();
+                    }
+                    catch
+                    {
+                        tran.Rollback();
+                        throw;
                     }
                 }
 
-                UpdateSchemaVersionUp(connectionString, file.Version);
-                Log.WriteLine("Migrated to Version:".PadRight(30) + file.Version.ToString());
+                Log.WriteLine("Migrated to Version:".PadRight(30) + file.Version);
             }
         }
 
@@ -247,20 +191,19 @@ namespace DotNetMigrations.Commands
         /// <param name="currentVersion">The current version of the database.</param>
         /// <param name="targetVersion">The targeted version of the database.</param>
         /// <param name="fileDictionary">The dictionary containing versions and file paths.</param>
-        /// <param name="connectionString">The connection string to use.</param>
-        private void MigrateDown(long currentVersion, long targetVersion, Dictionary<long, string> fileDictionary, string connectionString)
+        private void MigrateDown(long currentVersion, long targetVersion, Dictionary<long, string> fileDictionary)
         {
             var files = (from f in fileDictionary
                          orderby f.Key descending
                          where f.Key <= currentVersion && f.Key > targetVersion
-                         select new { Version = f.Key, Path = f.Value }).ToList();
+                         select new {Version = f.Key, Path = f.Value}).ToList();
 
             StringBuilder scriptLines;
 
             foreach (var file in files)
             {
                 scriptLines = new StringBuilder();
-                using (var reader = File.OpenText(file.Path))
+                using (StreamReader reader = File.OpenText(file.Path))
                 {
                     string line = reader.ReadLine();
                     bool started = false;
@@ -290,55 +233,79 @@ namespace DotNetMigrations.Commands
 
                 if (scriptLines.ToString().Trim().Length == 0)
                 {
-                    Log.WriteWarning("TEARDOWN was not found in migration version " + file.Version.ToString());
+                    Log.WriteWarning("TEARDOWN was not found in migration version " + file.Version);
                 }
 
-                var sqlScripts = scriptLines.ToString().Split('|');
-                foreach (var sql in sqlScripts)
+                using (DbTransaction tran = DataAccess.BeginTransaction())
                 {
-                    if (!string.IsNullOrEmpty(sql.Trim()))
+                    try
                     {
-                        _da.ExecuteNonQuery(connectionString, sql);
+                        string[] sqlScripts = scriptLines.ToString().Split('|');
+                        foreach (string sql in sqlScripts)
+                        {
+                            if (!string.IsNullOrEmpty(sql.Trim()))
+                            {
+                                using (DbCommand cmd = tran.CreateCommand())
+                                {
+                                    cmd.CommandText = sql;
+                                    cmd.ExecuteNonQuery();
+                                }
+                            }
+                        }
+
+                        UpdateSchemaVersionDown(tran, file.Version);
+
+                        tran.Commit();
+                    }
+                    catch
+                    {
+                        tran.Rollback();
+                        throw;
                     }
                 }
 
-                UpdateSchemaVersionDown(connectionString, file.Version);
-                Log.WriteLine("Migrated From Version:".PadRight(30) + file.Version.ToString());
+                Log.WriteLine("Migrated From Version:".PadRight(30) + file.Version);
             }
         }
 
         /// <summary>
         /// Updates the database with the version provided
         /// </summary>
-        /// <param name="connectionString">The database connection string</param>
+        /// <param name="transaction">The transaction to execute the command in</param>
         /// <param name="version">The version to log</param>
-        private void UpdateSchemaVersionUp(string connectionString, long version)
+        private static void UpdateSchemaVersionUp(DbTransaction transaction, long version)
         {
-            var sql = string.Format("INSERT INTO [schema_migrations] ([version]) VALUES ({0})", version.ToString());
-            _da.ExecuteNonQuery(connectionString, sql);
+            const string sql = "INSERT INTO [schema_migrations] ([version]) VALUES ({0})";
+            using (DbCommand cmd = transaction.CreateCommand())
+            {
+                cmd.CommandText = string.Format(sql, version);
+                cmd.ExecuteNonQuery();
+            }
         }
 
         /// <summary>
         /// Removes the provided version from the database log table.
         /// </summary>
-        /// <param name="connectionString">The database connection string</param>
+        /// <param name="transaction">The transaction to execute the command in</param>
         /// <param name="version">The version to log</param>
-        private void UpdateSchemaVersionDown(string connectionString, long version)
+        private static void UpdateSchemaVersionDown(DbTransaction transaction, long version)
         {
-            var sql = string.Format("DELETE FROM [schema_migrations] WHERE version = {0}", version.ToString());
-            _da.ExecuteNonQuery(connectionString, sql);
+            const string sql = "DELETE FROM [schema_migrations] WHERE version = {0}";
+            using (DbCommand cmd = transaction.CreateCommand())
+            {
+                cmd.CommandText = string.Format(sql, version);
+                cmd.ExecuteNonQuery();
+            }
         }
 
         /// <summary>
         /// Reviews the migration directory and generates a Dictionary containing the version and the file path.
         /// </summary>
-        /// <param name="migrationName">The migration name which is used to identify the scripts.</param>
         /// <returns>a Dictionary containing the version and the file path.</returns>
-        private Dictionary<long, string> CreateScriptFileDictionary(string migrationName)
+        private Dictionary<long, string> CreateScriptFileDictionary()
         {
-
-            var scriptNamePattern = "*" + migrationName + ".sql";
-            var migrationDirectory = ConfigurationManager.AppSettings["migrateFolder"];
+            const string scriptNamePattern = "*.sql";
+            string migrationDirectory = ConfigurationManager.AppSettings["migrateFolder"];
 
             if (!Directory.Exists(migrationDirectory))
             {
@@ -346,7 +313,7 @@ namespace DotNetMigrations.Commands
                 return null;
             }
 
-            var files = Directory.GetFiles(migrationDirectory, scriptNamePattern).ToList();
+            List<string> files = Directory.GetFiles(migrationDirectory, scriptNamePattern).ToList();
 
             if (files.Count == 0)
             {
@@ -359,7 +326,7 @@ namespace DotNetMigrations.Commands
             var dictionary = new Dictionary<long, string>();
             long key;
 
-            foreach (var file in files)
+            foreach (string file in files)
             {
                 key = GetVersionFromFileName(file);
                 dictionary.Add(key, file);
@@ -373,12 +340,12 @@ namespace DotNetMigrations.Commands
         /// </summary>
         /// <param name="fileName">The file path and name of the file</param>
         /// <returns>The version number from the file name.</returns>
-        private long GetVersionFromFileName(string fileName)
+        private static long GetVersionFromFileName(string fileName)
         {
-            var pathParts = fileName.Split('\\');
-            var version = pathParts[pathParts.Length - 1].Split('_')[0];
+            string[] pathParts = fileName.Split(Path.PathSeparator);
+            string version = pathParts[pathParts.Length - 1].Split('_')[0];
 
-            long returnValue = -1;
+            long returnValue;
             long.TryParse(version, out returnValue);
 
             return returnValue;

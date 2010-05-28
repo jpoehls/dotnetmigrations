@@ -58,9 +58,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseClasses\CommandBase.cs" />
-    <Compile Include="BaseClasses\LoggerBase.cs" />
+    <Compile Include="CommandBase.cs" />
+    <Compile Include="DatabaseCommandBase.cs" />
+    <Compile Include="Data\DatabaseInitializer.cs" />
+    <Compile Include="Data\DbTransactionExtensions.cs" />
+    <Compile Include="LoggerBase.cs" />
+    <Compile Include="Data\ConnectionStringFactory.cs" />
     <Compile Include="Data\DataAccess.cs" />
+    <Compile Include="Data\DbCommandExtensions.cs" />
     <Compile Include="Enum.cs" />
     <Compile Include="Interfaces\ILogRepository.cs" />
     <Compile Include="Interfaces\IArgumentRepository.cs" />
@@ -71,6 +76,7 @@
     <Compile Include="Provider\ConfigurableTypeCollection.cs" />
     <Compile Include="Provider\ConfigurableTypeElement.cs" />
     <Compile Include="Provider\ConfigurableTypeSection.cs" />
+    <Compile Include="SchemaException.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

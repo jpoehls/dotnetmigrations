@@ -80,7 +80,6 @@
     <Compile Include="Commands\GenerateScriptCommand.cs" />
     <Compile Include="Commands\MigrateCommand.cs" />
     <Compile Include="Commands\RollbackCommand.cs" />
-    <Compile Include="Commands\Special\CreateCommand.cs" />
     <Compile Include="Commands\Special\HelpCommand.cs" />
     <Compile Include="Commands\VersionCommand.cs" />
     <Compile Include="Logs\ConsoleLog.cs" />

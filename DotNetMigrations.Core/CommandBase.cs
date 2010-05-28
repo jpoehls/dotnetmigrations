@@ -1,7 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DotNetMigrations.Core
 {
+    /// <summary>
+    /// Base class for all DNM commands.
+    /// </summary>
     public abstract class CommandBase : ICommand
     {
         protected abstract void RunCommand();
@@ -15,16 +19,28 @@ namespace DotNetMigrations.Core
 
         public virtual IList<ICommand> SubCommands { get; set; }
 
+        public event EventHandler CommandEnded;
+
         public CommandResults Run()
         {
             if (!ValidateArguments())
             {
+                InvokeCommandEnded();
                 return CommandResults.Invalid;
             }
 
             RunCommand();
 
+            InvokeCommandEnded();
             return CommandResults.Success;
+        }
+
+        private void InvokeCommandEnded()
+        {
+            if (CommandEnded != null)
+            {
+                CommandEnded(this, EventArgs.Empty);
+            }
         }
     }
 }

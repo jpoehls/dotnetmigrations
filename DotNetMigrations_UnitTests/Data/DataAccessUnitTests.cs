@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 namespace DotNetMigrations.UnitTests.Data
 {
+    /*
     [TestFixture]
     public class DataAccessUnitTests
     {
@@ -176,4 +177,5 @@ namespace DotNetMigrations.UnitTests.Data
             }
         }
     }
+    */
 }

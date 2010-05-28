@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 namespace DotNetMigrations.UnitTests.Commands
 {
+    /*
     [TestFixture]
     public class CreateCommandUnitTests
     {
@@ -114,4 +115,5 @@ namespace DotNetMigrations.UnitTests.Commands
             }
         }
     }
+    */
 }

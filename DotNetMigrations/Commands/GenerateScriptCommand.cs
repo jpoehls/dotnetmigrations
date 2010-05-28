@@ -78,7 +78,7 @@ namespace DotNetMigrations.Commands
         /// Checks the config file to ensure the migration path is there
         /// </summary>
         /// <returns>Null if the path is null or empty</returns>
-        private string GetScriptPathFromConfig()
+        private static string GetScriptPathFromConfig()
         {
             string path = ConfigurationManager.AppSettings["migrateFolder"];
 
@@ -100,7 +100,7 @@ namespace DotNetMigrations.Commands
         /// Verify the path exists and creates it if it's missing.
         /// </summary>
         /// <param name="path">The path to verify.</param>
-        private void VerifyAndCreatePath(string path)
+        private static void VerifyAndCreatePath(string path)
         {
             if (!Directory.Exists(path))
             {
