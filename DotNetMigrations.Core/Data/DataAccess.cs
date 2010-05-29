@@ -6,18 +6,13 @@ namespace DotNetMigrations.Core.Data
 {
     public class DataAccess : IDisposable
     {
-        private DbConnection _connection;
-        private DbProviderFactory _factory;
+        private readonly DbConnection _connection;
+        private readonly DbProviderFactory _factory;
 
-        /// <remarks>
-        /// Constructor is private to force use of the factory method.
-        /// 
-        /// Prefer the factory method over the constructor here
-        /// because constructors should never throw exceptions
-        /// and the connection instantiation could throw.
-        /// </remarks>
-        private DataAccess()
+        public DataAccess(DbProviderFactory factory, string connectionString)
         {
+            _factory = factory;
+            _connection = GetConnection(connectionString);
         }
 
         #region IDisposable Members
@@ -30,21 +25,9 @@ namespace DotNetMigrations.Core.Data
 
         #endregion
 
-        /// <summary>
-        /// Creates and returns a new instance for the given connection string.
-        /// Also opens a connection to the database.
-        /// </summary>
-        public static DataAccess Open(string connectionString)
+        public void OpenConnection()
         {
-            var csb = new DbConnectionStringBuilder();
-            csb.ConnectionString = connectionString;
-
-            string provider = GetProvider(csb);
-
-            var da = new DataAccess();
-            da._factory = GetFactory(provider);
-            da._connection = da.GetConnection(connectionString);
-            return da;
+            _connection.Open();
         }
 
         public DbCommand CreateCommand()
@@ -70,34 +53,6 @@ namespace DotNetMigrations.Core.Data
             conn.ConnectionString = connectionString;
 
             return conn;
-        }
-
-        /// <summary>
-        /// Retrieves the appropriate Database provider factory.
-        /// </summary>
-        /// <param name="provider">The string type of the provider whose factory to create</param>
-        /// <returns>An instance of the database provider factory.</returns>
-        private static DbProviderFactory GetFactory(string provider)
-        {
-            return DbProviderFactories.GetFactory(provider);
-        }
-
-        /// <summary>
-        /// Extracts the provider from the connection string or uses the default.
-        /// </summary>
-        /// <param name="csb">The DbConnectionStringBuilder object to use.</param>
-        /// <returns>the string type of the provider.</returns>
-        private static string GetProvider(DbConnectionStringBuilder csb)
-        {
-            string provider = "System.Data.SqlClient"; // default factory provider
-
-            if (csb.ContainsKey("provider"))
-            {
-                provider = csb["provider"].ToString();
-                csb.Remove("provider");
-            }
-
-            return provider;
         }
     }
 }

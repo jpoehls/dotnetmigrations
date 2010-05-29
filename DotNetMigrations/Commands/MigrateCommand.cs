@@ -156,7 +156,7 @@ namespace DotNetMigrations.Commands
                 }
 
                 string[] sqlScripts = scriptLines.ToString().Split('|');
-                using (DbTransaction tran = DataAccess.BeginTransaction())
+                using (DbTransaction tran = Database.BeginTransaction())
                 {
                     try
                     {
@@ -235,7 +235,7 @@ namespace DotNetMigrations.Commands
                     Log.WriteWarning("TEARDOWN was not found in migration version " + file.Version);
                 }
 
-                using (DbTransaction tran = DataAccess.BeginTransaction())
+                using (DbTransaction tran = Database.BeginTransaction())
                 {
                     try
                     {

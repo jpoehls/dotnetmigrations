@@ -89,7 +89,7 @@ namespace DotNetMigrations.Commands
 
             try
             {
-                using (DbCommand cmd = DataAccess.CreateCommand())
+                using (DbCommand cmd = Database.CreateCommand())
                 {
                     cmd.CommandText = cmdText;
                     var version = cmd.ExecuteScalar<string>();

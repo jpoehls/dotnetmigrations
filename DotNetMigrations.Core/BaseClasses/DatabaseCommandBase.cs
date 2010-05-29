@@ -24,7 +24,7 @@ namespace DotNetMigrations.Core
             _connectionStringFactory = connectionStringFactory;
         }
 
-        protected DataAccess DataAccess { get; private set; }
+        protected DataAccess Database { get; private set; }
 
         protected override bool ValidateArguments()
         {
@@ -40,13 +40,14 @@ namespace DotNetMigrations.Core
         protected override void RunCommand()
         {
             CommandEnded += OnCommandEnded;
-
+            
             //  initialize the data access class
             string connStr = GetConnectionString();
-            DataAccess = DataAccess.Open(connStr);
-
+            Database = DataAccessFactory.Create(connStr);
+            
             //  perform the database initialization
-            var dbInit = new DatabaseInitializer(DataAccess);
+            Database.OpenConnection();
+            var dbInit = new DatabaseInitializer(Database);
             dbInit.Initialize();
         }
 
@@ -67,9 +68,9 @@ namespace DotNetMigrations.Core
 
         private void OnCommandEnded(object sender, EventArgs e)
         {
-            if (DataAccess != null)
+            if (Database != null)
             {
-                DataAccess.Dispose();
+                Database.Dispose();
             }
         }
 
@@ -85,7 +86,7 @@ namespace DotNetMigrations.Core
 
             try
             {
-                using (DbCommand cmd = DataAccess.CreateCommand())
+                using (DbCommand cmd = Database.CreateCommand())
                 {
                     cmd.CommandText = command;
                     var version = cmd.ExecuteScalar<string>();

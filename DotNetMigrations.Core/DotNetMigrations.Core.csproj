@@ -61,6 +61,7 @@
     <Compile Include="BaseClasses\CommandBase.cs" />
     <Compile Include="BaseClasses\DatabaseCommandBase.cs" />
     <Compile Include="ConfigurationManagerWrapper.cs" />
+    <Compile Include="Data\DataAccessFactory.cs" />
     <Compile Include="Data\DatabaseInitializer.cs" />
     <Compile Include="Data\DbTransactionExtensions.cs" />
     <Compile Include="BaseClasses\LoggerBase.cs" />
