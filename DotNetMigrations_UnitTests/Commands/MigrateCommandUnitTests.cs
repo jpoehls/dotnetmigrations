@@ -20,6 +20,7 @@ namespace DotNetMigrations.UnitTests.Commands
         {
             using (var helper = new SqlDatabaseHelper(TestConnectionString))
             {
+                helper.SwallowSqlExceptions = true;
                 helper.ExecuteNonQuery("DROP TABLE [schema_migrations]");
                 helper.ExecuteNonQuery("DROP TABLE [TestTable]");
             }
