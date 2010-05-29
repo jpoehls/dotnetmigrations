@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Configuration;
-using System.Data;
-using System.Data.SqlClient;
 using System.IO;
+using System.Linq;
 using System.Text;
 using DotNetMigrations.Commands;
 using DotNetMigrations.Core;
@@ -13,7 +12,7 @@ using NUnit.Framework;
 namespace DotNetMigrations.UnitTests.Commands
 {
     [TestFixture]
-    public class VersionCommandUnitTests
+    public class VersionCommandUnitTests : DatabaseIntegrationTests
     {
         private string _migrationPath;
         private string _scriptName;
@@ -34,60 +33,10 @@ namespace DotNetMigrations.UnitTests.Commands
                 Directory.Delete(_migrationPath, true);
             }
 
-            var connString = ConfigurationManager.ConnectionStrings["testDb"].ConnectionString;
-
-            using (var conn = new SqlConnection(connString))
-            using (var cmd = new SqlCommand())
+            using (var helper = new SqlDatabaseHelper(TestConnectionString))
             {
-                string results = string.Empty;
-                cmd.CommandText = "DROP TABLE [schema_migrations]";
-                cmd.CommandType = CommandType.Text;
-                cmd.Connection = conn;
-
-                conn.Open();
-                cmd.ExecuteNonQuery();
+                helper.ExecuteNonQuery("DROP TABLE [schema_migrations]");
             }
-        }
-
-        [Test]
-        public void Should_Report_DB_And_Script_Version_Invalid_Arguments()
-        {
-            var arguments = new string[] { "Version" };
-            var log = new MockLog1();
-            var args = new ArgumentRepository(arguments);
-
-            var versionCommand  = new VersionCommand();
-            versionCommand.Log = log;
-            versionCommand.Arguments = args;
-
-            var results = versionCommand.Run();
-
-            Assert.AreEqual(CommandResults.Invalid, results);
-            Assert.IsTrue(log.Output.Length > 1);
-        }
-
-        [Test]
-        public void Should_Report_DB_And_Script_Version()
-        {
-            var expected = new StringBuilder();
-            expected.AppendLine(string.Format("Current Database Version:".PadRight(30) + "{0}", _dbVersion));
-            expected.AppendLine(string.Format("Current Script Version:".PadRight(30) + "{0}", _scriptName.Split('_')[0]));
-
-            var arguments = new string[] { "Version", "testDb" };
-            var log = new MockLog1();
-            var args = new ArgumentRepository(arguments);
-
-            var versionCommand = new VersionCommand();
-            versionCommand.Log = log;
-            versionCommand.Arguments = args;
-
-            var results = versionCommand.Run();
-
-            Assert.AreEqual(CommandResults.Success, results);
-            Assert.IsTrue(log.Output.Length > 1);
-            Assert.IsTrue(EnsureTableWasCreated());
-            Assert.AreEqual(expected.ToString(), log.Output);
-            
         }
 
         private void SetupTestScript()
@@ -100,7 +49,7 @@ namespace DotNetMigrations.UnitTests.Commands
                 Directory.CreateDirectory(_migrationPath);
             }
 
-            using (var writer = File.CreateText(Path.Combine(_migrationPath, _scriptName)))
+            using (StreamWriter writer = File.CreateText(Path.Combine(_migrationPath, _scriptName)))
             {
                 writer.WriteLine("This is a test file.");
             }
@@ -108,26 +57,11 @@ namespace DotNetMigrations.UnitTests.Commands
 
         private void SetupDatabase()
         {
-            var connString = ConfigurationManager.ConnectionStrings["testDb"].ConnectionString;
-
-            using (var conn = new SqlConnection(connString))
-            using (var cmd = new SqlCommand())
+            using (var helper = new SqlDatabaseHelper(TestConnectionString))
             {
-                string results = string.Empty;
-                cmd.CommandText = "SELECT MAX(version) FROM [schema_migrations]";
-                cmd.CommandType = CommandType.Text;
-                cmd.Connection = conn;
-
-                conn.Open();
-
-                try
-                {
-                    results = cmd.ExecuteScalar().ToString();    
-                }
-                catch(SqlException)
-                {
-                    // do nothing
-                }
+                helper.SwallowSqlExceptions = true;
+                string results = helper.ExecuteScalar("SELECT MAX(version) FROM [schema_migrations]")
+                    .ToString();
 
                 if (string.IsNullOrEmpty(results))
                 {
@@ -142,29 +76,52 @@ namespace DotNetMigrations.UnitTests.Commands
 
         private bool EnsureTableWasCreated()
         {
-            var connString = ConfigurationManager.ConnectionStrings["testDb"].ConnectionString;
-
-            using (var conn = new SqlConnection(connString))
-            using (var cmd = new SqlCommand())
+            using (var helper = new SqlDatabaseHelper(TestConnectionString))
             {
-                string results = string.Empty;
-                cmd.CommandText = "SELECT MAX(version) FROM [schema_migrations]";
-                cmd.CommandType = CommandType.Text;
-                cmd.Connection = conn;
-
-                conn.Open();
-
-                try
-                {
-                    results = cmd.ExecuteScalar().ToString();
-                }
-                catch (SqlException)
-                {
-                    // do nothing
-                }
-
+                helper.SwallowSqlExceptions = true;
+                string results = "SELECT MAX(version) FROM [schema_migrations]";
                 return (!string.IsNullOrEmpty(results));
             }
+        }
+
+        [Test]
+        public void Should_Report_DB_And_Script_Version()
+        {
+            var expected = new StringBuilder();
+            expected.AppendLine(string.Format("Current Database Version:".PadRight(30) + "{0}", _dbVersion));
+            expected.AppendLine(string.Format("Current Script Version:".PadRight(30) + "{0}", _scriptName.Split('_')[0]));
+
+            var arguments = new[] {"Version", "testDb"};
+            var log = new MockLog1();
+            var args = new ArgumentRepository(arguments);
+
+            var versionCommand = new VersionCommand();
+            versionCommand.Log = log;
+            versionCommand.Arguments = args;
+
+            CommandResults results = versionCommand.Run();
+
+            Assert.AreEqual(CommandResults.Success, results);
+            Assert.IsTrue(log.Output.Length > 1);
+            Assert.IsTrue(EnsureTableWasCreated());
+            Assert.AreEqual(expected.ToString(), log.Output);
+        }
+
+        [Test]
+        public void Should_Report_DB_And_Script_Version_Invalid_Arguments()
+        {
+            var arguments = new[] {"Version"};
+            var log = new MockLog1();
+            var args = new ArgumentRepository(arguments);
+
+            var versionCommand = new VersionCommand();
+            versionCommand.Log = log;
+            versionCommand.Arguments = args;
+
+            CommandResults results = versionCommand.Run();
+
+            Assert.AreEqual(CommandResults.Invalid, results);
+            Assert.IsTrue(log.Output.Length > 1);
         }
     }
 }
