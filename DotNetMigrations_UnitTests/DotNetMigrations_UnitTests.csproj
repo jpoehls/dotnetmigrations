@@ -81,7 +81,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Commands\CreateCommandUnitTests.cs" />
     <Compile Include="Commands\GenerateScriptCommandUnitTests.cs" />
     <Compile Include="Commands\HelpCommandUnitTests.cs" />
     <Compile Include="Commands\MigrateCommandUnitTests.cs" />
@@ -90,6 +89,7 @@
     <Compile Include="Data\ConnectionStringFactoryUnitTests.cs" />
     <Compile Include="Data\DataAccessIntegrationTests.cs" />
     <Compile Include="DatabaseIntegrationTests.cs" />
+    <Compile Include="Data\DatabaseInitializerIntegrationTests.cs" />
     <Compile Include="Mocks\MockSubcommand.cs" />
     <Compile Include="Mocks\MockLog1.cs" />
     <Compile Include="Repositories\ArgumentRepositoryUnitTests.cs" />
@@ -97,6 +97,7 @@
     <Compile Include="Mocks\MockCommand1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\LogRepositoryUnitTests.cs" />
+    <Compile Include="SqlDatabaseHelper.cs" />
     <Compile Include="Stubs\InMemoryConfigurationManager.cs" />
   </ItemGroup>
   <ItemGroup>
