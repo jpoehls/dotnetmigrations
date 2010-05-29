@@ -38,7 +38,8 @@ namespace DotNetMigrations.Commands
         {
             base.RunCommand();
 
-            IOrderedEnumerable<MigrationScriptFile> files = MigrationScriptHelper.GetScriptFiles()
+            var scriptHelper = new MigrationScriptHelper();
+            IOrderedEnumerable<MigrationScriptFile> files = scriptHelper.GetScriptFiles()
                 .OrderByDescending(x => x);
 
             if (files.Count() == 0)

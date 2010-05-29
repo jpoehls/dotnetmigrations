@@ -48,7 +48,8 @@ namespace DotNetMigrations.Commands
         /// <returns>The latest script version</returns>
         private static long GetLatestScriptVersion()
         {
-            IOrderedEnumerable<MigrationScriptFile> files = MigrationScriptHelper.GetScriptFiles()
+            var scriptHelper = new MigrationScriptHelper();
+            IOrderedEnumerable<MigrationScriptFile> files = scriptHelper.GetScriptFiles()
                 .OrderByDescending(x => x);
 
             MigrationScriptFile latestFile = files.FirstOrDefault();

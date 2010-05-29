@@ -31,7 +31,8 @@ namespace DotNetMigrations.Commands
         /// </summary>
         protected override void RunCommand()
         {
-            string scriptPath = MigrationScriptHelper.GetScriptPath(Log);
+            var scriptHelper = new MigrationScriptHelper();
+            string scriptPath = scriptHelper.GetScriptPath(Log);
             GenerateScript(scriptPath);
         }
 
