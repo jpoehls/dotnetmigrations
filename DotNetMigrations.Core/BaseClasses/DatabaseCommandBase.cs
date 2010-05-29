@@ -1,5 +1,6 @@
 using System;
 using System.Data.Common;
+using System.Linq;
 using DotNetMigrations.Core.Data;
 
 namespace DotNetMigrations.Core
@@ -12,6 +13,17 @@ namespace DotNetMigrations.Core
     /// </summary>
     public abstract class DatabaseCommandBase : CommandBase
     {
+        private readonly ConnectionStringFactory _connectionStringFactory;
+
+        protected DatabaseCommandBase() : this(new ConnectionStringFactory())
+        {
+        }
+
+        protected DatabaseCommandBase(ConnectionStringFactory connectionStringFactory)
+        {
+            _connectionStringFactory = connectionStringFactory;
+        }
+
         protected DataAccess DataAccess { get; private set; }
 
         protected override bool ValidateArguments()
@@ -42,13 +54,13 @@ namespace DotNetMigrations.Core
         {
             string connStrArg = Arguments.GetArgument(1);
             string connStr;
-            if (ConnectionStringFactory.IsConnectionString(connStrArg))
+            if (_connectionStringFactory.IsConnectionString(connStrArg))
             {
                 connStr = connStrArg;
             }
             else
             {
-                connStr = ConnectionStringFactory.GetConnectionString(connStrArg);
+                connStr = _connectionStringFactory.GetConnectionString(connStrArg);
             }
             return connStr;
         }
@@ -73,7 +85,7 @@ namespace DotNetMigrations.Core
 
             try
             {
-                using (var cmd = DataAccess.CreateCommand())
+                using (DbCommand cmd = DataAccess.CreateCommand())
                 {
                     cmd.CommandText = command;
                     var version = cmd.ExecuteScalar<string>();

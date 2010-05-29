@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="BaseClasses\CommandBase.cs" />
     <Compile Include="BaseClasses\DatabaseCommandBase.cs" />
+    <Compile Include="ConfigurationManagerWrapper.cs" />
     <Compile Include="Data\DatabaseInitializer.cs" />
     <Compile Include="Data\DbTransactionExtensions.cs" />
     <Compile Include="BaseClasses\LoggerBase.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="Data\DataAccess.cs" />
     <Compile Include="Data\DbCommandExtensions.cs" />
     <Compile Include="CommandResults.cs" />
+    <Compile Include="IConfigurationManager.cs" />
     <Compile Include="Interfaces\ILogRepository.cs" />
     <Compile Include="Interfaces\IArgumentRepository.cs" />
     <Compile Include="Interfaces\ICommand.cs" />
