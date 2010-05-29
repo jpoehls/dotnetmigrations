@@ -13,6 +13,8 @@ namespace DotNetMigrations.UnitTests
             _connection = new SqlConnection(connectionString);
         }
 
+        public bool SwallowSqlExceptions { get; set; }
+
         #region IDisposable Members
 
         public void Dispose()
@@ -22,6 +24,34 @@ namespace DotNetMigrations.UnitTests
 
         #endregion
 
+        public object ExecuteScalar(string commandText)
+        {
+            var cmd = new SqlCommand(commandText);
+            return ExecuteScalar(cmd);
+        }
+
+        public object ExecuteScalar(SqlCommand command)
+        {
+            try
+            {
+                command.Connection = _connection;
+                _connection.Open();
+                return command.ExecuteScalar();
+            }
+            catch (SqlException)
+            {
+                if (!SwallowSqlExceptions)
+                {
+                    throw;
+                }
+                return null;
+            }
+            finally
+            {
+                _connection.Close();
+            }
+        }
+
         public int ExecuteNonQuery(SqlCommand command)
         {
             try
@@ -29,6 +59,14 @@ namespace DotNetMigrations.UnitTests
                 command.Connection = _connection;
                 _connection.Open();
                 return command.ExecuteNonQuery();
+            }
+            catch (SqlException)
+            {
+                if (!SwallowSqlExceptions)
+                {
+                    throw;
+                }
+                return 0;
             }
             finally
             {
@@ -56,6 +94,13 @@ namespace DotNetMigrations.UnitTests
                 {
                     cmd.Connection = _connection;
                     cmd.ExecuteNonQuery();
+                }
+            }
+            catch (SqlException)
+            {
+                if (!SwallowSqlExceptions)
+                {
+                    throw;
                 }
             }
             finally

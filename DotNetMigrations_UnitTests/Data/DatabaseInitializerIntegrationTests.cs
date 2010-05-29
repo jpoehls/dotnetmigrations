@@ -70,14 +70,10 @@ namespace DotNetMigrations.UnitTests.Data
 
             //  assert
             string results;
-            using (var conn = new SqlConnection(TestConnectionString))
-            using (var cmd = new SqlCommand())
+            using (var helper = new SqlDatabaseHelper(TestConnectionString))
             {
-                cmd.CommandText = "SELECT COUNT(Version) FROM [schema_migrations]";
-                cmd.Connection = conn;
-
-                conn.Open();
-                results = cmd.ExecuteScalar().ToString();
+                results = helper.ExecuteScalar("SELECT COUNT(Version) FROM [schema_migrations]")
+                    .ToString();
             }
 
             Assert.AreEqual("1", results);
@@ -94,14 +90,10 @@ namespace DotNetMigrations.UnitTests.Data
 
             //  assert
             string results;
-            using (var conn = new SqlConnection(TestConnectionString))
-            using (var cmd = new SqlCommand())
+            using (var helper = new SqlDatabaseHelper(TestConnectionString))
             {
-                cmd.CommandText = "SELECT COUNT(Version) FROM [schema_migrations]";
-                cmd.Connection = conn;
-
-                conn.Open();
-                results = cmd.ExecuteScalar().ToString();
+                results = helper.ExecuteScalar("SELECT COUNT(Version) FROM [schema_migrations]")
+                    .ToString();
             }
 
             Assert.AreEqual("1", results);

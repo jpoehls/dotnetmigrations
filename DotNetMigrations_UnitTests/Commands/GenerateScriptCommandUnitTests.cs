@@ -1,5 +1,7 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
 using System.IO;
+using System.Linq;
 using DotNetMigrations.Commands;
 using DotNetMigrations.Core;
 using DotNetMigrations.Repositories;
@@ -11,6 +13,19 @@ namespace DotNetMigrations.UnitTests.Commands
     [TestFixture]
     public class GenerateScriptCommandUnitTests
     {
+        #region Setup/Teardown
+
+        [SetUp]
+        public void Test_Setup()
+        {
+            if (Directory.Exists(_migrationPath))
+            {
+                Directory.Delete(_migrationPath, true);
+            }
+        }
+
+        #endregion
+
         private string _migrationPath;
 
         [TestFixtureSetUp]
@@ -33,38 +48,11 @@ namespace DotNetMigrations.UnitTests.Commands
             }
         }
 
-        [SetUp]
-        public void Test_Setup()
-        {
-            if (Directory.Exists(_migrationPath))
-            {
-                Directory.Delete(_migrationPath, true);
-            }
-        }
-
-        [Test]
-        public void Should_Create_Directory_And_Script_Invalid_Arguments()
-        {
-            var arguments = new string[] { "Generate" };
-            var log = new MockLog1();
-            var args = new ArgumentRepository(arguments);
-
-            var generateCommand = new GenerateScriptCommand();
-            generateCommand.Log = log;
-            generateCommand.Arguments = args;
-
-            var results = generateCommand.Run();
-
-            Assert.AreEqual(CommandResults.Invalid, results);
-            Assert.IsTrue(!Directory.Exists(_migrationPath));
-            Assert.IsTrue(log.Output.Length > 1);
-        }
-
         [Test]
         public void Should_Create_Directory_And_Script()
         {
-            var migrationName = "testDb";
-            var arguments = new string[] {"Generate", migrationName};
+            const string migrationName = "testDb";
+            var arguments = new[] {"Generate", migrationName};
             var log = new MockLog1();
             var args = new ArgumentRepository(arguments);
 
@@ -72,7 +60,7 @@ namespace DotNetMigrations.UnitTests.Commands
             generateCommand.Log = log;
             generateCommand.Arguments = args;
 
-            var results = generateCommand.Run();
+            CommandResults results = generateCommand.Run();
 
             Assert.AreEqual(CommandResults.Success, results);
             Assert.IsTrue(Directory.Exists(_migrationPath));
@@ -80,5 +68,22 @@ namespace DotNetMigrations.UnitTests.Commands
             Assert.IsTrue(log.Output.Length > 1);
         }
 
+        [Test]
+        public void Should_Create_Directory_And_Script_Invalid_Arguments()
+        {
+            var arguments = new[] {"Generate"};
+            var log = new MockLog1();
+            var args = new ArgumentRepository(arguments);
+
+            var generateCommand = new GenerateScriptCommand();
+            generateCommand.Log = log;
+            generateCommand.Arguments = args;
+
+            CommandResults results = generateCommand.Run();
+
+            Assert.AreEqual(CommandResults.Invalid, results);
+            Assert.IsTrue(!Directory.Exists(_migrationPath));
+            Assert.IsTrue(log.Output.Length > 1);
+        }
     }
 }
