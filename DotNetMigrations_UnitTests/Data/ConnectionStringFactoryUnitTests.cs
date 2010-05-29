@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace DotNetMigrations.UnitTests.Data
 {
     [TestFixture]
-    public class ConnectionStringFactory_Tests
+    public class ConnectionStringFactoryUnitTests
     {
         #region Setup/Teardown
 

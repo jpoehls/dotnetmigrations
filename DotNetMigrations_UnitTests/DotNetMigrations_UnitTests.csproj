@@ -72,7 +72,7 @@
     <Compile Include="Commands\MigrateCommandUnitTests.cs" />
     <Compile Include="Commands\RollbackUnitTests.cs" />
     <Compile Include="Commands\VersionCommandUnitTests.cs" />
-    <Compile Include="Data\ConnectionStringFactory_Tests.cs" />
+    <Compile Include="Data\ConnectionStringFactoryUnitTests.cs" />
     <Compile Include="Data\DataAccessUnitTests.cs" />
     <Compile Include="Mocks\MockSubcommand.cs" />
     <Compile Include="Mocks\MockLog1.cs" />
