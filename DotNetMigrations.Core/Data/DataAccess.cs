@@ -30,6 +30,11 @@ namespace DotNetMigrations.Core.Data
             _connection.Open();
         }
 
+        public void CloseConnection()
+        {
+            _connection.Close();
+        }
+
         public DbCommand CreateCommand()
         {
             DbCommand cmd = _connection.CreateCommand();
