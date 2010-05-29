@@ -12,7 +12,8 @@ namespace DotNetMigrations.Commands
         private const string ScriptFileNamePattern = "*.sql";
         private readonly IConfigurationManager _configurationManager;
 
-        public MigrationScriptHelper() : this(new ConfigurationManagerWrapper())
+        public MigrationScriptHelper()
+            : this(new ConfigurationManagerWrapper())
         {
         }
 
@@ -67,7 +68,7 @@ namespace DotNetMigrations.Commands
 
             if (files != null)
             {
-                return files.Select(x => new MigrationScriptFile(x));
+                return files.Select(x => new MigrationScriptFile(x)).OrderBy(x => x);
             }
 
             return Enumerable.Empty<MigrationScriptFile>();

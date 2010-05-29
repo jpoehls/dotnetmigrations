@@ -19,13 +19,6 @@ namespace DotNetMigrations.UnitTests.Data
             _subject = new ConnectionStringFactory(_configManager);
         }
 
-        [TearDown]
-        public void TearDown()
-        {
-            //  remove the test connection string (if it exists)
-            _configManager.ConnectionStrings.Remove(TestConnectionStringName);
-        }
-
         #endregion
 
         private ConnectionStringFactory _subject;
