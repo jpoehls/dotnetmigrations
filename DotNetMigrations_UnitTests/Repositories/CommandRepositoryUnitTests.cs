@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using DotNetMigrations.Core;
 using DotNetMigrations.Repositories;
-using DotNetMigrations.UnitTests.MockCommands;
+using DotNetMigrations.UnitTests.Mocks;
 using NUnit.Framework;
 using Rhino.Mocks;
 
@@ -26,7 +26,7 @@ namespace DotNetMigrations.UnitTests.Repositories
             ICommand results = cmdRepository.GetCommand("TestCommand");
 
             Assert.IsNotNull(results);
-            Assert.IsTrue(results is MockCommands.MockCommand1);
+            Assert.IsTrue(results is MockCommand1);
         }
 
         [Test]

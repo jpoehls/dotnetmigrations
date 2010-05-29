@@ -2,7 +2,7 @@
 using System.ComponentModel.Composition;
 using DotNetMigrations.Core;
 
-namespace DotNetMigrations.UnitTests.MockCommands
+namespace DotNetMigrations.UnitTests.Mocks
 {
     [Export("Commands", typeof(ICommand))]
     internal class MockCommand1 : CommandBase

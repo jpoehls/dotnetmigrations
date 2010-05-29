@@ -6,6 +6,7 @@ using System.IO;
 using DotNetMigrations.Commands;
 using DotNetMigrations.Core;
 using DotNetMigrations.Repositories;
+using DotNetMigrations.UnitTests.Mocks;
 using NUnit.Framework;
 
 namespace DotNetMigrations.UnitTests.Commands

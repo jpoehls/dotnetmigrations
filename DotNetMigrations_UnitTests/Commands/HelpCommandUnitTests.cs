@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using DotNetMigrations.Commands.Special;
 using DotNetMigrations.Repositories;
-using DotNetMigrations.UnitTests.MockCommands;
+using DotNetMigrations.UnitTests.Mocks;
 using NUnit.Framework;
 using Rhino.Mocks;
 

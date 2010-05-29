@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using DotNetMigrations.Core;
 
-namespace DotNetMigrations.UnitTests
+namespace DotNetMigrations.UnitTests.Mocks
 {
     public class MockLog1 : LoggerBase
     {
