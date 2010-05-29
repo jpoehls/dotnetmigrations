@@ -84,6 +84,7 @@
     <Compile Include="Commands\GenerateScriptCommandUnitTests.cs" />
     <Compile Include="Commands\HelpCommandUnitTests.cs" />
     <Compile Include="Commands\MigrateCommandUnitTests.cs" />
+    <Compile Include="Commands\MigrationScriptFileUnitTests.cs" />
     <Compile Include="Commands\RollbackUnitTests.cs" />
     <Compile Include="Commands\VersionCommandUnitTests.cs" />
     <Compile Include="Data\ConnectionStringFactoryUnitTests.cs" />
