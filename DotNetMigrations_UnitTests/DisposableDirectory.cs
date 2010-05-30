@@ -4,17 +4,13 @@ using System.Linq;
 
 namespace DotNetMigrations.UnitTests
 {
-    /// <summary>
-    /// Creates a directory at the given path and
-    /// deletes it (and all contents) when disposed.
-    /// </summary>
     public class DisposableDirectory : IDisposable
     {
         private readonly DirectoryInfo _dir;
 
-        public DisposableDirectory(string path)
+        private DisposableDirectory(DirectoryInfo dir)
         {
-            _dir = Directory.CreateDirectory(path);
+            _dir = dir;
         }
 
         public string FullName
@@ -33,5 +29,25 @@ namespace DotNetMigrations.UnitTests
         }
 
         #endregion
+
+        /// <summary>
+        /// Creates a directory at the given path and
+        /// deletes it (and all contents) when disposed.
+        /// </summary>
+        public static DisposableDirectory Create(string path)
+        {
+            DirectoryInfo dir = Directory.CreateDirectory(path);
+            return new DisposableDirectory(dir);
+        }
+
+        /// <summary>
+        /// Watches the directory at the given path and
+        /// deletes it (and all contents) when disposed.
+        /// </summary>
+        public static DisposableDirectory Watch(string path)
+        {
+            var dir = new DirectoryInfo(path);
+            return new DisposableDirectory(dir);
+        }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DotNetMigrations.Commands;
+using DotNetMigrations.UnitTests.Mocks;
 using DotNetMigrations.UnitTests.Stubs;
 using NUnit.Framework;
 
@@ -30,7 +31,7 @@ namespace DotNetMigrations.UnitTests.Commands
         {
             //  arrange
             string path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            using (new DisposableDirectory(path))
+            using (DisposableDirectory.Create(path))
             {
                 _configManager.AppSettings["migrateFolder"] = path;
 
@@ -51,7 +52,7 @@ namespace DotNetMigrations.UnitTests.Commands
         {
             //  arrange
             string pathToEmptyDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            using (var emptyDir = new DisposableDirectory(pathToEmptyDir))
+            using (DisposableDirectory emptyDir = DisposableDirectory.Create(pathToEmptyDir))
             {
                 _configManager.AppSettings["migrateFolder"] = emptyDir.FullName;
 
@@ -69,7 +70,7 @@ namespace DotNetMigrations.UnitTests.Commands
         {
             //  arrange
             string path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            using (new DisposableDirectory(path))
+            using (DisposableDirectory.Create(path))
             {
                 _configManager.AppSettings["migrateFolder"] = path;
 
@@ -83,6 +84,52 @@ namespace DotNetMigrations.UnitTests.Commands
                 //  assert
                 Assert.IsTrue(files.First().Version == 1);
                 Assert.IsTrue(files.Last().Version == 10);
+            }
+        }
+
+        [Test]
+        public void GetScriptPath_should_create_path_if_it_doesnt_exist()
+        {
+            //  arrange
+            string path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            using (DisposableDirectory.Watch(path))
+            {
+                _configManager.AppSettings["migrateFolder"] = path;
+
+                //  act
+                _subject.GetScriptPath(null);
+
+                //  assert
+                bool pathExists = Directory.Exists(path);
+                Assert.IsTrue(pathExists);
+            }
+        }
+
+        [Test]
+        public void GetScriptPath_should_log_warning_if_migrateFolder_appSetting_isnt_found()
+        {
+            //  arrange
+            var logger = new MockLog1();
+
+            //  act
+            string path = _subject.GetScriptPath(logger);
+            using (DisposableDirectory.Watch(path))
+            {
+                //  assert
+                Assert.IsTrue(logger.Output.StartsWith("WARNING"));
+            }
+        }
+
+        [Test]
+        public void GetScriptPath_should_return_default_path_if_migrateFolder_appSetting_isnt_found()
+        {
+            //  act
+            string path = _subject.GetScriptPath(null);
+            using (DisposableDirectory.Watch(path))
+            {
+                //  assert
+                bool pathExists = Directory.Exists(path);
+                Assert.IsTrue(pathExists);
             }
         }
     }
