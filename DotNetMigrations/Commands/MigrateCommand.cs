@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.IO;
 using System.Linq;
-using System.Text;
 using DotNetMigrations.Core;
 using DotNetMigrations.Core.Data;
 using DotNetMigrations.Migrations;
@@ -119,74 +117,49 @@ namespace DotNetMigrations.Commands
             IEnumerable<MigrationScriptFile> filesToUse = files.OrderBy(x => x)
                 .Where(x => x.Version > currentVersion && x.Version <= targetVersion);
 
-            StringBuilder scriptLines;
+            var allSqlChunksToExecute = new List<string>();
 
             foreach (MigrationScriptFile file in filesToUse)
             {
-                scriptLines = new StringBuilder();
-                using (StreamReader reader = File.OpenText(file.FilePath))
-                {
-                    string line = reader.ReadLine();
-                    bool started = false;
+                MigrationScriptContents contents = file.Read();
+                IEnumerable<string> sqlChunks = SqlParser.SplitByGoKeyword(contents.Setup);
 
-                    while (line != null)
-                    {
-                        if (!started && line == "BEGIN_SETUP:")
-                        {
-                            started = true;
-                        }
-                        else if (started && line == "END_SETUP:")
-                        {
-                            break;
-                        }
-                        else if (started && line.Trim().ToUpper() == "GO")
-                        {
-                            scriptLines.Append("|");
-                        }
-                        else
-                        {
-                            scriptLines.AppendLine(line);
-                        }
-
-                        line = reader.ReadLine();
-                    }
-                }
-
-                if (scriptLines.ToString().Trim().Length == 0)
+                if (sqlChunks.Count() == 0)
                 {
                     Log.WriteWarning("SETUP was not found in migration version " + file.Version);
                 }
 
-                string[] sqlScripts = scriptLines.ToString().Split('|');
-                using (DbTransaction tran = Database.BeginTransaction())
+                allSqlChunksToExecute.AddRange(sqlChunks);
+            }
+
+            using (DbTransaction tran = Database.BeginTransaction())
+            {
+                try
                 {
-                    try
+                    foreach (string sql in allSqlChunksToExecute)
                     {
-                        foreach (string sql in sqlScripts)
+                        if (sql != null && sql.Trim().Length > 0)
                         {
-                            if (!string.IsNullOrEmpty(sql.Trim()))
+                            using (DbCommand cmd = tran.CreateCommand())
                             {
-                                using (DbCommand cmd = tran.CreateCommand())
-                                {
-                                    cmd.CommandText = sql;
-                                    cmd.ExecuteNonQuery();
-                                }
+                                cmd.CommandText = sql;
+                                cmd.ExecuteNonQuery();
                             }
                         }
-
-                        UpdateSchemaVersionUp(tran, file.Version);
-
-                        tran.Commit();
                     }
-                    catch
-                    {
-                        tran.Rollback();
-                        throw;
-                    }
+
+                    UpdateSchemaVersionUp(tran, targetVersion);
+
+                    tran.Commit();
                 }
-
-                Log.WriteLine("Migrated to Version:".PadRight(30) + file.Version);
+                catch
+                {
+                    tran.Rollback();
+                    throw;
+                }
             }
+
+            Log.WriteLine("Migrated to Version:".PadRight(30) + targetVersion);
         }
 
         /// <summary>
@@ -196,77 +169,52 @@ namespace DotNetMigrations.Commands
         /// <param name="targetVersion">The targeted version of the database.</param>
         private void MigrateDown(long currentVersion, long targetVersion, IEnumerable<MigrationScriptFile> files)
         {
-            IEnumerable<MigrationScriptFile> filesToUse = files.OrderBy(x => x)
+            IEnumerable<MigrationScriptFile> filesToUse = files.OrderByDescending(x => x)
                 .Where(x => x.Version <= currentVersion && x.Version > targetVersion);
 
-            StringBuilder scriptLines;
+            var allSqlChunksToExecute = new List<string>();
 
             foreach (MigrationScriptFile file in filesToUse)
             {
-                scriptLines = new StringBuilder();
-                using (StreamReader reader = File.OpenText(file.FilePath))
-                {
-                    string line = reader.ReadLine();
-                    bool started = false;
+                MigrationScriptContents contents = file.Read();
+                IEnumerable<string> sqlChunks = SqlParser.SplitByGoKeyword(contents.Teardown);
 
-                    while (line != null)
-                    {
-                        if (!started && line == "BEGIN_TEARDOWN:")
-                        {
-                            started = true;
-                        }
-                        else if (started && line == "END_TEARDOWN:")
-                        {
-                            break;
-                        }
-                        else if (started && line.Trim().ToUpper() == "GO")
-                        {
-                            scriptLines.Append("|");
-                        }
-                        else if (started)
-                        {
-                            scriptLines.AppendLine(line);
-                        }
-
-                        line = reader.ReadLine();
-                    }
-                }
-
-                if (scriptLines.ToString().Trim().Length == 0)
+                if (sqlChunks.Count() == 0)
                 {
                     Log.WriteWarning("TEARDOWN was not found in migration version " + file.Version);
                 }
 
-                using (DbTransaction tran = Database.BeginTransaction())
+                allSqlChunksToExecute.AddRange(sqlChunks);
+            }
+
+            using (DbTransaction tran = Database.BeginTransaction())
+            {
+                try
                 {
-                    try
+                    foreach (string sql in allSqlChunksToExecute)
                     {
-                        string[] sqlScripts = scriptLines.ToString().Split('|');
-                        foreach (string sql in sqlScripts)
+                        if (sql != null && sql.Trim().Length > 0)
                         {
-                            if (!string.IsNullOrEmpty(sql.Trim()))
+                            using (DbCommand cmd = tran.CreateCommand())
                             {
-                                using (DbCommand cmd = tran.CreateCommand())
-                                {
-                                    cmd.CommandText = sql;
-                                    cmd.ExecuteNonQuery();
-                                }
+                                cmd.CommandText = sql;
+                                cmd.ExecuteNonQuery();
                             }
                         }
-
-                        UpdateSchemaVersionDown(tran, file.Version);
-
-                        tran.Commit();
                     }
-                    catch
-                    {
-                        tran.Rollback();
-                        throw;
-                    }
+
+                    UpdateSchemaVersionDown(tran, targetVersion);
+
+                    tran.Commit();
                 }
-
-                Log.WriteLine("Migrated From Version:".PadRight(30) + file.Version);
+                catch
+                {
+                    tran.Rollback();
+                    throw;
+                }
             }
+
+            Log.WriteLine("Migrated From Version:".PadRight(30) + targetVersion);
         }
 
         /// <summary>
