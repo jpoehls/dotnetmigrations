@@ -25,7 +25,7 @@ namespace DotNetMigrations.Repositories
         /// </summary>
         internal CommandRepository()
         {
-            var pluginDirectory = ConfigurationManager.AppSettings["PlugInDirectory"];
+            var pluginDirectory = ConfigurationManager.AppSettings["pluginFolder"];
 
             Commands = new List<ICommand>();
             catalog = new AggregateCatalog();
