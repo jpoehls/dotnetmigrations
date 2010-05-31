@@ -15,12 +15,21 @@ namespace DotNetMigrations.Migrations
 
         public IVersionStrategy GetStrategy()
         {
-            var setting = _configurationManager.AppSettings["versionStrategy"];
-            if (string.Equals("local_time", setting))
+            string setting = _configurationManager.AppSettings["versionStrategy"];
+
+            if (string.Equals("local_time", setting, StringComparison.OrdinalIgnoreCase))
             {
                 return new LocalTimestampVersion();
             }
-            return new UtcTimestampVersion();
+
+            if (string.Equals("utc_time", setting, StringComparison.OrdinalIgnoreCase))
+            {
+                return new UtcTimestampVersion();
+            }
+
+            throw new ApplicationException(
+                "Invalid value proved for the versionStrategy appSetting. "
+                + "Acceptable values are 'local_time' or 'utc_time'.");
         }
     }
 }
