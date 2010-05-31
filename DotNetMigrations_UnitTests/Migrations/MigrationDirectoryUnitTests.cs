@@ -30,6 +30,8 @@ namespace DotNetMigrations.UnitTests.Migrations
         public void CreateBlankScript_file_name_should_include_migration_name_with_invalid_chars_replaced_with_a_dash()
         {
             //  arrange
+            _configManager.AppSettings["versionStrategy"] = "utc_time";
+
             char[] invalidChars = Path.GetInvalidFileNameChars();
             string migrationName = "my first script";
             foreach (char c in invalidChars)
@@ -54,6 +56,7 @@ namespace DotNetMigrations.UnitTests.Migrations
             CreateBlankScript_file_name_should_include_migration_name_with_whitespace_replaced_with_an_underscore()
         {
             //  arrange
+            _configManager.AppSettings["versionStrategy"] = "utc_time";
             const string migrationName = "my first     script";
 
             //  act
@@ -72,6 +75,7 @@ namespace DotNetMigrations.UnitTests.Migrations
         public void CreateBlankScript_file_name_should_include_migration_name_with_whitespace_trimmed()
         {
             //  arrange
+            _configManager.AppSettings["versionStrategy"] = "utc_time";
             const string migrationName = "    my first script    ";
 
             //  act
@@ -90,6 +94,7 @@ namespace DotNetMigrations.UnitTests.Migrations
         public void CreateBlankScript_file_name_should_start_with_version_number_followed_by_an_underscore()
         {
             //  arrange
+            _configManager.AppSettings["versionStrategy"] = "utc_time";
             const string migrationName = "my first script";
 
             //  act
@@ -111,6 +116,7 @@ namespace DotNetMigrations.UnitTests.Migrations
         public void CreateBlankScript_file_should_contain_template_tags_in_correct_order()
         {
             //  arrange
+            _configManager.AppSettings["versionStrategy"] = "utc_time";
             const string migrationName = "my first script";
 
             //  act
@@ -136,6 +142,7 @@ namespace DotNetMigrations.UnitTests.Migrations
         public void CreateBlankScript_should_create_file()
         {
             //  arrange
+            _configManager.AppSettings["versionStrategy"] = "utc_time";
             const string migrationName = "my first script";
 
             //  act
