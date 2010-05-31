@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using DotNetMigrations.Core;
 using DotNetMigrations.Migrations;
 
@@ -28,13 +29,16 @@ namespace DotNetMigrations.Commands
         }
 
         /// <summary>
-        /// Executes the Command's logic.
+        /// Creates the .sql file and sends the final message.
         /// </summary>
         protected override void RunCommand()
         {
-            var scriptHelper = new MigrationDirectory();
-            string scriptPath = scriptHelper.GetPath(Log);
-            GenerateScript(scriptPath);
+            string migrationName = Arguments.GetArgument(1);
+
+            var dir = new MigrationDirectory();
+            string path = dir.CreateBlankScript(migrationName);
+
+            Log.WriteLine("The new migration script, " + Path.GetFileName(path) + ", was created successfully!");
         }
 
         /// <summary>
@@ -51,28 +55,6 @@ namespace DotNetMigrations.Commands
             }
 
             return true;
-        }
-
-        /// <summary>
-        /// Creates the .sql file and sends the final message.
-        /// </summary>
-        /// <param name="path">The directory to create the new script.</param>
-        private void GenerateScript(string path)
-        {
-            string migrationName = Arguments.GetArgument(1);
-            string scriptName = DateTime.Now.ToString("yyyyMMddhhmmss") + "_" + migrationName + ".sql";
-
-            string file = Path.Combine(path, scriptName);
-
-            using (StreamWriter writer = File.CreateText(file))
-            {
-                writer.WriteLine("BEGIN_SETUP:\r\n\r\n\r\n");
-                writer.WriteLine("END_SETUP:");
-                writer.WriteLine("BEGIN_TEARDOWN:\r\n\r\n\r\n");
-                writer.WriteLine("END_TEARDOWN:");
-            }
-
-            Log.WriteLine("The new migration script, " + scriptName + ", was created successfully!");
         }
     }
 }
