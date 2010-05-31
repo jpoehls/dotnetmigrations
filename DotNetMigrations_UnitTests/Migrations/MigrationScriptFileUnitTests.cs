@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using DotNetMigrations.Commands;
+using DotNetMigrations.Migrations;
 using NUnit.Framework;
 
-namespace DotNetMigrations.UnitTests.Commands
+namespace DotNetMigrations.UnitTests.Migrations
 {
     [TestFixture]
     public class MigrationScriptFileUnitTests

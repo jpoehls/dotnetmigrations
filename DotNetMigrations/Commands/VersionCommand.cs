@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using DotNetMigrations.Core;
+using DotNetMigrations.Migrations;
 
 namespace DotNetMigrations.Commands
 {
@@ -48,8 +49,8 @@ namespace DotNetMigrations.Commands
         /// <returns>The latest script version</returns>
         private static long GetLatestScriptVersion()
         {
-            var scriptHelper = new MigrationScriptHelper();
-            IOrderedEnumerable<MigrationScriptFile> files = scriptHelper.GetScriptFiles()
+            var scriptHelper = new MigrationDirectory();
+            IOrderedEnumerable<MigrationScriptFile> files = scriptHelper.GetScripts()
                 .OrderByDescending(x => x);
 
             MigrationScriptFile latestFile = files.FirstOrDefault();

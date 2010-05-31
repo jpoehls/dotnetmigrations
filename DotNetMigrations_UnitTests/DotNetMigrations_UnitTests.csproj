@@ -81,12 +81,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DisposableFile.cs" />
     <Compile Include="FileHelper.cs" />
     <Compile Include="Commands\GenerateScriptCommandUnitTests.cs" />
     <Compile Include="Commands\HelpCommandUnitTests.cs" />
     <Compile Include="Commands\MigrateCommandUnitTests.cs" />
-    <Compile Include="Commands\MigrationScriptFileUnitTests.cs" />
-    <Compile Include="Commands\MigrationScriptHelperUnitTests.cs" />
+    <Compile Include="Migrations\MigrationScriptFileUnitTests.cs" />
+    <Compile Include="Migrations\MigrationDirectoryUnitTests.cs" />
     <Compile Include="Commands\RollbackUnitTests.cs" />
     <Compile Include="Commands\VersionCommandUnitTests.cs" />
     <Compile Include="Data\ConnectionStringFactoryUnitTests.cs" />

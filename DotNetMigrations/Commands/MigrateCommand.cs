@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using DotNetMigrations.Core;
 using DotNetMigrations.Core.Data;
+using DotNetMigrations.Migrations;
 
 namespace DotNetMigrations.Commands
 {
@@ -38,8 +39,8 @@ namespace DotNetMigrations.Commands
         {
             base.RunCommand();
 
-            var scriptHelper = new MigrationScriptHelper();
-            IOrderedEnumerable<MigrationScriptFile> files = scriptHelper.GetScriptFiles()
+            var scriptHelper = new MigrationDirectory();
+            IOrderedEnumerable<MigrationScriptFile> files = scriptHelper.GetScripts()
                 .OrderByDescending(x => x);
 
             if (files.Count() == 0)

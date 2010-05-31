@@ -79,12 +79,17 @@
   <ItemGroup>
     <Compile Include="Commands\GenerateScriptCommand.cs" />
     <Compile Include="Commands\MigrateCommand.cs" />
-    <Compile Include="Commands\MigrationScriptFile.cs" />
-    <Compile Include="Commands\MigrationScriptHelper.cs" />
+    <Compile Include="Migrations\IVersionStrategy.cs" />
+    <Compile Include="Migrations\LocalTimestampVersion.cs" />
+    <Compile Include="Migrations\MigrationScriptContents.cs" />
+    <Compile Include="Migrations\MigrationScriptFile.cs" />
+    <Compile Include="Migrations\MigrationDirectory.cs" />
     <Compile Include="Commands\RollbackCommand.cs" />
     <Compile Include="Commands\Special\HelpCommand.cs" />
     <Compile Include="Commands\VersionCommand.cs" />
     <Compile Include="Logs\ConsoleLog.cs" />
+    <Compile Include="Migrations\UtcTimestampVersion.cs" />
+    <Compile Include="Migrations\VersionStrategyFactory.cs" />
     <Compile Include="Repositories\ArgumentRepository.cs" />
     <Compile Include="Repositories\CommandRepository.cs" />
     <Compile Include="Repositories\LogRepository.cs" />

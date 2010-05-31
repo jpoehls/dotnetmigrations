@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using DotNetMigrations.Core;
+using DotNetMigrations.Migrations;
 
 namespace DotNetMigrations.Commands
 {
@@ -31,8 +32,8 @@ namespace DotNetMigrations.Commands
         /// </summary>
         protected override void RunCommand()
         {
-            var scriptHelper = new MigrationScriptHelper();
-            string scriptPath = scriptHelper.GetScriptPath(Log);
+            var scriptHelper = new MigrationDirectory();
+            string scriptPath = scriptHelper.GetPath(Log);
             GenerateScript(scriptPath);
         }
 
