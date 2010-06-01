@@ -10,6 +10,17 @@ namespace DotNetMigrations.Commands
 {
     internal class MigrateCommand : DatabaseCommandBase
     {
+        private readonly IMigrationDirectory _migrationDirectory;
+
+        public MigrateCommand() : this(new MigrationDirectory())
+        {
+        }
+
+        public MigrateCommand(IMigrationDirectory migrationDirectory)
+        {
+            _migrationDirectory = migrationDirectory;
+        }
+
         /// <summary>
         /// The name of the command that is typed as a command line argument.
         /// </summary>
@@ -37,8 +48,7 @@ namespace DotNetMigrations.Commands
         {
             base.RunCommand();
 
-            var scriptHelper = new MigrationDirectory();
-            IOrderedEnumerable<MigrationScriptFile> files = scriptHelper.GetScripts()
+            IOrderedEnumerable<MigrationScriptFile> files = _migrationDirectory.GetScripts()
                 .OrderByDescending(x => x);
 
             if (files.Count() == 0)

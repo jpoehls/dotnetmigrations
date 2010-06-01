@@ -79,6 +79,7 @@
   <ItemGroup>
     <Compile Include="Commands\GenerateScriptCommand.cs" />
     <Compile Include="Commands\MigrateCommand.cs" />
+    <Compile Include="Migrations\IMigrationDirectory.cs" />
     <Compile Include="Migrations\IVersionStrategy.cs" />
     <Compile Include="Migrations\LocalTimestampVersion.cs" />
     <Compile Include="Migrations\MigrationScriptContents.cs" />

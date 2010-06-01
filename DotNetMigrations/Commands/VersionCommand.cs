@@ -7,6 +7,18 @@ namespace DotNetMigrations.Commands
 {
     internal class VersionCommand : DatabaseCommandBase
     {
+        private readonly IMigrationDirectory _migrationDirectory;
+
+        public VersionCommand()
+            : this(new MigrationDirectory())
+        {
+        }
+
+        public VersionCommand(IMigrationDirectory migrationDirectory)
+        {
+            _migrationDirectory = migrationDirectory;
+        }
+
         /// <summary>
         /// The name of the command that is typed as a command line argument.
         /// </summary>
@@ -47,10 +59,9 @@ namespace DotNetMigrations.Commands
         /// Retrieves the latest migration script version from the migration directory.
         /// </summary>
         /// <returns>The latest script version</returns>
-        private static long GetLatestScriptVersion()
+        private long GetLatestScriptVersion()
         {
-            var scriptHelper = new MigrationDirectory();
-            IOrderedEnumerable<MigrationScriptFile> files = scriptHelper.GetScripts()
+            IOrderedEnumerable<MigrationScriptFile> files = _migrationDirectory.GetScripts()
                 .OrderByDescending(x => x);
 
             MigrationScriptFile latestFile = files.FirstOrDefault();

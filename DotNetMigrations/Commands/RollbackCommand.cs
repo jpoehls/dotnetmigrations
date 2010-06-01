@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.Common;
+using System.Linq;
 using DotNetMigrations.Core;
 using DotNetMigrations.Core.Data;
 

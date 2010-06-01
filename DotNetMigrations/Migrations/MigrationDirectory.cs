@@ -8,7 +8,7 @@ using DotNetMigrations.Core;
 
 namespace DotNetMigrations.Migrations
 {
-    public class MigrationDirectory
+    public class MigrationDirectory : IMigrationDirectory
     {
         private const string DefaultMigrationScriptPath = @".\migrate\";
         private const string ScriptFileNamePattern = "*.sql";

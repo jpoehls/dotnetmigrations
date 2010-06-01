@@ -8,6 +8,17 @@ namespace DotNetMigrations.Commands
 {
     internal class GenerateScriptCommand : CommandBase
     {
+        private readonly IMigrationDirectory _migrationDirectory;
+
+        public GenerateScriptCommand() : this(new MigrationDirectory())
+        {
+        }
+
+        public GenerateScriptCommand(IMigrationDirectory migrationDirectory)
+        {
+            _migrationDirectory = migrationDirectory;
+        }
+
         /// <summary>
         /// The name of the command that is typed as a command line argument.
         /// </summary>
@@ -34,9 +45,7 @@ namespace DotNetMigrations.Commands
         protected override void RunCommand()
         {
             string migrationName = Arguments.GetArgument(1);
-
-            var dir = new MigrationDirectory();
-            string path = dir.CreateBlankScript(migrationName);
+            string path = _migrationDirectory.CreateBlankScript(migrationName);
 
             Log.WriteLine("The new migration script, " + Path.GetFileName(path) + ", was created successfully!");
         }
