@@ -116,11 +116,13 @@ namespace DotNetMigrations.UnitTests.Commands
             using (var helper = new SqlDatabaseHelper(TestConnectionString))
             {
                 helper.SwallowSqlExceptions = true;
-                string results = helper.ExecuteScalar("SELECT MAX(Id) FROM [TestTable]")
-                    .ToString();
-                _testTableVersion = long.Parse(results);
+                var results = helper.ExecuteScalar("SELECT MAX(Id) FROM [TestTable]");
+                if (results != null)
+                {
+                    _testTableVersion = (long)results;
+                }
 
-                return (!string.IsNullOrEmpty(results));
+                return results != null;
             }
         }
 
