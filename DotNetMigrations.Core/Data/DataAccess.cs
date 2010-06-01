@@ -59,5 +59,23 @@ namespace DotNetMigrations.Core.Data
 
             return conn;
         }
+
+        /// <summary>
+        /// Executes a SQL script. Includes support for executing
+        /// scripts in batches using the GO keyword.
+        /// </summary>
+        public void ExecuteScript(DbTransaction tran, string script)
+        {
+            var batches = SqlParser.SplitByGoKeyword(script);
+            foreach (var batch in batches)
+            {
+                using (var cmd = CreateCommand())
+                {
+                    cmd.CommandText = batch;
+                    cmd.Transaction = tran;
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }

@@ -12,7 +12,8 @@ namespace DotNetMigrations.Commands
     {
         private readonly IMigrationDirectory _migrationDirectory;
 
-        public MigrateCommand() : this(new MigrationDirectory())
+        public MigrateCommand()
+            : this(new MigrationDirectory())
         {
         }
 
@@ -57,7 +58,13 @@ namespace DotNetMigrations.Commands
             }
 
             long currentVersion = GetDatabaseVersion();
-            long targetVersion = GetTargetScriptVersion(files);
+            long targetVersion = GetTargetVersionFromArguments();
+
+            //  if version not provided, assume latest migration script version
+            if (targetVersion == -1)
+            {
+                targetVersion = files.Select(x => x.Version).First();
+            }
 
             if (currentVersion == -1 || targetVersion == -1 || currentVersion == targetVersion)
             {
@@ -101,11 +108,11 @@ namespace DotNetMigrations.Commands
         }
 
         /// <summary>
-        /// Returns the target version to migrate the database too. If the version is not provided
-        /// from the command line arguments, the most recent script version will be used.
+        /// Returns the target version to migrate the database to. If the version is not provided
+        /// from the command line arguments, -1 will be returned.
         /// </summary>
         /// <returns>Returns the targeted version.</returns>
-        private long GetTargetScriptVersion(IEnumerable<MigrationScriptFile> scriptFiles)
+        private long GetTargetVersionFromArguments()
         {
             long targetVersion;
 
@@ -114,7 +121,7 @@ namespace DotNetMigrations.Commands
                 return targetVersion;
             }
 
-            return scriptFiles.Select(x => x.Version).First();
+            return -1;
         }
 
         /// <summary>
@@ -124,41 +131,19 @@ namespace DotNetMigrations.Commands
         /// <param name="targetVersion">The targeted version of the database.</param>
         private void MigrateUp(long currentVersion, long targetVersion, IEnumerable<MigrationScriptFile> files)
         {
-            IEnumerable<MigrationScriptFile> filesToUse = files.OrderBy(x => x)
-                .Where(x => x.Version > currentVersion && x.Version <= targetVersion);
-
-            var allSqlChunksToExecute = new List<string>();
-
-            foreach (MigrationScriptFile file in filesToUse)
-            {
-                MigrationScriptContents contents = file.Read();
-                IEnumerable<string> sqlChunks = SqlParser.SplitByGoKeyword(contents.Setup);
-
-                if (sqlChunks.Count() == 0)
-                {
-                    Log.WriteWarning("SETUP was not found in migration version " + file.Version);
-                }
-
-                allSqlChunksToExecute.AddRange(sqlChunks);
-            }
+            IEnumerable<KeyValuePair<long, string>> scripts = files.OrderBy(x => x)
+                .Where(x => x.Version > currentVersion && x.Version <= targetVersion)
+                .Select(x => new KeyValuePair<long, string>(x.Version, x.Read().Setup));
 
             using (DbTransaction tran = Database.BeginTransaction())
             {
                 try
                 {
-                    foreach (string sql in allSqlChunksToExecute)
+                    foreach (var script in scripts)
                     {
-                        if (sql != null && sql.Trim().Length > 0)
-                        {
-                            using (DbCommand cmd = tran.CreateCommand())
-                            {
-                                cmd.CommandText = sql;
-                                cmd.ExecuteNonQuery();
-                            }
-                        }
+                        Database.ExecuteScript(tran, script.Value);
+                        UpdateSchemaVersionUp(tran, script.Key);
                     }
-
-                    UpdateSchemaVersionUp(tran, targetVersion);
 
                     tran.Commit();
                 }
@@ -179,41 +164,19 @@ namespace DotNetMigrations.Commands
         /// <param name="targetVersion">The targeted version of the database.</param>
         private void MigrateDown(long currentVersion, long targetVersion, IEnumerable<MigrationScriptFile> files)
         {
-            IEnumerable<MigrationScriptFile> filesToUse = files.OrderByDescending(x => x)
-                .Where(x => x.Version <= currentVersion && x.Version > targetVersion);
-
-            var allSqlChunksToExecute = new List<string>();
-
-            foreach (MigrationScriptFile file in filesToUse)
-            {
-                MigrationScriptContents contents = file.Read();
-                IEnumerable<string> sqlChunks = SqlParser.SplitByGoKeyword(contents.Teardown);
-
-                if (sqlChunks.Count() == 0)
-                {
-                    Log.WriteWarning("TEARDOWN was not found in migration version " + file.Version);
-                }
-
-                allSqlChunksToExecute.AddRange(sqlChunks);
-            }
+            IEnumerable<KeyValuePair<long, string>> scripts = files.OrderByDescending(x => x)
+                .Where(x => x.Version <= currentVersion && x.Version > targetVersion)
+                .Select(x => new KeyValuePair<long, string>(x.Version, x.Read().Teardown));
 
             using (DbTransaction tran = Database.BeginTransaction())
             {
                 try
                 {
-                    foreach (string sql in allSqlChunksToExecute)
+                    foreach (var script in scripts)
                     {
-                        if (sql != null && sql.Trim().Length > 0)
-                        {
-                            using (DbCommand cmd = tran.CreateCommand())
-                            {
-                                cmd.CommandText = sql;
-                                cmd.ExecuteNonQuery();
-                            }
-                        }
+                        Database.ExecuteScript(tran, script.Value);
+                        UpdateSchemaVersionDown(tran, script.Key);
                     }
-
-                    UpdateSchemaVersionDown(tran, targetVersion);
 
                     tran.Commit();
                 }
