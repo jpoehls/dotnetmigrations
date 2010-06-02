@@ -17,8 +17,6 @@ namespace DotNetMigrations.Core
         public IArgumentRepository Arguments { get; set; }
         public ILogger Log { get; set; }
 
-        public virtual IList<ICommand> SubCommands { get; set; }
-
         public event EventHandler CommandEnded;
 
         public CommandResults Run()

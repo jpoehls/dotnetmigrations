@@ -96,7 +96,6 @@
     <Compile Include="Data\DatabaseInitializerIntegrationTests.cs" />
     <Compile Include="DisposableDirectory.cs" />
     <Compile Include="Migrations\VersionStrategyFactoryUnitTests.cs" />
-    <Compile Include="Mocks\MockSubcommand.cs" />
     <Compile Include="Mocks\MockLog1.cs" />
     <Compile Include="Repositories\ArgumentRepositoryUnitTests.cs" />
     <Compile Include="Repositories\CommandRepositoryUnitTests.cs" />

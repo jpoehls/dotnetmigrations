@@ -25,37 +25,6 @@ namespace DotNetMigrations.UnitTests.Commands
                 Assert.Fail("TestCommand wasn't found.");
             }
 
-            // Empty the subcommands
-            cmd.SubCommands.Clear();
-
-            MockLog1 log = new MockLog1();
-            HelpCommand help = new HelpCommand(log);
-            help.ShowHelp(cmd);
-
-            Assert.AreEqual(expected, log.Output);
-        }
-
-        [Test]
-        public void Should_Be_Able_To_Output_Help_Text_For_A_Command_With_Subcommands()
-        {
-            string expected = "TestCommand\r\n\r\n"
-                              + "This is help text for MockCommand1.".Trim().PadRight(55, ' ').PadLeft(60, ' ')
-                              + "\r\n\r\n\r\n\r\n"
-                              + "Subcommands for TestCommand:\r\n"
-                              + string.Empty.PadLeft(60, '=')
-                              + "\r\n\r\n"
-                              + "TestSubcommand\r\n\r\n"
-                              + "This is the help text for MockSubcommand.".Trim().PadRight(55, ' ').PadLeft(60, ' ')
-                              + "\r\n\r\n\r\n";
-
-            CommandRepository repository = new CommandRepository();
-            MockCommand1 cmd = repository.GetCommand("TestCommand") as MockCommand1;
-
-            if (cmd == null)
-            {
-                Assert.Fail("TestCommand wasn't found.");
-            }
-
             MockLog1 log = new MockLog1();
             HelpCommand help = new HelpCommand(log);
             help.ShowHelp(cmd);

@@ -53,25 +53,5 @@ namespace DotNetMigrations.Repositories
 
             return cmd;
         }
-
-        /// <summary>
-        /// Retrieves the subcommand based on the subcommand name from a provided command instance.
-        /// </summary>
-        /// <param name="command">The command to search for a subcommand for.</param>
-        /// <param name="commandName">The name of the command to retrieve.</param>
-        /// <returns>An instance of the command or null if not found.</returns>
-        internal ICommand GetSubcommand(ICommand command, string commandName)
-        {
-            ICommand cmd = null;
-
-            if (command.SubCommands != null)
-            {
-                cmd = (from c in command.SubCommands
-                                where c.CommandName == commandName
-                                select c).FirstOrDefault();
-            }
-
-            return cmd;
-        }
     }
 }

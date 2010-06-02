@@ -8,7 +8,6 @@ namespace DotNetMigrations.Core
     {
         string CommandName { get; }
         string HelpText { get; }
-        IList<ICommand> SubCommands { get; set; }
         ILogger Log { get; set; }
         IArgumentRepository Arguments { get; set; }
 

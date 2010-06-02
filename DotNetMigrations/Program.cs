@@ -87,29 +87,13 @@ namespace DotNetMigrations
         }
 
         /// <summary>
-        /// Iterates through commands and subcommands until it finds an argument that
+        /// Iterates through commands until it finds an argument that
         /// is not a command or runs out of arguments.
         /// </summary>
         /// <returns>An instance of command located from the interations.</returns>
         private ICommand GetCommand()
         {
-            ICommand tmp;
             ICommand cmd = _cmdRepository.GetCommand(_argRepository.GetArgument(0));
-            int argLength = _argRepository.Arguments.Count;
-
-            for (var i = 1; i < argLength; i++)
-            {
-                tmp = _cmdRepository.GetSubcommand(cmd,_argRepository.GetArgument(i));
-                if (tmp != null)
-                {
-                    cmd = tmp;
-                }
-                else
-                {
-                    break;
-                }
-            }
-
             return cmd;
         }
     }

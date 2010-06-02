@@ -29,28 +29,17 @@ namespace DotNetMigrations.Commands.Special
         }
 
         /// <summary>
-        /// Displays Help Text specific command and all subcommands
+        /// Displays Help Text specific command
         /// </summary>
         /// <param name="command">The command that seeks specific help text.</param>
         internal void ShowHelp(ICommand command)
         {
             log.WriteLine(FormatHelpText(command));
             log.WriteLine(string.Empty);
-
-            IList<ICommand> subcommands = command.SubCommands;
-
-            if (subcommands != null && subcommands.Count > 0)
-            {
-                log.WriteLine(string.Empty);
-                log.WriteLine("Subcommands for " + command.CommandName + ":");
-                log.WriteLine(string.Empty.PadLeft(60, '='));
-                log.WriteLine(string.Empty);
-                ShowHelp(subcommands);
-            }
         }
 
         /// <summary>
-        /// Displays Help Text for all commands provided but no subcommands.
+        /// Displays Help Text for all commands provided.
         /// </summary>
         /// <param name="commands">The command collection to display information about.</param>
         internal void ShowHelp(IEnumerable<ICommand> commands)

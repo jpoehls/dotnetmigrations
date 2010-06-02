@@ -37,17 +37,5 @@ namespace DotNetMigrations.UnitTests.Repositories
 
             Assert.IsNull(results);
         }
-
-        [Test]
-        public void Should_Be_Able_To_Retrieve_A_SubCommand()
-        {
-            var cmdRepository = new CommandRepository();
-            ICommand baseCommand = cmdRepository.GetCommand("TestCommand");
-
-            ICommand results = cmdRepository.GetSubcommand(baseCommand, "TestSubcommand");
-
-            Assert.IsNotNull(results);
-            Assert.IsTrue(results is MockSubcommand);
-        }
     }
 }
