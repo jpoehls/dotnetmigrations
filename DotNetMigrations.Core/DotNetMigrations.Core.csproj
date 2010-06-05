@@ -44,6 +44,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Shared Libraries\System.ComponentModel.Composition.dll</HintPath>
     </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -58,8 +61,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArgumentAttribute.cs" />
+    <Compile Include="ArgumentSet.cs" />
     <Compile Include="BaseClasses\CommandBase.cs" />
     <Compile Include="BaseClasses\DatabaseCommandBase.cs" />
+    <Compile Include="CommandArguments.cs" />
+    <Compile Include="CommandHelpWriter.cs" />
     <Compile Include="ConfigurationManagerWrapper.cs" />
     <Compile Include="Data\DataAccessFactory.cs" />
     <Compile Include="Data\DatabaseInitializer.cs" />

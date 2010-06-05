@@ -1,0 +1,87 @@
+﻿using System;
+using System.Linq;
+using DotNetMigrations.Core;
+using DotNetMigrations.UnitTests.Mocks;
+using NUnit.Framework;
+
+namespace DotNetMigrations.UnitTests
+{
+    [TestFixture]
+    public class CommandArgumentsUnitTests
+    {
+        [Test]
+        public void Parse_should_override_anonymous_arguments_with_named_arguments()
+        {
+            //  arrange
+            ArgumentSet args = ArgumentSet.Parse(new[] {"joshua", "2", "-connection", "david", "-v", "123"});
+            var opts = new MockCommandArgs();
+
+            //  act
+            opts.Parse(args);
+
+            //  assert
+            Assert.AreEqual("david", opts.Connection);
+            Assert.AreEqual(123, opts.TargetVersion);
+        }
+
+        [Test]
+        public void Parse_should_set_property_values_by_position_of_anonymous_arguments()
+        {
+            //  arrange
+            ArgumentSet args = ArgumentSet.Parse(new[] {"joshua", "2"});
+            var opts = new MockCommandArgs();
+
+            //  act
+            opts.Parse(args);
+
+            //  assert
+            Assert.AreEqual("joshua", opts.Connection);
+            Assert.AreEqual(2, opts.TargetVersion);
+        }
+
+        [Test]
+        public void Parse_should_set_property_values_to_matching_named_arguments()
+        {
+            //  arrange
+            ArgumentSet args = ArgumentSet.Parse(new[] {"-connection", "joshua", "-v", "123"});
+            var opts = new MockCommandArgs();
+
+            //  act
+            opts.Parse(args);
+
+            //  assert
+            Assert.AreEqual("joshua", opts.Connection);
+            Assert.AreEqual(123, opts.TargetVersion);
+        }
+
+        [Test]
+        public void Parse_should_validate_properties()
+        {
+            //  arrange
+            ArgumentSet args = ArgumentSet.Parse(new[] {"-v", "1"});
+            var opts = new MockCommandArgs();
+
+            //  act
+            opts.Parse(args);
+
+            //  assert
+            Assert.IsFalse(opts.IsValid);
+        }
+
+        [Test]
+        public void Validate_should_add_error_messages_to_collection()
+        {
+            //  arrange
+            ArgumentSet args = ArgumentSet.Parse(new[] {"-v", "0"});
+            var opts = new MockCommandArgs();
+
+            //  act
+            opts.Parse(args);
+
+            //  assert
+            Assert.AreEqual(2, opts.Errors.Count());
+            Assert.AreEqual("Connection is required", opts.Errors.First());
+            Assert.AreEqual("Target version must be between 1 and 5", opts.Errors.Last());
+        }
+    }
+}

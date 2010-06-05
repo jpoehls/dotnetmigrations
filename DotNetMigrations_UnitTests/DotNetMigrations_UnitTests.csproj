@@ -67,6 +67,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Shared Libraries\System.ComponentModel.Composition.dll</HintPath>
     </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -81,6 +84,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArgumentSetUnitTests.cs" />
+    <Compile Include="CommandArgumentsUnitTests.cs" />
+    <Compile Include="CommandHelpWriterUnitTests.cs" />
     <Compile Include="DisposableFile.cs" />
     <Compile Include="FileHelper.cs" />
     <Compile Include="Commands\GenerateScriptCommandUnitTests.cs" />
@@ -96,6 +102,7 @@
     <Compile Include="Data\DatabaseInitializerIntegrationTests.cs" />
     <Compile Include="DisposableDirectory.cs" />
     <Compile Include="Migrations\VersionStrategyFactoryUnitTests.cs" />
+    <Compile Include="Mocks\MockCommandArgs.cs" />
     <Compile Include="Mocks\MockLog1.cs" />
     <Compile Include="Repositories\ArgumentRepositoryUnitTests.cs" />
     <Compile Include="Repositories\CommandRepositoryUnitTests.cs" />
