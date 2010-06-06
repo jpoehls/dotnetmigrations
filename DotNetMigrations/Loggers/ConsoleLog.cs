@@ -1,7 +1,7 @@
 ﻿using System;
 using DotNetMigrations.Core;
 
-namespace DotNetMigrations.Logs
+namespace DotNetMigrations.Loggers
 {
     internal class ConsoleLog : LoggerBase
     {
@@ -22,7 +22,7 @@ namespace DotNetMigrations.Logs
         /// <param name="message">The message to write.</param>
         public override void WriteLine(string message)
         {
-             Console.WriteLine(message);
+            Console.WriteLine(message);
         }
 
         /// <summary>

@@ -1,5 +1,4 @@
-﻿using DotNetMigrations.Logs;
-using DotNetMigrations.Repositories;
+﻿using DotNetMigrations.Repositories;
 using DotNetMigrations.UnitTests.Mocks;
 using NUnit.Framework;
 using Rhino.Mocks;

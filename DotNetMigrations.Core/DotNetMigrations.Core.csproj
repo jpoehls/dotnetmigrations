@@ -80,7 +80,6 @@
     <Compile Include="Data\SqlParser.cs" />
     <Compile Include="Interfaces\IArguments.cs" />
     <Compile Include="IConfigurationManager.cs" />
-    <Compile Include="Interfaces\ILogRepository.cs" />
     <Compile Include="Interfaces\ICommand.cs" />
     <Compile Include="Interfaces\ILogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

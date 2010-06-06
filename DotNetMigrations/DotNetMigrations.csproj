@@ -93,7 +93,7 @@
     <Compile Include="Commands\RollbackCommand.cs" />
     <Compile Include="Commands\Special\HelpCommand.cs" />
     <Compile Include="Commands\VersionCommand.cs" />
-    <Compile Include="Logs\ConsoleLog.cs" />
+    <Compile Include="Loggers\ConsoleLog.cs" />
     <Compile Include="Migrations\UtcTimestampVersion.cs" />
     <Compile Include="Migrations\VersionStrategyFactory.cs" />
     <Compile Include="Repositories\CommandRepository.cs" />

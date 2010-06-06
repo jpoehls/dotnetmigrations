@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using DotNetMigrations.Core;
-using DotNetMigrations.Logs;
+using DotNetMigrations.Loggers;
 
 namespace DotNetMigrations.Commands.Special
 {

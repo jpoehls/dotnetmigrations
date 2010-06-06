@@ -9,8 +9,8 @@ namespace DotNetMigrations.Repositories
 {
     internal class LogRepository : ILogger
     {
-        private TypeCatalog catalog;
-        private CompositionContainer container;
+        private readonly TypeCatalog catalog;
+        private readonly CompositionContainer container;
         private string _logName = "Repository";
 
         /// <summary>
