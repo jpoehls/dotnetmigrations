@@ -8,7 +8,7 @@ namespace DotNetMigrations.Core
     public interface ICommand
     {
         string CommandName { get; }
-        string HelpText { get; }
+        string Description { get; }
         ILogger Log { get; set; }
 
         void Run(IArguments args);

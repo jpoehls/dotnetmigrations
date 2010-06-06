@@ -12,7 +12,7 @@ namespace DotNetMigrations.Core
         #region ICommand Members
 
         public abstract string CommandName { get; }
-        public abstract string HelpText { get; }
+        public abstract string Description { get; }
         public ILogger Log { get; set; }
 
         public Type GetArgumentsType()

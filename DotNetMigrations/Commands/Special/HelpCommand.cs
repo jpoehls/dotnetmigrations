@@ -62,7 +62,7 @@ namespace DotNetMigrations.Commands.Special
             sb.AppendLine(command.CommandName);
             sb.AppendLine(string.Empty); //empty line
 
-            List<string> splitText = SplitText(command.HelpText);
+            List<string> splitText = SplitText(command.Description);
 
             splitText.ForEach(t => sb.AppendLine(t));
 

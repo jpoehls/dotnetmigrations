@@ -33,7 +33,7 @@ namespace DotNetMigrations.Commands
         /// <summary>
         /// The help text information for the command.
         /// </summary>
-        public override string HelpText
+        public override string Description
         {
             get
             {

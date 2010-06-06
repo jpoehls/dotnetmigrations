@@ -13,7 +13,7 @@ namespace DotNetMigrations.UnitTests.Mocks
             get { return "TestCommand"; }
         }
 
-        public override string HelpText
+        public override string Description
         {
             get { return "This is help text for MockCommand1."; }
         }
