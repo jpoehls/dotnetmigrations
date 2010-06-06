@@ -28,19 +28,16 @@ namespace DotNetMigrations.Core
         public void Run(IArguments args)
         {
             if (args == null)
-            {
                 throw new ArgumentNullException("args");
-            }
 
             if (!(args is TArgs))
-            {
                 throw new ArgumentException("args type doesn't match generic type", "args");
-            }
 
             if (Log == null)
-            {
-                throw new InvalidOperationException("ICommand.Log cannot be null");
-            }
+                throw new InvalidOperationException("ICommand.Log cannot be null.");
+
+            if (!args.IsValid)
+                throw new InvalidOperationException("Argument validation failed. Arguments are invalid.");
 
             var commandArgs = (TArgs) args;
 

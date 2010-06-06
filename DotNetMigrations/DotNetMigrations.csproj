@@ -91,7 +91,6 @@
     <Compile Include="Migrations\MigrationScriptFile.cs" />
     <Compile Include="Migrations\MigrationDirectory.cs" />
     <Compile Include="Commands\RollbackCommand.cs" />
-    <Compile Include="Commands\Special\HelpCommand.cs" />
     <Compile Include="Commands\VersionCommand.cs" />
     <Compile Include="Loggers\ConsoleLog.cs" />
     <Compile Include="Migrations\UtcTimestampVersion.cs" />

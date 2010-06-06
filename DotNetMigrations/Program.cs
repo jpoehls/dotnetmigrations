@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using DotNetMigrations.Core;
@@ -22,16 +23,16 @@ namespace DotNetMigrations
 
         #endregion
 
-        private readonly CommandRepository _cmdRepository;
-        private readonly LogRepository _logRepository;
+        private readonly CommandRepository _commandRepo;
+        private readonly LogRepository _logger;
 
         /// <summary>
         /// Program constructor, instantiates primary repository objects.
         /// </summary>
         private Program()
         {
-            _cmdRepository = new CommandRepository();
-            _logRepository = new LogRepository();
+            _commandRepo = new CommandRepository();
+            _logger = new LogRepository();
         }
 
         /// <summary>
@@ -39,9 +40,10 @@ namespace DotNetMigrations
         /// </summary>
         private void Run(string[] args)
         {
+            string executableName = Process.GetCurrentProcess().ProcessName + ".exe";
             ArgumentSet set = ArgumentSet.Parse(args);
 
-            var helpWriter = new CommandHelpWriter(_logRepository);
+            var helpWriter = new CommandHelpWriter(_logger);
 
             bool showHelp = set.NamedArgs.ContainsKey("help");
 
@@ -53,22 +55,24 @@ namespace DotNetMigrations
 
             if (commandName != null)
             {
-                command = _cmdRepository.GetCommand(commandName);
+                command = _commandRepo.GetCommand(commandName);
             }
             else
             {
-                WriteCommandList();
+                //  no command name was found, show the list of available commands
+                helpWriter.WriteCommandList(_commandRepo.Commands);
             }
 
             if (showHelp && command != null)
             {
-                helpWriter.WriteCommandHelp(command, "db.exe");
+                //  show help for the given command
+                helpWriter.WriteCommandHelp(command, executableName);
             }
             else if (command != null)
             {
-                command.Log = _logRepository;
+                command.Log = _logger;
 
-                var commandArgs = command.CreateArguments();
+                IArguments commandArgs = command.CreateArguments();
                 commandArgs.Parse(set);
 
                 if (commandArgs.IsValid)
@@ -76,33 +80,43 @@ namespace DotNetMigrations
                     var timer = new Stopwatch();
                     timer.Start();
 
-                    command.Run(commandArgs);
+                    try
+                    {
+                        command.Run(commandArgs);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.WriteError(ex.ToString());
 
-                    timer.Stop();
-                    _logRepository.WriteLine(string.Format("Process Finished in: {0}.",
-                                                           decimal.Divide(timer.ElapsedMilliseconds, 1000).ToString(
-                                                               "0.0000s")));
+                        if (Debugger.IsAttached)
+                            throw;
+                    }
+                    finally
+                    {
+                        timer.Stop();
+                        _logger.WriteLine(string.Format("Command duration was {0}.",
+                                                               decimal.Divide(timer.ElapsedMilliseconds, 1000).ToString(
+                                                                   "0.0000s")));
+                    }
                 }
                 else
                 {
-                    //  ALSO WRITE ERROR MESSAGES OUT
-                    helpWriter.WriteArgumentSyntax(command.GetArgumentsType());
+                    //  argument validation failed, show errors
+                    WriteValidationErrors(command.CommandName, commandArgs.Errors);
+                    _logger.WriteLine(string.Empty);
+                    helpWriter.WriteCommandHelp(command, executableName);
                 }
             }
-
-            //new HelpCommand(_logRepository).ShowHelp(cmd);
         }
 
-        private void WriteCommandList()
+        /// <summary>
+        /// Writes out all validation errors to the logger.
+        /// </summary>
+        private void WriteValidationErrors(string commandName, IEnumerable<string> errors)
         {
-            foreach (var cmd in _cmdRepository.Commands)
-            {
-                _logRepository.WriteLine(
-                    "\t" +
-                    cmd.CommandName +
-                    "\t\t" +
-                    cmd.Description);
-            }
+            _logger.WriteError("Invalid arguments for the {0} command", commandName);
+            _logger.WriteLine(string.Empty);
+            errors.ForEach(x => _logger.WriteError("\t* " + x));
         }
     }
 }

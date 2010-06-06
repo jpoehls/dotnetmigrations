@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{1EA6B83D-7676-4F6C-869F-EA4DFE017804}"
 	ProjectSection(SolutionItems) = preProject
 		Shared Libraries\System.ComponentModel.Composition.dll = Shared Libraries\System.ComponentModel.Composition.dll
+		TODO.txt = TODO.txt
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetMigrations.Core", "DotNetMigrations.Core\DotNetMigrations.Core.csproj", "{5CEC9598-E28B-4A1C-ABF7-85E5A17E0C79}"
