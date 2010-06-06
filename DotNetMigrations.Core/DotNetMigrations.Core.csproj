@@ -78,6 +78,7 @@
     <Compile Include="Data\DataAccess.cs" />
     <Compile Include="Data\DbCommandExtensions.cs" />
     <Compile Include="Data\SqlParser.cs" />
+    <Compile Include="IEnumerableExtensions.cs" />
     <Compile Include="Interfaces\IArguments.cs" />
     <Compile Include="IConfigurationManager.cs" />
     <Compile Include="Interfaces\ICommand.cs" />

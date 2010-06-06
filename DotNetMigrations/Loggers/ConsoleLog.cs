@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using DotNetMigrations.Core;
 
 namespace DotNetMigrations.Loggers
@@ -14,6 +15,11 @@ namespace DotNetMigrations.Loggers
         {
             get { return _logName; }
             set { _logName = value; }
+        }
+
+        public override void Write(string message)
+        {
+            Console.Write(message);
         }
 
         /// <summary>

@@ -1,12 +1,19 @@
-﻿using System.Text;
+﻿using System;
+using System.Linq;
+using System.Text;
 using DotNetMigrations.Core;
 
 namespace DotNetMigrations.UnitTests.Mocks
 {
     public class MockLog1 : LoggerBase
     {
-        private StringBuilder _logger;
+        private readonly StringBuilder _logger;
         private string _logName = "MockLog";
+
+        public MockLog1()
+        {
+            _logger = new StringBuilder();
+        }
 
         public override string LogName
         {
@@ -19,26 +26,23 @@ namespace DotNetMigrations.UnitTests.Mocks
             get { return _logger.ToString(); }
         }
 
-        public MockLog1()
+        public override void Write(string message)
         {
-            _logger = new StringBuilder();
+            _logger.Append(message);
         }
 
         public override void WriteLine(string message)
         {
-            //no line break
             _logger.AppendLine(message);
         }
 
         public override void WriteWarning(string message)
         {
-            // with linebreak
             _logger.AppendLine("WARNING: " + message);
         }
 
         public override void WriteError(string message)
         {
-            // For the purpose of the test will be the same as writeline
             _logger.AppendLine("ERROR: " + message);
         }
 

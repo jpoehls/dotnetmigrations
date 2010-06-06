@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -9,85 +8,138 @@ namespace DotNetMigrations.Core
 {
     public class CommandHelpWriter
     {
-        private static bool IsRequired(PropertyInfo property)
+        private readonly ILogger _log;
+
+        public CommandHelpWriter(ILogger logger)
         {
-            bool required = property.GetCustomAttributes(typeof(RequiredAttribute), false)
-                                .Count() > 0;
-            return required;
+            _log = logger;
         }
 
-        public void WriteOptionSyntax(Type argumentsType, TextWriter writer)
+        /// <summary>
+        /// Returns True/False whether the given property is optional.
+        /// </summary>
+        private static bool IsOptional(ICustomAttributeProvider property)
         {
-            Dictionary<PropertyInfo, ArgumentAttribute> properties = CommandArguments.GetArgumentProperties(argumentsType);
+            bool optional = property.GetCustomAttributes(typeof (RequiredAttribute), false)
+                                .Count() == 0;
+            return optional;
+        }
+
+        /// <summary>
+        /// Writes out the argument syntax for the given arguments Type.
+        /// </summary>
+        public void WriteArgumentSyntax(Type argumentsType)
+        {
+            //  SAMPLE OUTPUT
+            //
+            //  -requiredArg req_value_name [-optionalArg1 value_name] [-optionalArg2 value_name]
+
+            Dictionary<PropertyInfo, ArgumentAttribute> properties =
+                CommandArguments.GetArgumentProperties(argumentsType);
 
             int count = 0;
             foreach (var prop in properties)
             {
-                bool required = IsRequired(prop.Key);
-                if (!required)
+                bool optional = IsOptional(prop.Key);
+                if (optional)
                 {
-                    writer.Write("[");
+                    _log.Write("[");
                 }
 
-                writer.Write("-");
-                writer.Write(prop.Value.ShortName);
-                writer.Write(" ");
-                writer.Write(prop.Value.ValueName ?? prop.Value.Name);
+                _log.Write("-");
+                _log.Write(prop.Value.ShortName);
+                _log.Write(" ");
+                _log.Write(prop.Value.ValueName ?? prop.Value.Name);
 
-                if (!required)
+                if (optional)
                 {
-                    writer.Write("]");
+                    _log.Write("]");
                 }
 
                 //  if not the last one, add a space
                 if (count < properties.Count - 1)
                 {
-                    writer.Write(" ");
+                    _log.Write(" ");
                 }
 
                 count++;
             }
         }
 
-        public void WriteOptionList(Type argumentsType, TextWriter writer)
+        /// <summary>
+        /// Writes out the list of arguments for the given arguments Type.
+        /// </summary>
+        public void WriteArgumentList(Type argumentsType)
         {
-            writer.WriteLine("Options:");
+            //  SAMPLE OUTPUT
+            //
+            //  Options:
+            //  -f, -firstArg       description of first argument
+            //  -s, -secondArg      description of second argument
 
-            Dictionary<PropertyInfo, ArgumentAttribute> properties = CommandArguments.GetArgumentProperties(argumentsType);
+            _log.WriteLine("Options:");
+
+            Dictionary<PropertyInfo, ArgumentAttribute> properties =
+                CommandArguments.GetArgumentProperties(argumentsType);
 
             foreach (var prop in properties)
             {
-                writer.Write("\t");
-                writer.Write("-");
-                writer.Write(prop.Value.ShortName);
-                writer.Write(", ");
-                writer.Write("-");
-                writer.Write(prop.Value.Name);
-                writer.Write("\t\t");
-                writer.WriteLine(prop.Value.Description);
+                _log.Write("-");
+                _log.Write(prop.Value.ShortName);
+                _log.Write(", ");
+                _log.Write("-");
+                _log.Write(prop.Value.Name);
+                _log.Write("\t\t");
+                _log.WriteLine(prop.Value.Description);
             }
-
-            //  get all props with [ArgumentAttribute]
-            //  foreach, write line with name and description (if available)
-
-            //  Usage:
-            //  db.exe [-help] COMMAND [ARGS]
-
-            //  |> db.exe -help migrate
-            //  Usage:
-            //  db.exe migrate -
-
-            //  Options:
-            //      -name      description
         }
 
-        public void WriteCommandHelp(ICommand command, TextWriter writer)
+        /// <summary>
+        /// Writes out the help verbiage for the given command.
+        /// </summary>
+        public void WriteCommandHelp(ICommand command, string executableName)   
         {
-            writer.WriteLine("Usage:");
-            writer.WriteLine("db.exe ");
-            writer.Write(command.CommandName);
-            writer.Write(" ");
-            WriteOptionSyntax(command.GetArgumentsType(), writer);
+            //  SAMPLE OUTPUT
+            //
+            //  Usage:
+            //  db.exe commandName [ARGUMENT SYNTAX]
+            //  
+            //  Options:
+            //  -f, -firstArg       description of first argument
+            //  -s, -secondArg      description of second argument       
+
+            _log.WriteLine("Usage:");
+            _log.Write(executableName);
+            _log.Write(" ");
+            _log.Write(command.CommandName);
+            _log.Write(" ");
+
+            var argType = command.GetArgumentsType();
+            WriteArgumentSyntax(argType);
+
+            _log.WriteLine(string.Empty);
+            _log.WriteLine(string.Empty);
+            WriteArgumentList(argType);
+        }
+
+        /// <summary>
+        /// Writes out a list of the given command names and descriptions.
+        /// </summary>
+        /// <param name="commands"></param>
+        public void WriteCommandList(IEnumerable<ICommand> commands)
+        {
+            //  SAMPLE OUTPUT
+            //
+            //  Commands:
+            //  firstCommand        description of first command
+            //  secondCommand       description of second command
+
+            _log.WriteLine("Commands:");
+
+            foreach (ICommand cmd in commands)
+            {
+                _log.WriteLine("{0}\t\t{1}", cmd.CommandName, cmd.Description);
+            }
         }
     }
 }

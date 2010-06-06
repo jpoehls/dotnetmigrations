@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Linq;
@@ -14,21 +15,6 @@ namespace DotNetMigrations.Repositories
         private string _logName = "Repository";
 
         /// <summary>
-        /// The name of the log.
-        /// </summary>
-        public string LogName
-        {
-            get { return _logName; }
-            set { _logName = value; }
-        }
-
-        /// <summary>
-        /// The log collection used in the application.
-        /// </summary>
-        [ImportMany("Logs", typeof(ILogger))]
-        internal IList<ILogger> Logs { get; set; }
-
-        /// <summary>
         /// Instantiates a new instance of the LogRepository Class.
         /// </summary>
         internal LogRepository()
@@ -40,15 +26,30 @@ namespace DotNetMigrations.Repositories
         }
 
         /// <summary>
-        /// Retrieves a specific log by name.
+        /// The log collection used in the application.
         /// </summary>
-        /// <param name="logName">The log name.</param>
-        /// <returns>An instance of the log.</returns>
-        public ILogger GetLog(string logName)
+        [ImportMany("Logs", typeof (ILogger))]
+        internal IList<ILogger> Logs { get; set; }
+
+        #region ILogger Members
+
+        /// <summary>
+        /// The name of the log.
+        /// </summary>
+        public string LogName
         {
-            return (from l in Logs
-                    where l.LogName == logName
-                    select l).FirstOrDefault();
+            get { return _logName; }
+            set { _logName = value; }
+        }
+
+        public void Write(string message)
+        {
+            Logs.ForEach(x => x.Write(message));
+        }
+
+        public void Write(string format, params object[] args)
+        {
+            Logs.ForEach(x => x.Write(format, args));
         }
 
         /// <summary>
@@ -57,10 +58,12 @@ namespace DotNetMigrations.Repositories
         /// <param name="message">The message to write.</param>
         public void WriteLine(string message)
         {
-            foreach (var log in Logs)
-            {
-                log.WriteLine(message);
-            }
+            Logs.ForEach(x => x.WriteLine(message));
+        }
+
+        public void WriteLine(string format, params object[] args)
+        {
+            Logs.ForEach(x => x.WriteLine(format, args));
         }
 
         /// <summary>
@@ -69,10 +72,12 @@ namespace DotNetMigrations.Repositories
         /// <param name="message">The message to write.</param>
         public void WriteWarning(string message)
         {
-            foreach (var log in Logs)
-            {
-                log.WriteWarning(message);
-            }
+            Logs.ForEach(x => x.WriteWarning(message));
+        }
+
+        public void WriteWarning(string format, params object[] args)
+        {
+            Logs.ForEach(x => x.WriteWarning(format, args));
         }
 
         /// <summary>
@@ -81,10 +86,12 @@ namespace DotNetMigrations.Repositories
         /// <param name="message">The message to write.</param>
         public void WriteError(string message)
         {
-            foreach (var log in Logs)
-            {
-                log.WriteError(message);
-            }
+            Logs.ForEach(x => x.WriteError(message));
+        }
+
+        public void WriteError(string format, params object[] args)
+        {
+            Logs.ForEach(x => x.WriteError(format, args));
         }
 
         /// <summary>
@@ -92,10 +99,21 @@ namespace DotNetMigrations.Repositories
         /// </summary>
         public void Dispose()
         {
-            foreach (var log in Logs)
-            {
-                log.Dispose();
-            }
+            Logs.ForEach(x => x.Dispose());
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Retrieves a specific log by name.
+        /// </summary>
+        /// <param name="logName">The log name.</param>
+        /// <returns>An instance of the log.</returns>
+        public ILogger GetLog(string logName)
+        {
+            return Logs
+                .Where(x => x.LogName == logName)
+                .FirstOrDefault();
         }
     }
 }

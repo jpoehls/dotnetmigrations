@@ -41,7 +41,7 @@ namespace DotNetMigrations
         {
             ArgumentSet set = ArgumentSet.Parse(args);
 
-            var helpWriter = new CommandHelpWriter();
+            var helpWriter = new CommandHelpWriter(_logRepository);
 
             bool showHelp = set.NamedArgs.ContainsKey("help");
 
@@ -55,10 +55,14 @@ namespace DotNetMigrations
             {
                 command = _cmdRepository.GetCommand(commandName);
             }
+            else
+            {
+                WriteCommandList();
+            }
 
             if (showHelp && command != null)
             {
-                helpWriter.WriteCommandHelp(command, Console.Out);
+                helpWriter.WriteCommandHelp(command, "db.exe");
             }
             else if (command != null)
             {
@@ -82,11 +86,23 @@ namespace DotNetMigrations
                 else
                 {
                     //  ALSO WRITE ERROR MESSAGES OUT
-                    helpWriter.WriteOptionSyntax(command.GetArgumentsType(), Console.Out);
+                    helpWriter.WriteArgumentSyntax(command.GetArgumentsType());
                 }
             }
 
             //new HelpCommand(_logRepository).ShowHelp(cmd);
+        }
+
+        private void WriteCommandList()
+        {
+            foreach (var cmd in _cmdRepository.Commands)
+            {
+                _logRepository.WriteLine(
+                    "\t" +
+                    cmd.CommandName +
+                    "\t\t" +
+                    cmd.Description);
+            }
         }
     }
 }
