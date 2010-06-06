@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.Composition;
+using System.Linq;
 using DotNetMigrations.Core;
 
 namespace DotNetMigrations.UnitTests.Mocks
 {
-    [Export("Commands", typeof(ICommand))]
-    internal class MockCommand1 : CommandBase
+    [Export("Commands", typeof (ICommand))]
+    internal class MockCommand1 : CommandBase<MockCommandArgs>
     {
         public override string CommandName
         {
@@ -17,14 +18,8 @@ namespace DotNetMigrations.UnitTests.Mocks
             get { return "This is help text for MockCommand1."; }
         }
 
-        protected override bool ValidateArguments()
+        protected override void Run(MockCommandArgs args)
         {
-            return true;
-        }
-
-        protected override void RunCommand()
-        {
-
         }
     }
 }

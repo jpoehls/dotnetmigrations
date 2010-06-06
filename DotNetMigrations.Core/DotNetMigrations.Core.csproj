@@ -64,10 +64,12 @@
     <Compile Include="ArgumentAttribute.cs" />
     <Compile Include="ArgumentSet.cs" />
     <Compile Include="BaseClasses\CommandBase.cs" />
+    <Compile Include="BaseClasses\CommandEventArgs.cs" />
     <Compile Include="BaseClasses\DatabaseCommandBase.cs" />
     <Compile Include="CommandArguments.cs" />
     <Compile Include="CommandHelpWriter.cs" />
     <Compile Include="ConfigurationManagerWrapper.cs" />
+    <Compile Include="DatabaseCommandArguments.cs" />
     <Compile Include="Data\DataAccessFactory.cs" />
     <Compile Include="Data\DatabaseInitializer.cs" />
     <Compile Include="Data\DbTransactionExtensions.cs" />
@@ -75,11 +77,10 @@
     <Compile Include="Data\ConnectionStringFactory.cs" />
     <Compile Include="Data\DataAccess.cs" />
     <Compile Include="Data\DbCommandExtensions.cs" />
-    <Compile Include="CommandResults.cs" />
     <Compile Include="Data\SqlParser.cs" />
+    <Compile Include="Interfaces\IArguments.cs" />
     <Compile Include="IConfigurationManager.cs" />
     <Compile Include="Interfaces\ILogRepository.cs" />
-    <Compile Include="Interfaces\IArgumentRepository.cs" />
     <Compile Include="Interfaces\ICommand.cs" />
     <Compile Include="Interfaces\ILogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

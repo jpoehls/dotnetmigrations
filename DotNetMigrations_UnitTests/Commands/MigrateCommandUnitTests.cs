@@ -3,8 +3,6 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using DotNetMigrations.Commands;
-using DotNetMigrations.Core;
-using DotNetMigrations.Repositories;
 using DotNetMigrations.UnitTests.Mocks;
 using NUnit.Framework;
 
@@ -116,10 +114,10 @@ namespace DotNetMigrations.UnitTests.Commands
             using (var helper = new SqlDatabaseHelper(TestConnectionString))
             {
                 helper.SwallowSqlExceptions = true;
-                var results = helper.ExecuteScalar("SELECT MAX(Id) FROM [TestTable]");
+                object results = helper.ExecuteScalar("SELECT MAX(Id) FROM [TestTable]");
                 if (results != null)
                 {
-                    _testTableVersion = (long)results;
+                    _testTableVersion = (long) results;
                 }
 
                 return results != null;
@@ -128,25 +126,20 @@ namespace DotNetMigrations.UnitTests.Commands
 
         private void MigrateUpToMigrateDown()
         {
-            // Create the 2nd script and migrate up
+            //  arrange
+            //  create the 2nd script and migrate up
             SetupSecondaryTestScript();
 
-            var arguments = new[] {"migrate", "testDb"};
             var log = new MockLog1();
-            var args = new ArgumentRepository(arguments);
+            var args = new MigrateCommandArgs {Connection = "testDb"};
 
             var migrateCommand = new MigrateCommand();
             migrateCommand.Log = log;
-            migrateCommand.Arguments = args;
 
-            CommandResults results = migrateCommand.Run();
+            //  act
+            migrateCommand.Run(args);
 
-            if (results != CommandResults.Success)
-            {
-                Assert.Fail("Migration up failed.");
-            }
-
-            Assert.AreEqual(CommandResults.Success, results);
+            //  assert
             Assert.IsTrue(EnsureTableWasCreated());
             Assert.IsTrue(DoesTestTableExist());
             Assert.AreEqual(_secondScriptName.Split('_')[0], _dbVersion);
@@ -156,21 +149,24 @@ namespace DotNetMigrations.UnitTests.Commands
         [Test]
         public void Should_Be_Able_To_Migrate_Down_To_Original_Schema()
         {
+            //  arrange
             MigrateUpToMigrateDown();
 
-            string targetVersion = 0.ToString();
-
-            var arguments = new[] {"migrate", "testDb", targetVersion};
+            const long targetVersion = 0;
+            var args = new MigrateCommandArgs
+                           {
+                               Connection = "testDb",
+                               TargetVersion = targetVersion
+                           };
             var log = new MockLog1();
-            var args = new ArgumentRepository(arguments);
 
             var migrateCommand = new MigrateCommand();
             migrateCommand.Log = log;
-            migrateCommand.Arguments = args;
 
-            CommandResults results = migrateCommand.Run();
+            //  act
+            migrateCommand.Run(args);
 
-            Assert.AreEqual(CommandResults.Success, results);
+            //  assert
             Assert.IsTrue(EnsureTableWasCreated());
             Assert.IsTrue(!DoesTestTableExist());
             Assert.AreEqual(targetVersion, _dbVersion);
@@ -180,21 +176,25 @@ namespace DotNetMigrations.UnitTests.Commands
         [Test]
         public void Should_Be_Able_To_Migrate_Down_To_Specific_Version()
         {
+            //  arrange
             MigrateUpToMigrateDown();
 
-            string targetVersion = _firstScriptName.Split('_')[0] + "";
+            long targetVersion = long.Parse(_firstScriptName.Split('_')[0] + "");
 
-            var arguments = new[] {"migrate", "testDb", targetVersion};
+            var args = new MigrateCommandArgs
+                           {
+                               Connection = "testDb",
+                               TargetVersion = targetVersion
+                           };
             var log = new MockLog1();
-            var args = new ArgumentRepository(arguments);
 
             var migrateCommand = new MigrateCommand();
             migrateCommand.Log = log;
-            migrateCommand.Arguments = args;
 
-            CommandResults results = migrateCommand.Run();
+            //  act
+            migrateCommand.Run(args);
 
-            Assert.AreEqual(CommandResults.Success, results);
+            //  assert
             Assert.IsTrue(EnsureTableWasCreated());
             Assert.IsTrue(DoesTestTableExist());
             Assert.AreEqual(_firstScriptName.Split('_')[0], _dbVersion);
@@ -205,17 +205,17 @@ namespace DotNetMigrations.UnitTests.Commands
         [Test]
         public void Should_Be_Able_To_Migrate_Up_One_Version()
         {
-            var arguments = new[] {"migrate", "testDb"};
+            //  arrange
             var log = new MockLog1();
-            var args = new ArgumentRepository(arguments);
+            var args = new MigrateCommandArgs {Connection = "testDb"};
 
             var migrateCommand = new MigrateCommand();
             migrateCommand.Log = log;
-            migrateCommand.Arguments = args;
 
-            CommandResults results = migrateCommand.Run();
+            //  act
+            migrateCommand.Run(args);
 
-            Assert.AreEqual(CommandResults.Success, results);
+            //  assert
             Assert.IsTrue(EnsureTableWasCreated());
             Assert.IsTrue(DoesTestTableExist());
             Assert.AreEqual(_firstScriptName.Split('_')[0], _dbVersion);
@@ -226,19 +226,19 @@ namespace DotNetMigrations.UnitTests.Commands
         [Test]
         public void Should_Be_Able_To_Migrate_Up_To_Most_Recent()
         {
+            //  arrange
             SetupSecondaryTestScript();
 
-            var arguments = new[] {"migrate", "testDb"};
+            var args = new MigrateCommandArgs {Connection = "testDb"};
             var log = new MockLog1();
-            var args = new ArgumentRepository(arguments);
 
             var migrateCommand = new MigrateCommand();
             migrateCommand.Log = log;
-            migrateCommand.Arguments = args;
 
-            CommandResults results = migrateCommand.Run();
+            //  act
+            migrateCommand.Run(args);
 
-            Assert.AreEqual(CommandResults.Success, results);
+            //  assert
             Assert.IsTrue(EnsureTableWasCreated());
             Assert.IsTrue(DoesTestTableExist());
             Assert.AreEqual(_secondScriptName.Split('_')[0], _dbVersion);
@@ -249,63 +249,29 @@ namespace DotNetMigrations.UnitTests.Commands
         [Test]
         public void Should_Be_Able_To_Migrate_Up_To_Specific_Version()
         {
-            string targetVersion = _firstScriptName.Split('_')[0] + "";
+            //  arrange
+            long targetVersion = long.Parse(_firstScriptName.Split('_')[0] + "");
 
             SetupSecondaryTestScript();
 
-            var arguments = new[] {"migrate", "testDb", targetVersion};
+            var args = new MigrateCommandArgs
+                           {
+                               Connection = "testDb",
+                               TargetVersion = targetVersion
+                           };
             var log = new MockLog1();
-            var args = new ArgumentRepository(arguments);
 
             var migrateCommand = new MigrateCommand();
             migrateCommand.Log = log;
-            migrateCommand.Arguments = args;
 
-            CommandResults results = migrateCommand.Run();
+            //  act
+            migrateCommand.Run(args);
 
-            Assert.AreEqual(CommandResults.Success, results);
+            //  assert
             Assert.IsTrue(EnsureTableWasCreated());
             Assert.IsTrue(DoesTestTableExist());
             Assert.AreEqual(_firstScriptName.Split('_')[0], _dbVersion);
             Assert.AreEqual(1, _testTableVersion);
-            Assert.IsTrue(log.Output.Length > 1);
-        }
-
-        [Test]
-        public void Should_Not_Allow_Less_Than_2_Argments()
-        {
-            var arguments = new[] {"migrate"};
-            var log = new MockLog1();
-            var args = new ArgumentRepository(arguments);
-
-            var migratCommand = new MigrateCommand();
-            migratCommand.Log = log;
-            migratCommand.Arguments = args;
-
-            CommandResults results = migratCommand.Run();
-
-            Assert.AreEqual(CommandResults.Invalid, results);
-            Assert.IsTrue(log.Output.Length > 1);
-        }
-
-        [Test]
-        public void Should_Not_Allow_More_Than_4_Argments()
-        {
-            var arguments = new[]
-                                {
-                                    "migrate", "migrationName", "0", "connString",
-                                    "something, something, something, darkside"
-                                };
-            var log = new MockLog1();
-            var args = new ArgumentRepository(arguments);
-
-            var migratCommand = new MigrateCommand();
-            migratCommand.Log = log;
-            migratCommand.Arguments = args;
-
-            CommandResults results = migratCommand.Run();
-
-            Assert.AreEqual(CommandResults.Invalid, results);
             Assert.IsTrue(log.Output.Length > 1);
         }
     }

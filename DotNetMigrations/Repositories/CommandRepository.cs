@@ -11,8 +11,8 @@ namespace DotNetMigrations.Repositories
 {
     internal class CommandRepository
     {
-        private AggregateCatalog catalog;
-        private CompositionContainer container;
+        private readonly AggregateCatalog catalog;
+        private readonly CompositionContainer container;
 
         /// <summary>
         /// A collection of the commands in the system.

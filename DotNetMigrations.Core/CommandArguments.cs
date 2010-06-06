@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace DotNetMigrations.Core
 {
-    public abstract class CommandArguments
+    public abstract class CommandArguments : IArguments
     {
         private readonly List<string> _errors;
 
@@ -32,7 +32,7 @@ namespace DotNetMigrations.Core
             foreach (PropertyInfo prop in properties)
             {
                 IEnumerable<ValidationAttribute> validationAttrs =
-                    prop.GetCustomAttributes(typeof (ValidationAttribute), true)
+                    prop.GetCustomAttributes(typeof(ValidationAttribute), true)
                         .OfType<ValidationAttribute>();
 
                 foreach (ValidationAttribute attr in validationAttrs)
@@ -52,7 +52,7 @@ namespace DotNetMigrations.Core
 
         public void Parse(ArgumentSet args)
         {
-            Dictionary<PropertyInfo, ArgumentAttribute> props = GetArgumentProperties();
+            Dictionary<PropertyInfo, ArgumentAttribute> props = GetArgumentProperties(GetType());
 
             //  set property values for anonymous arguments
             AssignAnonymousArguments(args.AnonymousArgs, props);
@@ -67,15 +67,15 @@ namespace DotNetMigrations.Core
         /// Gets all properties that have ArgumentAttribute's and
         /// returns then in a dictionary.
         /// </summary>
-        public Dictionary<PropertyInfo, ArgumentAttribute> GetArgumentProperties()
+        public static Dictionary<PropertyInfo, ArgumentAttribute> GetArgumentProperties(Type type)
         {
-            Dictionary<PropertyInfo, ArgumentAttribute> p = GetType().GetProperties(BindingFlags.Public |
+            Dictionary<PropertyInfo, ArgumentAttribute> p = type.GetProperties(BindingFlags.Public |
                                                                                     BindingFlags.Instance)
                 .Select(x => new
                                  {
                                      Property = x,
                                      Attribute =
-                                 (ArgumentAttribute) x.GetCustomAttributes(typeof (ArgumentAttribute), false)
+                                 (ArgumentAttribute)x.GetCustomAttributes(typeof(ArgumentAttribute), false)
                                                          .FirstOrDefault()
                                  })
                 .Where(x => x.Attribute != null)
@@ -120,7 +120,7 @@ namespace DotNetMigrations.Core
         {
             if (property != null)
             {
-                if (property.PropertyType == typeof (string))
+                if (property.PropertyType == typeof(string))
                 {
                     property.SetValue(this, value, null);
                 }

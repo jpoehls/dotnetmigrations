@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
-using DotNetMigrations.Commands.Special;
-using DotNetMigrations.Repositories;
+using System.Linq;
 using DotNetMigrations.Core;
+using DotNetMigrations.Repositories;
 
 namespace DotNetMigrations
 {
-    class Program
+    internal class Program
     {
         #region Void Main
 
@@ -14,25 +14,22 @@ namespace DotNetMigrations
         /// Application entry point
         /// </summary>
         /// <param name="args"></param>
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            Program p = new Program(args);
-            p.Run();
+            var p = new Program();
+            p.Run(args);
         }
 
         #endregion
-        
-        private ArgumentRepository _argRepository;
-        private CommandRepository _cmdRepository;
-        private LogRepository _logRepository;
+
+        private readonly CommandRepository _cmdRepository;
+        private readonly LogRepository _logRepository;
 
         /// <summary>
         /// Program constructor, instantiates primary repository objects.
         /// </summary>
-        /// <param name="args">The command line arguments.</param>
-        private Program(IEnumerable<string> args)
+        private Program()
         {
-            _argRepository = new ArgumentRepository(args);
             _cmdRepository = new CommandRepository();
             _logRepository = new LogRepository();
         }
@@ -40,61 +37,56 @@ namespace DotNetMigrations
         /// <summary>
         /// Primary Program Execution
         /// </summary>
-        private void Run()
+        private void Run(string[] args)
         {
-            if(CheckForFirstArgument())
+            ArgumentSet set = ArgumentSet.Parse(args);
+
+            var helpWriter = new CommandHelpWriter();
+
+            bool showHelp = set.NamedArgs.ContainsKey("help");
+
+            string commandName = showHelp
+                                     ? set.NamedArgs["help"]
+                                     : set.AnonymousArgs.FirstOrDefault();
+
+            ICommand command = null;
+
+            if (commandName != null)
             {
-                return;
+                command = _cmdRepository.GetCommand(commandName);
             }
 
-            Stopwatch timer = new Stopwatch();
-            timer.Start();
-
-            var cmd = GetCommand();
-
-            cmd.Log = _logRepository;
-            cmd.Arguments = _argRepository;
-
-            CommandResults results = cmd.Run();
-
-            if (results == CommandResults.Invalid)
+            if (showHelp && command != null)
             {
-                new HelpCommand(_logRepository).ShowHelp(cmd);
+                helpWriter.WriteCommandHelp(command, Console.Out);
+            }
+            else if (command != null)
+            {
+                command.Log = _logRepository;
+
+                var commandArgs = command.CreateArguments();
+                commandArgs.Parse(set);
+
+                if (commandArgs.IsValid)
+                {
+                    var timer = new Stopwatch();
+                    timer.Start();
+
+                    command.Run(commandArgs);
+
+                    timer.Stop();
+                    _logRepository.WriteLine(string.Format("Process Finished in: {0}.",
+                                                           decimal.Divide(timer.ElapsedMilliseconds, 1000).ToString(
+                                                               "0.0000s")));
+                }
+                else
+                {
+                    //  ALSO WRITE ERROR MESSAGES OUT
+                    helpWriter.WriteOptionSyntax(command.GetArgumentsType(), Console.Out);
+                }
             }
 
-            timer.Stop();
-
-            _logRepository.WriteLine(string.Format("Process Finished in: {0}.", decimal.Divide(timer.ElapsedMilliseconds, 1000).ToString("0.0000s")));
-        }
-
-        /// <summary>
-        /// Shows the help screen if there are no arguments or if the first isn't a command.
-        /// </summary>
-        private bool CheckForFirstArgument()
-        {
-            bool invalid = false;
-            
-            invalid = (_argRepository.Arguments.Count == 0);
-            invalid = (invalid || _cmdRepository.GetCommand(_argRepository.GetArgument(0)) == null);
-
-            if (invalid)
-            {
-                var helpcmd = new HelpCommand(_logRepository);
-                helpcmd.ShowHelp(_cmdRepository.Commands);
-            }
-
-            return (invalid);
-        }
-
-        /// <summary>
-        /// Iterates through commands until it finds an argument that
-        /// is not a command or runs out of arguments.
-        /// </summary>
-        /// <returns>An instance of command located from the interations.</returns>
-        private ICommand GetCommand()
-        {
-            ICommand cmd = _cmdRepository.GetCommand(_argRepository.GetArgument(0));
-            return cmd;
+            //new HelpCommand(_logRepository).ShowHelp(cmd);
         }
     }
 }

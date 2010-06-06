@@ -104,7 +104,6 @@
     <Compile Include="Migrations\VersionStrategyFactoryUnitTests.cs" />
     <Compile Include="Mocks\MockCommandArgs.cs" />
     <Compile Include="Mocks\MockLog1.cs" />
-    <Compile Include="Repositories\ArgumentRepositoryUnitTests.cs" />
     <Compile Include="Repositories\CommandRepositoryUnitTests.cs" />
     <Compile Include="Mocks\MockCommand1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

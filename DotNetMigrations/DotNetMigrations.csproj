@@ -60,6 +60,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Shared Libraries\System.ComponentModel.Composition.dll</HintPath>
     </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -78,7 +81,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\GenerateScriptCommand.cs" />
+    <Compile Include="Commands\GenerateScriptCommandArgs.cs" />
     <Compile Include="Commands\MigrateCommand.cs" />
+    <Compile Include="Commands\MigrateCommandArgs.cs" />
     <Compile Include="Migrations\IMigrationDirectory.cs" />
     <Compile Include="Migrations\IVersionStrategy.cs" />
     <Compile Include="Migrations\LocalTimestampVersion.cs" />
@@ -91,7 +96,6 @@
     <Compile Include="Logs\ConsoleLog.cs" />
     <Compile Include="Migrations\UtcTimestampVersion.cs" />
     <Compile Include="Migrations\VersionStrategyFactory.cs" />
-    <Compile Include="Repositories\ArgumentRepository.cs" />
     <Compile Include="Repositories\CommandRepository.cs" />
     <Compile Include="Repositories\LogRepository.cs" />
     <Compile Include="Program.cs" />

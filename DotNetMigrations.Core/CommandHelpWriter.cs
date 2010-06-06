@@ -16,9 +16,9 @@ namespace DotNetMigrations.Core
             return required;
         }
 
-        public void WriteOptionSyntax(CommandArguments options, TextWriter writer)
+        public void WriteOptionSyntax(Type argumentsType, TextWriter writer)
         {
-            Dictionary<PropertyInfo, ArgumentAttribute> properties = options.GetArgumentProperties();
+            Dictionary<PropertyInfo, ArgumentAttribute> properties = CommandArguments.GetArgumentProperties(argumentsType);
 
             int count = 0;
             foreach (var prop in properties)
@@ -49,11 +49,11 @@ namespace DotNetMigrations.Core
             }
         }
 
-        public void WriteOptionList(CommandArguments options, TextWriter writer)
+        public void WriteOptionList(Type argumentsType, TextWriter writer)
         {
             writer.WriteLine("Options:");
 
-            Dictionary<PropertyInfo, ArgumentAttribute> properties = options.GetArgumentProperties();
+            Dictionary<PropertyInfo, ArgumentAttribute> properties = CommandArguments.GetArgumentProperties(argumentsType);
 
             foreach (var prop in properties)
             {
@@ -79,6 +79,15 @@ namespace DotNetMigrations.Core
 
             //  Options:
             //      -name      description
+        }
+
+        public void WriteCommandHelp(ICommand command, TextWriter writer)
+        {
+            writer.WriteLine("Usage:");
+            writer.WriteLine("db.exe ");
+            writer.Write(command.CommandName);
+            writer.Write(" ");
+            WriteOptionSyntax(command.GetArgumentsType(), writer);
         }
     }
 }

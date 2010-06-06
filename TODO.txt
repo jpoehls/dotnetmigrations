@@ -1,0 +1,19 @@
+TODO
+
+* unit test DatabaseCommandArguments validation
+* unit test MigrateCommandArguments validation
+* unit test GenerateScriptCommandArguments validation
+* clean up main arg parsing in Program.cs
+* add try...catch around Run() in Program.cs
+* validate arguments in Program.cs OR in CommandBase<> Run()
+* write any argument validation errors to the output (ILogger)
+* unit test CreateArguments() and GetArgumentsType() in CommandBase<>
+* unit test the GenerateScriptCommand
+* unit test Run() in CommandBase<>
+	1. if Log is null should throw exception
+	2. if args is null should throw
+	3. if args is not of type TArgs should throw
+	4. CommandStarting event should fire before Run()
+	5. CommandEnding event should fire after Run()
+	6. CommandEnding event should fire even if Run() throws exception
+	7. Run() should not throw exception if there aren't any event listeners

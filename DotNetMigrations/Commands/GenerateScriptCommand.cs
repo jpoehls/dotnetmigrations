@@ -6,11 +6,12 @@ using DotNetMigrations.Migrations;
 
 namespace DotNetMigrations.Commands
 {
-    internal class GenerateScriptCommand : CommandBase
+    internal class GenerateScriptCommand : CommandBase<GenerateScriptCommandArgs>
     {
         private readonly IMigrationDirectory _migrationDirectory;
 
-        public GenerateScriptCommand() : this(new MigrationDirectory())
+        public GenerateScriptCommand()
+            : this(new MigrationDirectory())
         {
         }
 
@@ -42,28 +43,11 @@ namespace DotNetMigrations.Commands
         /// <summary>
         /// Creates the .sql file and sends the final message.
         /// </summary>
-        protected override void RunCommand()
+        protected override void Run(GenerateScriptCommandArgs args)
         {
-            string migrationName = Arguments.GetArgument(1);
-            string path = _migrationDirectory.CreateBlankScript(migrationName);
+            string path = _migrationDirectory.CreateBlankScript(args.MigrationName);
 
             Log.WriteLine("The new migration script, " + Path.GetFileName(path) + ", was created successfully!");
-        }
-
-        /// <summary>
-        /// Validates the arguments for the command
-        /// </summary>
-        /// <returns>True if the arguments are valid, else false.</returns>
-        protected override bool ValidateArguments()
-        {
-            // The 1st argument is the command name and the 2nd is the migration script name.
-            if (Arguments.Count < 2)
-            {
-                Log.WriteError("The number of arguments for the Generate command is too few.");
-                return false;
-            }
-
-            return true;
         }
     }
 }

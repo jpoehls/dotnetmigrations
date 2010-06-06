@@ -2,10 +2,6 @@
 using System.Configuration;
 using System.IO;
 using System.Linq;
-using DotNetMigrations.Commands;
-using DotNetMigrations.Core;
-using DotNetMigrations.Repositories;
-using DotNetMigrations.UnitTests.Mocks;
 using NUnit.Framework;
 
 namespace DotNetMigrations.UnitTests.Commands
@@ -46,24 +42,6 @@ namespace DotNetMigrations.UnitTests.Commands
             {
                 Directory.Delete(_migrationPath, true);
             }
-        }
-
-        [Test]
-        public void Should_Create_Directory_And_Script_Invalid_Arguments()
-        {
-            var arguments = new[] {"generate"};
-            var log = new MockLog1();
-            var args = new ArgumentRepository(arguments);
-
-            var generateCommand = new GenerateScriptCommand();
-            generateCommand.Log = log;
-            generateCommand.Arguments = args;
-
-            CommandResults results = generateCommand.Run();
-
-            Assert.AreEqual(CommandResults.Invalid, results);
-            Assert.IsTrue(!Directory.Exists(_migrationPath));
-            Assert.IsTrue(log.Output.Length > 1);
         }
     }
 }

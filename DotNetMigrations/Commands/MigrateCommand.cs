@@ -8,7 +8,7 @@ using DotNetMigrations.Migrations;
 
 namespace DotNetMigrations.Commands
 {
-    internal class MigrateCommand : DatabaseCommandBase
+    internal class MigrateCommand : DatabaseCommandBase<MigrateCommandArgs>
     {
         private readonly IMigrationDirectory _migrationDirectory;
 
@@ -45,10 +45,8 @@ namespace DotNetMigrations.Commands
         /// <summary>
         /// Executes the Command's logic.
         /// </summary>
-        protected override void RunCommand()
+        protected override void Run(MigrateCommandArgs args)
         {
-            base.RunCommand();
-
             IOrderedEnumerable<MigrationScriptFile> files = _migrationDirectory.GetScripts()
                 .OrderByDescending(x => x);
 
@@ -58,7 +56,7 @@ namespace DotNetMigrations.Commands
             }
 
             long currentVersion = GetDatabaseVersion();
-            long targetVersion = GetTargetVersionFromArguments();
+            long targetVersion = args.TargetVersion;
 
             //  if version not provided, assume latest migration script version
             if (targetVersion == -1)
@@ -82,46 +80,6 @@ namespace DotNetMigrations.Commands
             }
 
             Log.WriteLine("Database is now on version:".PadRight(30) + targetVersion);
-        }
-
-        /// <summary>
-        /// Validates the arguments for the command
-        /// </summary>
-        /// <returns>True if the arguments are valid, else false.</returns>
-        /// <remarks>
-        /// Allowed Argument Structure:
-        /// db.exe migrate migrationName [version] [connectionstring]
-        /// </remarks>
-        protected override bool ValidateArguments()
-        {
-            bool valid = base.ValidateArguments();
-            if (!valid)
-                return false;
-
-            if (Arguments.Count > 4)
-            {
-                Log.WriteError("There are too many arguments for the migrate command.");
-                return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Returns the target version to migrate the database to. If the version is not provided
-        /// from the command line arguments, -1 will be returned.
-        /// </summary>
-        /// <returns>Returns the targeted version.</returns>
-        private long GetTargetVersionFromArguments()
-        {
-            long targetVersion;
-
-            if (Arguments.Count >= 3 && long.TryParse(Arguments.GetArgument(2), out targetVersion))
-            {
-                return targetVersion;
-            }
-
-            return -1;
         }
 
         /// <summary>

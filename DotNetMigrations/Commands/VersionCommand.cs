@@ -5,7 +5,7 @@ using DotNetMigrations.Migrations;
 
 namespace DotNetMigrations.Commands
 {
-    internal class VersionCommand : DatabaseCommandBase
+    internal class VersionCommand : DatabaseCommandBase<DatabaseCommandArguments>
     {
         private readonly IMigrationDirectory _migrationDirectory;
 
@@ -42,10 +42,8 @@ namespace DotNetMigrations.Commands
         /// <summary>
         /// Executes the Command's logic.
         /// </summary>
-        protected override void RunCommand()
+        protected override void Run(DatabaseCommandArguments args)
         {
-            base.RunCommand();
-
             // Obtain Latest Script Version
             long scriptVersion = GetLatestScriptVersion();
 

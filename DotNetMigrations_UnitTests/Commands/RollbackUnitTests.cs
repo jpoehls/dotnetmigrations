@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using DotNetMigrations.Commands;
 using DotNetMigrations.Core;
-using DotNetMigrations.Repositories;
 using DotNetMigrations.UnitTests.Mocks;
 using NUnit.Framework;
 
@@ -128,22 +127,17 @@ namespace DotNetMigrations.UnitTests.Commands
             // Create the 2nd script and migrate up
             SetupSecondaryTestScript();
 
-            var arguments = new[] {"migrate", "testDb"};
+            var args = new MigrateCommandArgs
+                           {
+                               Connection = "testDb"
+                           };
             var log = new MockLog1();
-            var args = new ArgumentRepository(arguments);
 
             var migrateCommand = new MigrateCommand();
             migrateCommand.Log = log;
-            migrateCommand.Arguments = args;
 
-            CommandResults results = migrateCommand.Run();
+            migrateCommand.Run(args);
 
-            if (results != CommandResults.Success)
-            {
-                Assert.Fail("Migration up failed.");
-            }
-
-            Assert.AreEqual(CommandResults.Success, results);
             Assert.IsTrue(EnsureTableWasCreated());
             Assert.IsTrue(DoesTestTableExist());
             Assert.AreEqual(_secondScriptName.Split('_')[0], _dbVersion);
@@ -153,20 +147,23 @@ namespace DotNetMigrations.UnitTests.Commands
         [Test]
         public void Should_Be_Able_To_Rollback_One_Version()
         {
-            // migrate to a 2nd version
+            //  arrange
+            //  migrate to a 2nd version
             MigrateUpToMigrateDown();
 
-            var arguments = new[] {"rollback", "testDb"};
             var log = new MockLog1();
-            var args = new ArgumentRepository(arguments);
+            var args = new DatabaseCommandArguments
+                           {
+                               Connection = "testDb"
+                           };
 
             var rollbackCommand = new RollbackCommand();
             rollbackCommand.Log = log;
-            rollbackCommand.Arguments = args;
 
-            CommandResults results = rollbackCommand.Run();
+            //  act
+            rollbackCommand.Run(args);
 
-            Assert.AreEqual(CommandResults.Success, results);
+            //  assert
             Assert.IsTrue(EnsureTableWasCreated());
             Assert.IsTrue(DoesTestTableExist());
             Assert.AreEqual(_firstScriptName.Split('_')[0], _dbVersion);
@@ -174,57 +171,24 @@ namespace DotNetMigrations.UnitTests.Commands
         }
 
         [Test]
-        public void Should_Not_Allow_Less_Than_2_Argments()
-        {
-            var arguments = new[] {"rollback"};
-            var log = new MockLog1();
-            var args = new ArgumentRepository(arguments);
-
-            var rollbackCommand = new RollbackCommand();
-            rollbackCommand.Log = log;
-            rollbackCommand.Arguments = args;
-
-            CommandResults results = rollbackCommand.Run();
-
-            Assert.AreEqual(CommandResults.Invalid, results);
-            Assert.IsTrue(log.Output.Length > 1);
-        }
-
-        [Test]
-        public void Should_Not_Allow_More_Than_3_Argments()
-        {
-            var arguments = new[]
-                                {"rollback", "migrationName", "connString", "something, something, something, darkside"};
-            var log = new MockLog1();
-            var args = new ArgumentRepository(arguments);
-
-            var rollbackCommand = new RollbackCommand();
-            rollbackCommand.Log = log;
-            rollbackCommand.Arguments = args;
-
-            CommandResults results = rollbackCommand.Run();
-
-            Assert.AreEqual(CommandResults.Invalid, results);
-            Assert.IsTrue(log.Output.Length > 1);
-        }
-
-        [Test]
         public void Should_Not_Be_Able_To_Rollback_Past_Initial_Schema()
         {
-            var arguments = new[] {"rollback", "testDb"};
+            //  arrange
+            var args = new DatabaseCommandArguments
+                           {
+                               Connection = "testDb"
+                           };
             var log = new MockLog1();
-            var args = new ArgumentRepository(arguments);
 
             var rollbackCommand = new RollbackCommand();
             rollbackCommand.Log = log;
-            rollbackCommand.Arguments = args;
 
-            CommandResults results = rollbackCommand.Run(); // roll back to 0
+            rollbackCommand.Run(args); // roll back to 0
 
-            args.Arguments.RemoveAt(2); // remove the argument that was added by the rollback command
-            results = rollbackCommand.Run(); // attempt to rollback past 0
+            //  act
+            rollbackCommand.Run(args); //  attempt to rollback past 0
 
-            Assert.AreEqual(CommandResults.Success, results);
+            //  assert
             Assert.IsTrue(EnsureTableWasCreated());
             Assert.IsTrue(!DoesTestTableExist());
             Assert.AreEqual("0", _dbVersion);

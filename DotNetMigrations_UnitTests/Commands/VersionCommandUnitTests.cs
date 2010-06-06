@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using DotNetMigrations.Commands;
 using DotNetMigrations.Core;
-using DotNetMigrations.Repositories;
 using DotNetMigrations.UnitTests.Mocks;
 using NUnit.Framework;
 
@@ -87,41 +86,28 @@ namespace DotNetMigrations.UnitTests.Commands
         [Test]
         public void Should_Report_DB_And_Script_Version()
         {
+            //  arrange
             var expected = new StringBuilder();
             expected.AppendLine(string.Format("Current Database Version:".PadRight(30) + "{0}", _dbVersion));
             expected.AppendLine(string.Format("Current Script Version:".PadRight(30) + "{0}", _scriptName.Split('_')[0]));
 
-            var arguments = new[] {"Version", "testDb"};
+            var args = new DatabaseCommandArguments
+                           {
+                               Connection = "testDb"
+                           };
+
             var log = new MockLog1();
-            var args = new ArgumentRepository(arguments);
 
             var versionCommand = new VersionCommand();
             versionCommand.Log = log;
-            versionCommand.Arguments = args;
 
-            CommandResults results = versionCommand.Run();
+            //  act
+            versionCommand.Run(args);
 
-            Assert.AreEqual(CommandResults.Success, results);
+            //  assert
             Assert.IsTrue(log.Output.Length > 1);
             Assert.IsTrue(EnsureTableWasCreated());
             Assert.AreEqual(expected.ToString(), log.Output);
-        }
-
-        [Test]
-        public void Should_Report_DB_And_Script_Version_Invalid_Arguments()
-        {
-            var arguments = new[] {"Version"};
-            var log = new MockLog1();
-            var args = new ArgumentRepository(arguments);
-
-            var versionCommand = new VersionCommand();
-            versionCommand.Log = log;
-            versionCommand.Arguments = args;
-
-            CommandResults results = versionCommand.Run();
-
-            Assert.AreEqual(CommandResults.Invalid, results);
-            Assert.IsTrue(log.Output.Length > 1);
         }
     }
 }

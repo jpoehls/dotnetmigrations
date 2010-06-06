@@ -11,12 +11,15 @@ namespace DotNetMigrations.Core
     /// Using this base class adds the requirement that the 2nd
     /// command argument must always be the connection string.
     /// </summary>
-    public abstract class DatabaseCommandBase : CommandBase
+    public abstract class DatabaseCommandBase<TArgs> : CommandBase<TArgs>
+        where TArgs : DatabaseCommandArguments, new()
     {
         private readonly ConnectionStringFactory _connectionStringFactory;
 
         protected DatabaseCommandBase() : this(new ConnectionStringFactory())
         {
+            CommandStarting += OnCommandStarting;
+            CommandEnded += OnCommandEnded;
         }
 
         protected DatabaseCommandBase(ConnectionStringFactory connectionStringFactory)
@@ -26,34 +29,21 @@ namespace DotNetMigrations.Core
 
         protected DataAccess Database { get; private set; }
 
-        protected override bool ValidateArguments()
+        private void OnCommandStarting(object sender, CommandEventArgs<TArgs> e)
         {
-            if (Arguments.Count < 2)
-            {
-                Log.WriteError("The number arguments is too few.");
-                return false;
-            }
-
-            return true;
-        }
-
-        protected override void RunCommand()
-        {
-            CommandEnded += OnCommandEnded;
-            
             //  initialize the data access class
-            string connStr = GetConnectionString();
+            string connStr = GetConnectionString(e.CommandArguments);
             Database = DataAccessFactory.Create(connStr);
-            
+
             //  perform the database initialization
             Database.OpenConnection();
             var dbInit = new DatabaseInitializer(Database);
             dbInit.Initialize();
         }
 
-        private string GetConnectionString()
+        private string GetConnectionString(TArgs args)
         {
-            string connStrArg = Arguments.GetArgument(1);
+            string connStrArg = args.Connection;
             string connStr;
             if (_connectionStringFactory.IsConnectionString(connStrArg))
             {
@@ -66,7 +56,7 @@ namespace DotNetMigrations.Core
             return connStr;
         }
 
-        private void OnCommandEnded(object sender, EventArgs e)
+        private void OnCommandEnded(object sender, CommandEventArgs<TArgs> e)
         {
             if (Database != null)
             {

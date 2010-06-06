@@ -17,10 +17,9 @@ namespace DotNetMigrations.UnitTests
             using (var writer = new StringWriter())
             {
                 var helpWriter = new CommandHelpWriter();
-                var opts = new MockCommandArgs();
 
                 //  act
-                helpWriter.WriteOptionList(opts, writer);
+                helpWriter.WriteOptionList(typeof(MockCommandArgs), writer);
 
                 //  assert
                 string output = writer.ToString();
@@ -38,10 +37,9 @@ namespace DotNetMigrations.UnitTests
             using (var writer = new StringWriter())
             {
                 var helpWriter = new CommandHelpWriter();
-                var opts = new MockCommandArgs();
 
                 //  act
-                helpWriter.WriteOptionSyntax(opts, writer);
+                helpWriter.WriteOptionSyntax(typeof(MockCommandArgs), writer);
 
                 //  assert
                 string output = writer.ToString();
@@ -56,10 +54,9 @@ namespace DotNetMigrations.UnitTests
             using (var writer = new StringWriter())
             {
                 var helpWriter = new CommandHelpWriter();
-                var opts = new MockCommandArgs();
 
                 //  act
-                helpWriter.WriteOptionSyntax(opts, writer);
+                helpWriter.WriteOptionSyntax(typeof(MockCommandArgs), writer);
 
                 //  assert
                 string output = writer.ToString();
@@ -74,10 +71,9 @@ namespace DotNetMigrations.UnitTests
             using (var writer = new StringWriter())
             {
                 var helpWriter = new CommandHelpWriter();
-                var opts = new MockCommandArgs();
 
                 //  act
-                helpWriter.WriteOptionSyntax(opts, writer);
+                helpWriter.WriteOptionSyntax(typeof(MockCommandArgs), writer);
 
                 //  assert
                 string output = writer.ToString();
