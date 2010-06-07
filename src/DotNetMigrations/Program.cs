@@ -108,6 +108,8 @@ namespace DotNetMigrations
                     }
                     catch (Exception ex)
                     {
+                        _logger.WriteLine(string.Empty);
+
                         if (_logFullErrors)
                         {
                             _logger.WriteError(ex.ToString());
