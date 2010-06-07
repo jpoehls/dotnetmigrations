@@ -69,7 +69,7 @@ namespace DotNetMigrations.UnitTests
         }
 
         [Test]
-        public void Validate_should_add_error_messages_to_collection()
+        public void Parse_should_validate_arguments_and_add_error_messages_to_collection()
         {
             //  arrange
             ArgumentSet args = ArgumentSet.Parse(new[] {"-v", "0"});
@@ -82,6 +82,17 @@ namespace DotNetMigrations.UnitTests
             Assert.AreEqual(2, opts.Errors.Count());
             Assert.AreEqual("Connection is required", opts.Errors.First());
             Assert.AreEqual("Target version must be between 1 and 5", opts.Errors.Last());
+        }
+
+        [Test]
+        public void GetArgumentProperties_should_return_argument_properties_ordered_by_their_Position_value()
+        {
+            //  act
+            var props = CommandArguments.GetArgumentProperties(typeof (MockCommandArgs));
+
+            //  assert
+            Assert.AreEqual(1, props.First().Value.Position);
+            Assert.AreEqual(2, props.Skip(1).First().Value.Position);
         }
     }
 }

@@ -84,6 +84,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArgumentAttributeUnitTests.cs" />
     <Compile Include="ArgumentSetUnitTests.cs" />
     <Compile Include="CommandArgumentsUnitTests.cs" />
     <Compile Include="CommandHelpWriterUnitTests.cs" />
