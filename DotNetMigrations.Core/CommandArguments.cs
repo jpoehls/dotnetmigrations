@@ -79,6 +79,7 @@ namespace DotNetMigrations.Core
                                                          .FirstOrDefault()
                                  })
                 .Where(x => x.Attribute != null)
+                .OrderBy(x => x.Attribute.Position)
                 .ToDictionary(x => x.Property, x => x.Attribute);
             return p;
         }

@@ -9,6 +9,7 @@ namespace DotNetMigrations.Core
             Name = name;
             ShortName = shortName;
             Description = description;
+            Position = int.MaxValue;
         }
 
         /// <summary>

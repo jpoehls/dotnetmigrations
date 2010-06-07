@@ -49,27 +49,40 @@ namespace DotNetMigrations
         private void Run(string[] args)
         {
             string executableName = Process.GetCurrentProcess().ProcessName + ".exe";
-            ArgumentSet set = ArgumentSet.Parse(args);
+            ArgumentSet argSet = ArgumentSet.Parse(args);
 
             var helpWriter = new CommandHelpWriter(_logger);
 
-            bool showHelp = set.NamedArgs.ContainsKey("help");
+            bool showHelp = argSet.NamedArgs.ContainsKey("help");
 
             string commandName = showHelp
-                                     ? set.NamedArgs["help"]
-                                     : set.AnonymousArgs.FirstOrDefault();
+                                     ? argSet.NamedArgs["help"]
+                                     : argSet.AnonymousArgs.FirstOrDefault();
 
             ICommand command = null;
 
             if (commandName != null)
             {
+                _logger.WriteLine("command name = " + commandName);
                 command = _commandRepo.GetCommand(commandName);
             }
-            else
+            
+            if (command == null)
             {
-                //  no command name was found, show the list of available commands
-                WriteAppUsageHelp(executableName);
-                helpWriter.WriteCommandList(_commandRepo.Commands);
+                if (showHelp)
+                {
+                    //  no command name was found, show the list of available commands
+                    WriteAppUsageHelp(executableName);
+                    helpWriter.WriteCommandList(_commandRepo.Commands);
+                }
+                else
+                {
+                    //  invalid command name was given
+                    _logger.WriteLine(string.Empty);
+                    _logger.WriteError("'{0}' is not a DotNetMigrations command.", commandName);
+                    _logger.WriteLine(string.Empty);
+                    _logger.WriteError("See '{0} -help' for a list of available commands.", executableName);
+                }
             }
 
             if (showHelp && command != null)
@@ -82,7 +95,7 @@ namespace DotNetMigrations
                 command.Log = _logger;
 
                 IArguments commandArgs = command.CreateArguments();
-                commandArgs.Parse(set);
+                commandArgs.Parse(argSet);
 
                 if (commandArgs.IsValid)
                 {
