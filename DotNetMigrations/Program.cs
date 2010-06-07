@@ -25,14 +25,22 @@ namespace DotNetMigrations
 
         private readonly CommandRepository _commandRepo;
         private readonly LogRepository _logger;
+        private bool _logFullErrors;
+
+        private Program() : this(new ConfigurationManagerWrapper())
+        {
+        }
 
         /// <summary>
         /// Program constructor, instantiates primary repository objects.
         /// </summary>
-        private Program()
+        private Program(IConfigurationManager configManager)
         {
             _commandRepo = new CommandRepository();
             _logger = new LogRepository();
+
+            string logFullErrorsSetting = configManager.AppSettings["logFullErrors"];
+            bool.TryParse(logFullErrorsSetting, out _logFullErrors);
         }
 
         /// <summary>
@@ -86,7 +94,14 @@ namespace DotNetMigrations
                     }
                     catch (Exception ex)
                     {
-                        _logger.WriteError(ex.ToString());
+                        if (_logFullErrors)
+                        {
+                            _logger.WriteError(ex.ToString());
+                        }
+                        else
+                        {
+                            _logger.WriteError(ex.Message);
+                        }
 
                         if (Debugger.IsAttached)
                             throw;
