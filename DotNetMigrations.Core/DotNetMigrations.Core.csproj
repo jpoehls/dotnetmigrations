@@ -66,10 +66,10 @@
     <Compile Include="BaseClasses\CommandBase.cs" />
     <Compile Include="BaseClasses\CommandEventArgs.cs" />
     <Compile Include="BaseClasses\DatabaseCommandBase.cs" />
-    <Compile Include="CommandArguments.cs" />
+    <Compile Include="BaseClasses\CommandArguments.cs" />
     <Compile Include="CommandHelpWriter.cs" />
     <Compile Include="ConfigurationManagerWrapper.cs" />
-    <Compile Include="DatabaseCommandArguments.cs" />
+    <Compile Include="BaseClasses\DatabaseCommandArguments.cs" />
     <Compile Include="Data\DataAccessFactory.cs" />
     <Compile Include="Data\DatabaseInitializer.cs" />
     <Compile Include="Data\DbTransactionExtensions.cs" />
