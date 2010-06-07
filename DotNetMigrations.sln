@@ -1,21 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetMigrations", "DotNetMigrations\DotNetMigrations.csproj", "{B7080C31-CF25-4BF9-9BEE-19ACFE5081F1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetMigrations", "src\DotNetMigrations\DotNetMigrations.csproj", "{B7080C31-CF25-4BF9-9BEE-19ACFE5081F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetMigrations_UnitTests", "DotNetMigrations_UnitTests\DotNetMigrations_UnitTests.csproj", "{FF3621F4-E0D6-4584-A58E-75EBDDE292C1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetMigrations_UnitTests", "src\DotNetMigrations_UnitTests\DotNetMigrations_UnitTests.csproj", "{FF3621F4-E0D6-4584-A58E-75EBDDE292C1}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{1EA6B83D-7676-4F6C-869F-EA4DFE017804}"
-	ProjectSection(SolutionItems) = preProject
-		Shared Libraries\System.ComponentModel.Composition.dll = Shared Libraries\System.ComponentModel.Composition.dll
-		TODO.txt = TODO.txt
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetMigrations.Core", "DotNetMigrations.Core\DotNetMigrations.Core.csproj", "{5CEC9598-E28B-4A1C-ABF7-85E5A17E0C79}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetMigrations.Core", "src\DotNetMigrations.Core\DotNetMigrations.Core.csproj", "{5CEC9598-E28B-4A1C-ABF7-85E5A17E0C79}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build Script", "Build Script", "{F9278534-B545-4796-ADC1-FCD46031939B}"
 	ProjectSection(SolutionItems) = preProject
 		BuildFile.build = BuildFile.build
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2F33E86A-EC08-463C-A380-61B01D377561}"
+	ProjectSection(SolutionItems) = preProject
+		TODO.txt = TODO.txt
 	EndProjectSection
 EndProject
 Global
@@ -39,20 +38,5 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 4
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs07.codeplex.com/
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = DotNetMigrations.Core\\DotNetMigrations.Core.csproj
-		SccProjectName1 = DotNetMigrations.Core
-		SccLocalPath1 = DotNetMigrations.Core
-		SccProjectUniqueName2 = DotNetMigrations\\DotNetMigrations.csproj
-		SccProjectName2 = DotNetMigrations
-		SccLocalPath2 = DotNetMigrations
-		SccProjectUniqueName3 = DotNetMigrations_UnitTests\\DotNetMigrations_UnitTests.csproj
-		SccProjectName3 = DotNetMigrations_UnitTests
-		SccLocalPath3 = DotNetMigrations_UnitTests
 	EndGlobalSection
 EndGlobal

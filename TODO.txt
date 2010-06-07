@@ -24,4 +24,4 @@ TODO
 	7. Run() should not throw exception if there aren't any event listeners
 	8. exception should be thrown if arguments are invalid
 
-* use a shared AssemblyInfo file for DNM and DNM Core so the version # is shared easier
+* make the build script assign a version (including GIT repo version) to the AssemblyInfo.cs files

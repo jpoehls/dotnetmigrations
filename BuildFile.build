@@ -2,8 +2,8 @@
 <project name="DotNetMigrations" default="BuildApp-Debug" basedir=".">
 	
 	<!-- Project Directories -->
-	<property name="appPath" value=".\DotNetMigrations\" />
-	<property name="corePath" value=".\DotNetMigrations.Core\" />
+	<property name="appPath" value=".\src\DotNetMigrations\" />
+	<property name="corePath" value=".\src\DotNetMigrations.Core\" />
 	
 	<!-- Output Directories -->
     <property name="debugPath" value=".\build\debug\" />
@@ -24,11 +24,11 @@
                 <include name="${corePath}**\*.cs" />
             </sources>
 			      <references>
-				      <include name=".\Shared Libraries\System.ComponentModel.Composition.dll" />
+				      <include name=".\lib\System.ComponentModel.Composition.dll" />
 			      </references>
         </csc>
 		<copy todir="${debugPath}">
-			<fileset basedir=".\Shared Libraries\">
+			<fileset basedir=".\lib\">
 				<include name="System.ComponentModel.Composition.dll" />
 			</fileset>			
 		</copy>
@@ -44,7 +44,7 @@
                 <include name="${appPath}**\*.cs" />
             </sources>
 			      <references>
-				      <include name=".\Shared Libraries\System.ComponentModel.Composition.dll" />
+				      <include name=".\lib\System.ComponentModel.Composition.dll" />
 				      <include name="${debugPath}DotNetMigrations.Core.dll" />
 			      </references>
         </csc>
@@ -66,11 +66,11 @@
                 <include name="${corePath}**\*.cs" />
             </sources>
 			      <references>
-				      <include name=".\Shared Libraries\System.ComponentModel.Composition.dll" />
+				      <include name=".\lib\System.ComponentModel.Composition.dll" />
 			      </references>
         </csc>
 		<copy todir="${releasePath}">
-			<fileset basedir=".\Shared Libraries\">
+			<fileset basedir=".\lib\">
 				<include name="System.ComponentModel.Composition.dll" />
 			</fileset>			
 		</copy>
@@ -86,7 +86,7 @@
                 <include name="${appPath}**\*.cs" />
             </sources>
 			      <references>
-				      <include name=".\Shared Libraries\System.ComponentModel.Composition.dll" />
+				      <include name=".\lib\System.ComponentModel.Composition.dll" />
 				      <include name="${releasePath}DotNetMigrations.Core.dll" />
 			      </references>
         </csc>
