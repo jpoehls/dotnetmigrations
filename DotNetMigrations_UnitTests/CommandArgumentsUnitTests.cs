@@ -85,6 +85,16 @@ namespace DotNetMigrations.UnitTests
         }
 
         [Test]
+        public void GetArgumentProperties_should_return_all_properties_with_an_ArgumentAttribute()
+        {
+            //  act
+            var props = CommandArguments.GetArgumentProperties(typeof(MockCommandArgs));
+
+            //  assert
+            Assert.AreEqual(2, props.Count);
+        }
+
+        [Test]
         public void GetArgumentProperties_should_return_argument_properties_ordered_by_their_Position_value()
         {
             //  act

@@ -9,10 +9,6 @@ TODO
 * unit test CreateArguments() and GetArgumentsType() in CommandBase<>
 
 * unit test the GenerateScriptCommand
-
-* unit test CommandArguments.GetArgumentProperties() method
-	1. order of properties returned (ordered by Position, then occurance in class)
-	2. all [ArgumentAttribute] properties are returned
 	
 * the command list help output doesn't line up the descriptions right
 	should align to a specific column. need to make sure long command names

@@ -21,5 +21,8 @@ namespace DotNetMigrations.UnitTests.Mocks
             Position = 1)]
         [Required(ErrorMessage = "Connection is required")]
         public string Connection { get; set; }
+
+        //  property that doesn't have the [ArgumentAttribute]
+        public string NotAnArgument { get; set; }
     }
 }
