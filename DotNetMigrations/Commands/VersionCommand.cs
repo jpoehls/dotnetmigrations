@@ -32,11 +32,7 @@ namespace DotNetMigrations.Commands
         /// </summary>
         public override string Description
         {
-            get
-            {
-                return "Displays the latest version of the database and the migration scripts."
-                       + "\r\nUsage: db version <connection_string>";
-            }
+            get { return "Displays the latest version of the database and the migration scripts."; }
         }
 
         /// <summary>

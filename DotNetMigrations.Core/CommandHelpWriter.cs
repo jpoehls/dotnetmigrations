@@ -74,9 +74,10 @@ namespace DotNetMigrations.Core
             //  SAMPLE OUTPUT
             //
             //  Options:
-            //  -f, -firstArg       description of first argument
-            //  -s, -secondArg      description of second argument
+            //    -f, -firstArg       description of first argument
+            //    -s, -secondArg      description of second argument
 
+            _log.WriteLine(string.Empty);
             _log.WriteLine("Options:");
 
             Dictionary<PropertyInfo, ArgumentAttribute> properties =
@@ -84,7 +85,7 @@ namespace DotNetMigrations.Core
 
             foreach (var prop in properties)
             {
-                _log.Write("-");
+                _log.Write("  -");
                 _log.Write(prop.Value.ShortName);
                 _log.Write(", ");
                 _log.Write("-");
@@ -101,14 +102,15 @@ namespace DotNetMigrations.Core
         {
             //  SAMPLE OUTPUT
             //
-            //  Usage:
-            //  db.exe commandName [ARGUMENT SYNTAX]
+            //  Usage: db.exe commandName [ARGUMENT SYNTAX]
             //  
             //  Options:
-            //  -f, -firstArg       description of first argument
-            //  -s, -secondArg      description of second argument       
+            //    -f, -firstArg       description of first argument
+            //    -s, -secondArg      description of second argument       
 
-            _log.WriteLine("Usage:");
+            _log.WriteLine(string.Empty);
+
+            _log.Write("Usage: ");
             _log.Write(executableName);
             _log.Write(" ");
             _log.Write(command.CommandName);
@@ -117,7 +119,6 @@ namespace DotNetMigrations.Core
             var argType = command.GetArgumentsType();
             WriteArgumentSyntax(argType);
 
-            _log.WriteLine(string.Empty);
             _log.WriteLine(string.Empty);
             WriteArgumentList(argType);
         }
@@ -131,14 +132,15 @@ namespace DotNetMigrations.Core
             //  SAMPLE OUTPUT
             //
             //  Commands:
-            //  firstCommand        description of first command
-            //  secondCommand       description of second command
+            //    firstCommand        description of first command
+            //    secondCommand       description of second command
 
-            _log.WriteLine("Commands:");
+            _log.WriteLine(string.Empty);
+            _log.WriteLine("Available commands:");
 
             foreach (ICommand cmd in commands)
             {
-                _log.WriteLine("{0}\t\t{1}", cmd.CommandName, cmd.Description);
+                _log.WriteLine("  {0}\t\t{1}", cmd.CommandName, cmd.Description);
             }
         }
     }

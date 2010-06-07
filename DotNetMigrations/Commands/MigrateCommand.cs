@@ -35,11 +35,7 @@ namespace DotNetMigrations.Commands
         /// </summary>
         public override string Description
         {
-            get
-            {
-                return "Migrates the database up and down the versions."
-                       + "\r\nUsage: db migrate <connection_string> [target_version]";
-            }
+            get { return "Migrates the database up and down the versions."; }
         }
 
         /// <summary>

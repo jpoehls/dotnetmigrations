@@ -25,7 +25,7 @@ namespace DotNetMigrations
 
         private readonly CommandRepository _commandRepo;
         private readonly LogRepository _logger;
-        private bool _logFullErrors;
+        private readonly bool _logFullErrors;
 
         private Program() : this(new ConfigurationManagerWrapper())
         {
@@ -68,6 +68,7 @@ namespace DotNetMigrations
             else
             {
                 //  no command name was found, show the list of available commands
+                WriteAppUsageHelp(executableName);
                 helpWriter.WriteCommandList(_commandRepo.Commands);
             }
 
@@ -122,6 +123,17 @@ namespace DotNetMigrations
                     helpWriter.WriteCommandHelp(command, executableName);
                 }
             }
+        }
+
+        /// <summary>
+        /// Writes usage help for the app to the logger.
+        /// </summary>
+        private void WriteAppUsageHelp(string executableName)
+        {
+            _logger.WriteLine(string.Empty);
+            _logger.Write("Usage: ");
+            _logger.Write(executableName);
+            _logger.WriteLine(" [-help] command [args]");
         }
 
         /// <summary>

@@ -21,11 +21,7 @@ namespace DotNetMigrations.Commands
         /// </summary>
         public override string Description
         {
-            get
-            {
-                return "Rolls back the database by one version."
-                       + "\r\nUsage: db rollback <connection_string>";
-            }
+            get { return "Rolls back the database by one version."; }
         }
 
         /// <summary>

@@ -33,11 +33,7 @@ namespace DotNetMigrations.Commands
         /// </summary>
         public override string Description
         {
-            get
-            {
-                return "Generates a new migration script in the migration directory."
-                       + "\r\nUsage: db generate <connection_string> <migration_name>";
-            }
+            get { return "Generates a new migration script in the migration directory."; }
         }
 
         /// <summary>
