@@ -20,7 +20,7 @@ namespace DotNetMigrations.Core
         /// </summary>
         private static bool IsOptional(ICustomAttributeProvider property)
         {
-            bool optional = property.GetCustomAttributes(typeof (RequiredAttribute), false)
+            bool optional = property.GetCustomAttributes(typeof(RequiredAttribute), false)
                                 .Count() == 0;
             return optional;
         }
@@ -83,14 +83,13 @@ namespace DotNetMigrations.Core
             Dictionary<PropertyInfo, ArgumentAttribute> properties =
                 CommandArguments.GetArgumentProperties(argumentsType);
 
+            int maxArgNameLength = properties.Max(x => x.Value.ShortName.Length + x.Value.Name.Length) + 4;
+
             foreach (var prop in properties)
             {
-                _log.Write("  -");
-                _log.Write(prop.Value.ShortName);
-                _log.Write(", ");
-                _log.Write("-");
-                _log.Write(prop.Value.Name);
-                _log.Write("\t\t");
+                _log.Write("".PadLeft(IndentWidth));
+                _log.Write(string.Format("-{0}, -{1}", prop.Value.ShortName, prop.Value.Name).PadRight(maxArgNameLength + TabWidth));
+                _log.Write("".PadLeft(TabWidth));
                 _log.WriteLine(prop.Value.Description);
             }
         }
@@ -98,7 +97,7 @@ namespace DotNetMigrations.Core
         /// <summary>
         /// Writes out the help verbiage for the given command.
         /// </summary>
-        public void WriteCommandHelp(ICommand command, string executableName)   
+        public void WriteCommandHelp(ICommand command, string executableName)
         {
             //  SAMPLE OUTPUT
             //
@@ -138,10 +137,17 @@ namespace DotNetMigrations.Core
             _log.WriteLine(string.Empty);
             _log.WriteLine("Available commands:");
 
+            int maxCommandNameLength = commands.Max(x => x.CommandName.Length);
+
             foreach (ICommand cmd in commands)
             {
-                _log.WriteLine("  {0}\t\t{1}", cmd.CommandName, cmd.Description);
+                _log.Write("".PadLeft(2));
+                _log.Write("{0}", cmd.CommandName.PadRight(maxCommandNameLength + TabWidth));
+                _log.WriteLine(cmd.Description);
             }
         }
+
+        private const int IndentWidth = 2;
+        private const int TabWidth = 4;
     }
 }

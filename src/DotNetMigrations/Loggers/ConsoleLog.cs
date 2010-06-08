@@ -7,6 +7,8 @@ namespace DotNetMigrations.Loggers
     internal class ConsoleLog : LoggerBase
     {
         private string _logName = "ConsoleLog";
+        private const ConsoleColor WarningColor = ConsoleColor.Yellow;
+        private const ConsoleColor ErrorColor = ConsoleColor.Red;
 
         /// <summary>
         /// The name of the log.
@@ -17,9 +19,47 @@ namespace DotNetMigrations.Loggers
             set { _logName = value; }
         }
 
+        /// <summary>
+        /// Writes output to the console. Intelligently wraps
+        /// text to fit the console's remaining line buffer,
+        /// aligning wrapped lines to the current cursor position.
+        /// </summary>
         public override void Write(string message)
         {
-            Console.Write(message);
+            //  remaining usable space on the current line
+            int remainingBufferLength = Console.BufferWidth - Console.CursorLeft;
+
+            //  if the message fits on the current line, write it
+            if (message.Length <= remainingBufferLength)
+            {
+                Console.Write(message);
+            }
+            else
+            {
+                int alignmentPosition = Console.CursorLeft;
+                int maxLineLength = remainingBufferLength;
+
+                var words = message.Split(' ');
+
+                for (int i = 0; i < words.Length; i++)
+                {
+                    if (words[i].Length + 1 > remainingBufferLength)
+                    {
+                        Console.WriteLine(string.Empty);
+                        Console.SetCursorPosition(alignmentPosition, Console.CursorTop);
+                        remainingBufferLength = maxLineLength;
+                    }
+
+                    Console.Write(words[i]);
+
+                    if (i < words.Length - 1)
+                    {
+                        Console.Write(" ");
+                    }
+
+                    remainingBufferLength -= words[i].Length + 1;
+                }
+            }
         }
 
         /// <summary>
@@ -28,7 +68,8 @@ namespace DotNetMigrations.Loggers
         /// <param name="message">The message to write.</param>
         public override void WriteLine(string message)
         {
-            Console.WriteLine(message);
+            Write(message);
+            Console.WriteLine(string.Empty);
         }
 
         /// <summary>
@@ -39,7 +80,7 @@ namespace DotNetMigrations.Loggers
         {
             ConsoleColor previous = Console.ForegroundColor;
 
-            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.ForegroundColor = WarningColor;
             WriteLine(message);
             Console.ForegroundColor = previous;
         }
@@ -52,7 +93,7 @@ namespace DotNetMigrations.Loggers
         {
             ConsoleColor previous = Console.ForegroundColor;
 
-            Console.ForegroundColor = ConsoleColor.Red;
+            Console.ForegroundColor = ErrorColor;
             WriteLine(message);
             Console.ForegroundColor = previous;
         }
