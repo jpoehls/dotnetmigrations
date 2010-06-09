@@ -18,8 +18,14 @@ namespace DotNetMigrations.UnitTests.Mocks
             get { return "This is help text for MockCommand1."; }
         }
 
+        public bool RunShouldThrowException { get; set; }
+
         protected override void Run(MockCommandArgs args)
         {
+            if (RunShouldThrowException)
+            {
+                throw new ApplicationException("error!");
+            }
         }
     }
 }

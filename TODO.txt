@@ -5,13 +5,9 @@ TODO
 * unit test the GenerateScriptCommand
 
 * unit test Run() method in CommandBase<>
-	1. if Log is null should throw exception
-	2. if args is null should throw
-	3. if args is not of type TArgs should throw
 	4. CommandStarting event should fire before Run()
 	5. CommandEnding event should fire after Run()
 	6. CommandEnding event should fire even if Run() throws exception
 	7. Run() should not throw exception if there aren't any event listeners
-	8. exception should be thrown if arguments are invalid
 
 * make the build script assign a version (including GIT repo version) to the AssemblyInfo.cs files
