@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Linq;
+using DotNetMigrations.Commands;
 using DotNetMigrations.Core;
 using NUnit.Framework;
 
 namespace DotNetMigrations.UnitTests
 {
     [TestFixture]
-    public class DatabaseCommandArgumentsUnitTests
+    public class GenerateScriptCommandArgsUnitTests
     {
         [Test]
-        public void Validation_should_fail_if_Connection_is_null_or_empty()
+        public void Validation_should_fail_if_MigrationName_is_null_or_empty()
         {
             //  arrange
             var argSet = ArgumentSet.Parse(new string[] { string.Empty });
-            var args = new DatabaseCommandArguments();
+            var args = new GenerateScriptCommandArgs();
 
             //  act
             args.Parse(argSet);
@@ -24,11 +25,11 @@ namespace DotNetMigrations.UnitTests
         }
 
         [Test]
-        public void Validation_should_succeed_if_Connection_has_value()
+        public void Validation_should_succeed_if_MigrationName_has_value()
         {
             //  arrange
-            var argSet = ArgumentSet.Parse(new string[] { "-c", "my_connection" });
-            var args = new DatabaseCommandArguments();
+            var argSet = ArgumentSet.Parse(new string[] { "-n", "my_migration_name" });
+            var args = new GenerateScriptCommandArgs();
 
             //  act
             args.Parse(argSet);
