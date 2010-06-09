@@ -9,10 +9,6 @@ TODO
 * unit test CreateArguments() and GetArgumentsType() in CommandBase<>
 
 * unit test the GenerateScriptCommand
-	
-* the command list help output doesn't line up the descriptions right
-	should align to a specific column. need to make sure long command names
-	also wrap correctly and don't cause description column to mis-align
 
 * unit test Run() method in CommandBase<>
 	1. if Log is null should throw exception
