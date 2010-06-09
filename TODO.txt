@@ -1,8 +1,6 @@
 TODO
 
-* unit test DatabaseCommandArguments validation
-
-* unit test MigrateCommandArguments validation
+* fix broken command unit tests
 
 * unit test GenerateScriptCommandArguments validation
 

@@ -88,6 +88,8 @@
     <Compile Include="ArgumentSetUnitTests.cs" />
     <Compile Include="CommandArgumentsUnitTests.cs" />
     <Compile Include="CommandHelpWriterUnitTests.cs" />
+    <Compile Include="Commands\MigrateCommandArgsUnitTests.cs" />
+    <Compile Include="DatabaseCommandArgumentsUnitTests.cs" />
     <Compile Include="DisposableFile.cs" />
     <Compile Include="FileHelper.cs" />
     <Compile Include="Commands\GenerateScriptCommandUnitTests.cs" />
