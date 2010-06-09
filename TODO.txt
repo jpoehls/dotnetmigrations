@@ -2,8 +2,6 @@ TODO
 
 * fix broken command unit tests
 
-* unit test CreateArguments() and GetArgumentsType() in CommandBase<>
-
 * unit test the GenerateScriptCommand
 
 * unit test Run() method in CommandBase<>
