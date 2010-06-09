@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
 namespace DotNetMigrations.Core
 {
@@ -37,33 +38,37 @@ namespace DotNetMigrations.Core
             Dictionary<PropertyInfo, ArgumentAttribute> properties =
                 CommandArguments.GetArgumentProperties(argumentsType);
 
+            var syntax = new StringBuilder();
+
             int count = 0;
             foreach (var prop in properties)
             {
                 bool optional = IsOptional(prop.Key);
                 if (optional)
                 {
-                    _log.Write("[");
+                    syntax.Append("[");
                 }
 
-                _log.Write("-");
-                _log.Write(prop.Value.ShortName);
-                _log.Write(" ");
-                _log.Write(prop.Value.ValueName ?? prop.Value.Name);
+                syntax.Append("-");
+                syntax.Append(prop.Value.ShortName);
+                syntax.Append(" ");
+                syntax.Append(prop.Value.ValueName ?? prop.Value.Name);
 
                 if (optional)
                 {
-                    _log.Write("]");
+                    syntax.Append("]");
                 }
 
                 //  if not the last one, add a space
                 if (count < properties.Count - 1)
                 {
-                    _log.Write(" ");
+                    syntax.Append(" ");
                 }
 
                 count++;
             }
+
+            _log.Write(syntax.ToString());
         }
 
         /// <summary>
@@ -89,7 +94,6 @@ namespace DotNetMigrations.Core
             {
                 _log.Write("".PadLeft(IndentWidth));
                 _log.Write(string.Format("-{0}, -{1}", prop.Value.ShortName, prop.Value.Name).PadRight(maxArgNameLength + TabWidth));
-                _log.Write("".PadLeft(TabWidth));
                 _log.WriteLine(prop.Value.Description);
             }
         }

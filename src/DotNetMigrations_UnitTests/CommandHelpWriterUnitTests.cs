@@ -39,8 +39,8 @@ namespace DotNetMigrations.UnitTests
 
             //  assert
             Assert.AreEqual("\r\nOptions:\r\n"
-                            + "  -c, -connection\t\tName of the connection to use\r\n"
-                            + "  -v, -version\t\tVersion to migrate up or down to\r\n",
+                            + "  -c, -connection    Name of the connection to use\r\n"
+                            + "  -v, -version       Version to migrate up or down to\r\n",
                             _logger.Output);
         }
 
@@ -101,14 +101,15 @@ namespace DotNetMigrations.UnitTests
                 new MockCommand1(),
                 new MockCommand1()
             };
+            int maxCommandNameLength = commandList.Max(x => x.CommandName.Length);
 
             //  act
             _helpWriter.WriteCommandList(commandList);
 
             //  assert
             string expectedOutput = "\r\nAvailable commands:\r\n" +
-                                    "  " + commandList[0].CommandName + "\t\t" + commandList[0].Description + "\r\n" +
-                                    "  " + commandList[1].CommandName + "\t\t" + commandList[1].Description + "\r\n";
+                                    "  " + commandList[0].CommandName.PadRight(maxCommandNameLength + 4) + commandList[0].Description + "\r\n" +
+                                    "  " + commandList[1].CommandName.PadRight(maxCommandNameLength + 4) + commandList[1].Description + "\r\n";
             Assert.AreEqual(expectedOutput, _logger.Output);
         }
 
