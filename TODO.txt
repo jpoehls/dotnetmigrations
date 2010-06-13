@@ -11,3 +11,5 @@ TODO
 	1. GetDatabaseVersion()
 
 * make the build script assign a version (including GIT repo version) to the AssemblyInfo.cs files
+
+* make sure all inheritors from DatabaseIntegrationTests call the TeardownDatabase() method in Fixture Teardown

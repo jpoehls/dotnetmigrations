@@ -23,6 +23,8 @@ namespace DotNetMigrations.UnitTests.Data
         public void Teardown()
         {
             _dataAccess.Dispose();
+
+            TeardownDatabase();
         }
 
         #endregion
@@ -30,37 +32,7 @@ namespace DotNetMigrations.UnitTests.Data
         private DataAccess _dataAccess;
         private DatabaseInitializer _subject;
 
-        [TestFixtureSetUp]
-        public void Test_Fixture_Setup()
-        {
-            SetupDatabase();
-        }
-
-        [TestFixtureTearDown]
-        public void Test_Fixture_Teardown()
-        {
-            TeardownDatabase();
-        }
-
         // TO TEST - Migration from legacy table
-
-        private void SetupDatabase()
-        {
-            using (var helper = new SqlDatabaseHelper(TestConnectionString))
-            {
-                helper.ExecuteNonQuery(
-                    "Create Table TestData (Id INT NOT NULL IDENTITY(1,1) PRIMARY KEY, TestName VARCHAR(25) NOT NULL)");
-                helper.ExecuteNonQuery("INSERT INTO TestData (TestName) VALUES ('DotNetMigrations')");
-            }
-        }
-
-        private void TeardownDatabase()
-        {
-            using (var helper = new SqlDatabaseHelper(TestConnectionString))
-            {
-                helper.ExecuteNonQuery("Drop Table TestData");
-            }
-        }
 
         [Test]
         public void Initialize_should_create_migration_table()

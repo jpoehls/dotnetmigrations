@@ -12,5 +12,16 @@ namespace DotNetMigrations.UnitTests
         }
 
         protected string TestConnectionString { get; private set; }
+
+        /// <summary>
+        /// Removes all objects in the database.
+        /// </summary>
+        protected void TeardownDatabase()
+        {
+            using (var helper = new SqlDatabaseHelper(TestConnectionString))
+            {
+                helper.DropAllObjects();
+            }
+        }
     }
 }
