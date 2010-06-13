@@ -5,23 +5,30 @@ using System.Linq;
 using System.Text;
 using DotNetMigrations.Commands;
 using DotNetMigrations.Core;
+using DotNetMigrations.Migrations;
 using DotNetMigrations.UnitTests.Mocks;
+using Moq;
 using NUnit.Framework;
 
 namespace DotNetMigrations.UnitTests.Commands
 {
     [TestFixture]
-    public class VersionCommandUnitTests : DatabaseIntegrationTests
+    public class VersionCommandIntegrationTests : DatabaseIntegrationTests
     {
         private string _migrationPath;
         private string _scriptName;
         private string _dbVersion;
 
+        private DatabaseCommandArguments _commandArgs;
+
         [TestFixtureSetUp]
         public void SetupFixture()
         {
-            SetupTestScript();
-            SetupDatabase();
+            _commandArgs = new DatabaseCommandArguments();
+            _commandArgs.Connection = TestConnectionString;
+
+            //SetupTestScript();
+            //SetupDatabase();
         }
 
         [TestFixtureTearDown]
@@ -84,30 +91,46 @@ namespace DotNetMigrations.UnitTests.Commands
         }
 
         [Test]
-        public void Should_Report_DB_And_Script_Version()
+        public void Run_should_log_latest_script_version()
         {
             //  arrange
-            var expected = new StringBuilder();
-            expected.AppendLine(string.Format("Current Database Version:".PadRight(30) + "{0}", _dbVersion));
-            expected.AppendLine(string.Format("Current Script Version:".PadRight(30) + "{0}", _scriptName.Split('_')[0]));
+            var scriptFiles = new MigrationScriptFile[]
+                                  {
+                                      new MigrationScriptFile("C:\\3_third.sql"),
+                                      new MigrationScriptFile("C:\\1_first.sql"),
+                                      new MigrationScriptFile("C:\\2_second.sql")
+                                  };
 
-            var args = new DatabaseCommandArguments
-                           {
-                               Connection = "testDb"
-                           };
+            var mockMigrationDir = new Mock<IMigrationDirectory>();
+            mockMigrationDir.Setup(dir => dir.GetScripts()).Returns(scriptFiles);
 
-            var log = new MockLog1();
-
-            var versionCommand = new VersionCommand();
-            versionCommand.Log = log;
+            var mockLog = new MockLog1();
+            var cmd = new VersionCommand(mockMigrationDir.Object);
+            cmd.Log = mockLog;
 
             //  act
-            versionCommand.Run(args);
+            cmd.Run(_commandArgs);
 
             //  assert
-            Assert.IsTrue(log.Output.Length > 1);
-            Assert.IsTrue(EnsureTableWasCreated());
-            Assert.AreEqual(expected.ToString(), log.Output);
+            Assert.IsTrue(mockLog.Output.Contains("Current script version:".PadRight(30) + "3"));
+        }
+
+        [Test]
+        public void Run_should_log_current_database_schema_version()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        public void Run_should_return_0_if_schema_migrations_table_doesnt_exist()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        public void Run_should_create_schema_migrations_table_if_it_doesnt_exist()
+        {
+            throw new NotImplementedException();
         }
     }
 }
