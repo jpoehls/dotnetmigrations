@@ -55,6 +55,9 @@ namespace DotNetMigrations.Core
         /// </summary>
         public static ArgumentSet Parse(string[] args)
         {
+            if (args == null)
+                throw new ArgumentNullException("args");
+
             var set = new ArgumentSet();
 
             string name = null;

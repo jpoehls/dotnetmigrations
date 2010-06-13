@@ -10,18 +10,6 @@ namespace DotNetMigrations.UnitTests
     public class CommandArgumentsUnitTests
     {
         [Test]
-        public void Constructor_should_add_initial_error_message()
-        {
-            //  arrange
-            var args = new MockCommandArgs();
-
-            //  assert
-            Assert.IsFalse(args.IsValid);
-            const string expectedError = "Arguments have not been initialized.";
-            Assert.AreEqual(expectedError, args.Errors.First());
-        }
-
-        [Test]
         public void Parse_should_override_anonymous_arguments_with_named_arguments()
         {
             //  arrange

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DotNetMigrations.Core;
 using NUnit.Framework;
@@ -9,21 +10,58 @@ namespace DotNetMigrations.UnitTests
     public class ArgumentSetUnitTests
     {
         [Test]
-        public void NamedArgs_key_comparison_should_be_case_insensitive()
+        public void ContainsName_should_be_case_insensitive()
         {
             //  arrange
             var args = new[] {"-HELP", "migrate"};
-
-            //  act
             ArgumentSet set = ArgumentSet.Parse(args);
 
+            //  act
+            bool exists = set.ContainsName("help");
+
             //  assert
-            Assert.IsTrue(set.ContainsName("help"));
+            Assert.IsTrue(exists);
         }
 
         [Test]
-        public void Parse_should_assign_anonymous_arguments_by_position()
+        public void ContainsName_should_return_true_if_name_exists()
         {
+            //  arrange
+            var args = new[] {"-help", "migrate"};
+            ArgumentSet set = ArgumentSet.Parse(args);
+
+            //  act
+            bool exists = set.ContainsName("help");
+
+            //  assert
+            Assert.IsTrue(exists);
+        }
+
+        [Test]
+        public void GetByName_should_return_value_of_argument_with_given_name()
+        {
+            //  arrange
+            var args = new[] {"-help", "migrate"};
+            ArgumentSet set = ArgumentSet.Parse(args);
+
+            //  act
+            string value = set.GetByName("help");
+
+            //  assert
+            const string expectedValue = "migrate";
+            Assert.AreEqual(expectedValue, value);
+        }
+
+        [Test]
+        [ExpectedException(ExceptionType=typeof(KeyNotFoundException))]
+        public void GetByName_should_throw_KeyNotFoundException_if_name_doesnt_exist()
+        {
+            //  arrange
+            var args = new[] {"blah"};
+            ArgumentSet set = ArgumentSet.Parse(args);
+
+            //  act
+            set.GetByName("help");
         }
 
         [Test]
@@ -96,6 +134,14 @@ namespace DotNetMigrations.UnitTests
             Assert.AreEqual(2, set.NamedArgs.Count());
             Assert.AreEqual("migrate", set.GetByName("help"));
             Assert.AreEqual("connection", set.GetByName("c"));
+        }
+
+        [Test]
+        [ExpectedException(ExceptionType = typeof (ArgumentNullException))]
+        public void Parse_should_throw_ArgumentNullException_if_args_param_is_null()
+        {
+            //  act
+            ArgumentSet.Parse(null);
         }
     }
 }
