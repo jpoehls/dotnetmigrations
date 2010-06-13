@@ -4,7 +4,7 @@ using DotNetMigrations.Commands;
 using DotNetMigrations.Core;
 using NUnit.Framework;
 
-namespace DotNetMigrations.UnitTests
+namespace DotNetMigrations.UnitTests.Commands
 {
     [TestFixture]
     public class GenerateScriptCommandArgsUnitTests
