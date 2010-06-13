@@ -43,7 +43,7 @@ namespace DotNetMigrations.Commands
         {
             string path = _migrationDirectory.CreateBlankScript(args.MigrationName);
 
-            Log.WriteLine("The new migration script, " + Path.GetFileName(path) + ", was created successfully!");
+            Log.WriteLine("The new migration script " + Path.GetFileName(path) + ", was created successfully!");
         }
     }
 }

@@ -13,7 +13,6 @@ namespace DotNetMigrations.Core
         protected CommandArguments()
         {
             _errors = new List<string>();
-            _errors.Add("Arguments have not been initialized.");
         }
 
         public IEnumerable<string> Errors
