@@ -22,6 +22,8 @@ namespace DotNetMigrations.UnitTests.Data
         public void Teardown()
         {
             _subject.Dispose();
+
+            TeardownDatabase();
         }
 
         #endregion
