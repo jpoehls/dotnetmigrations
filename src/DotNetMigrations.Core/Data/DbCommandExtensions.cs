@@ -7,7 +7,12 @@ namespace DotNetMigrations.Core.Data
     {
         public static T ExecuteScalar<T>(this DbCommand cmd)
         {
-            return (T)cmd.ExecuteScalar();
+            var obj = cmd.ExecuteScalar();
+            if (obj == DBNull.Value)
+            {
+                return default(T);
+            }
+            return (T) obj;
         }
     }
 }

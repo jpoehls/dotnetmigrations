@@ -98,7 +98,7 @@
     <Compile Include="Commands\MigrateCommandUnitTests.cs" />
     <Compile Include="Migrations\MigrationScriptFileUnitTests.cs" />
     <Compile Include="Migrations\MigrationDirectoryUnitTests.cs" />
-    <Compile Include="Commands\RollbackUnitTests.cs" />
+    <Compile Include="Commands\RollbackCommandIntegrationTests.cs" />
     <Compile Include="Commands\VersionCommandIntegrationTests.cs" />
     <Compile Include="Data\ConnectionStringFactoryUnitTests.cs" />
     <Compile Include="Data\DataAccessIntegrationTests.cs" />

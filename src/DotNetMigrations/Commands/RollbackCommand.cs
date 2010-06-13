@@ -8,6 +8,17 @@ namespace DotNetMigrations.Commands
 {
     internal class RollbackCommand : DatabaseCommandBase<DatabaseCommandArguments>
     {
+        private readonly DatabaseCommandBase<MigrateCommandArgs> _migrateCommand;
+
+        public RollbackCommand() : this(new MigrateCommand())
+        {
+        }
+
+        public RollbackCommand(DatabaseCommandBase<MigrateCommandArgs> migrateCommand)
+        {
+            _migrateCommand = migrateCommand;
+        }
+
         /// <summary>
         /// The name of the command that is typed as a command line argument.
         /// </summary>
@@ -32,14 +43,13 @@ namespace DotNetMigrations.Commands
             long currentVersion = GetDatabaseVersion();
             long previousVersion = GetPreviousDatabaseVersion(currentVersion);
 
-            var migrationCommand = new MigrateCommand();
-            migrationCommand.Log = Log;
+            _migrateCommand.Log = Log;
 
             var migrateCommandArgs = new MigrateCommandArgs();
             migrateCommandArgs.Connection = args.Connection;
             migrateCommandArgs.TargetVersion = previousVersion;
 
-            migrationCommand.Run(migrateCommandArgs);
+            _migrateCommand.Run(migrateCommandArgs);
         }
 
         /// <summary>

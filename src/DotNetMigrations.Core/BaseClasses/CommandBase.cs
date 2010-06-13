@@ -13,7 +13,7 @@ namespace DotNetMigrations.Core
 
         public abstract string CommandName { get; }
         public abstract string Description { get; }
-        public ILogger Log { get; set; }
+        public virtual ILogger Log { get; set; }
 
         public Type GetArgumentsType()
         {

@@ -4,7 +4,7 @@ using DotNetMigrations.Core;
 
 namespace DotNetMigrations.Commands
 {
-    internal class MigrateCommandArgs : DatabaseCommandArguments
+    public class MigrateCommandArgs : DatabaseCommandArguments
     {
         public MigrateCommandArgs()
         {
