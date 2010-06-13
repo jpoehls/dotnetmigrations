@@ -4,9 +4,9 @@ using System.Linq;
 
 namespace DotNetMigrations.UnitTests
 {
-    public class DatabaseIntegrationTests
+    public abstract class DatabaseIntegrationTests
     {
-        public DatabaseIntegrationTests()
+        protected DatabaseIntegrationTests()
         {
             TestConnectionString = ConfigurationManager.ConnectionStrings["testDb"].ConnectionString;
         }
