@@ -6,7 +6,6 @@ TODO
 	4. CommandStarting event should fire before Run()
 	5. CommandEnding event should fire after Run()
 	6. CommandEnding event should fire even if Run() throws exception
-	7. Run() should not throw exception if there aren't any event listeners
 	
 * unit test DatabaseCommandBase
 	1. GetDatabaseVersion()
