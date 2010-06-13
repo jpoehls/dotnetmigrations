@@ -18,7 +18,7 @@ namespace DotNetMigrations.UnitTests
             ArgumentSet set = ArgumentSet.Parse(args);
 
             //  assert
-            Assert.IsTrue(set.NamedArgs.ContainsKey("help"));
+            Assert.IsTrue(set.ContainsName("help"));
         }
 
         [Test]
@@ -36,10 +36,10 @@ namespace DotNetMigrations.UnitTests
             ArgumentSet set = ArgumentSet.Parse(args);
 
             //  assert
-            Assert.AreEqual(2, set.NamedArgs.Count);
-            Assert.AreEqual(2, set.AnonymousArgs.Count);
-            Assert.AreEqual("joshua", set.AnonymousArgs[0]);
-            Assert.AreEqual("david", set.AnonymousArgs[1]);
+            Assert.AreEqual(2, set.NamedArgs.Count());
+            Assert.AreEqual(2, set.AnonymousArgs.Count());
+            Assert.AreEqual("joshua", set.AnonymousArgs.First());
+            Assert.AreEqual("david", set.AnonymousArgs.Skip(1).First());
         }
 
         [Test]
@@ -52,9 +52,9 @@ namespace DotNetMigrations.UnitTests
             ArgumentSet set = ArgumentSet.Parse(args);
 
             //  assert
-            Assert.AreEqual(2, set.NamedArgs.Count);
-            Assert.AreEqual(null, set.NamedArgs["help"]);
-            Assert.AreEqual(null, set.NamedArgs["me"]);
+            Assert.AreEqual(2, set.NamedArgs.Count());
+            Assert.AreEqual(null, set.GetByName("help"));
+            Assert.AreEqual(null, set.GetByName("me"));
         }
 
         [Test]
@@ -67,7 +67,7 @@ namespace DotNetMigrations.UnitTests
             ArgumentSet set = ArgumentSet.Parse(args);
 
             //  assert
-            Assert.IsTrue(set.NamedArgs.ContainsKey("help"));
+            Assert.IsTrue(set.ContainsName("help"));
         }
 
         [Test]
@@ -80,7 +80,7 @@ namespace DotNetMigrations.UnitTests
             ArgumentSet set = ArgumentSet.Parse(args);
 
             //  assert
-            Assert.IsTrue(set.NamedArgs.ContainsKey("help"));
+            Assert.IsTrue(set.ContainsName("help"));
         }
 
         [Test]
@@ -93,9 +93,9 @@ namespace DotNetMigrations.UnitTests
             ArgumentSet set = ArgumentSet.Parse(args);
 
             //  assert
-            Assert.AreEqual(2, set.NamedArgs.Count);
-            Assert.AreEqual("migrate", set.NamedArgs["help"]);
-            Assert.AreEqual("connection", set.NamedArgs["c"]);
+            Assert.AreEqual(2, set.NamedArgs.Count());
+            Assert.AreEqual("migrate", set.GetByName("help"));
+            Assert.AreEqual("connection", set.GetByName("c"));
         }
     }
 }

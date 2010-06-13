@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DotNetMigrations.Core
 {
@@ -11,14 +12,42 @@ namespace DotNetMigrations.Core
         /// </summary>
         public const string NamePrefixes = "-|/";
 
+        private readonly List<string> _anonymousArgs;
+        private readonly Dictionary<string, string> _namedArgs;
+
         private ArgumentSet()
         {
-            NamedArgs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            AnonymousArgs = new List<string>();
+            _namedArgs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            _anonymousArgs = new List<string>();
         }
 
-        public Dictionary<string, string> NamedArgs { get; private set; }
-        public IList<string> AnonymousArgs { get; private set; }
+        public IEnumerable<KeyValuePair<string, string>> NamedArgs
+        {
+            get { return _namedArgs; }
+        }
+
+        public IEnumerable<string> AnonymousArgs
+        {
+            get { return _anonymousArgs; }
+        }
+
+        /// <summary>
+        /// Returns True/False whether this set contains
+        /// and argument with the given name.
+        /// </summary>
+        public bool ContainsName(string name)
+        {
+            return _namedArgs.ContainsKey(name);
+        }
+
+        /// <summary>
+        /// Returns the value of the argument
+        /// with the given name.
+        /// </summary>
+        public string GetByName(string name)
+        {
+            return _namedArgs[name];
+        }
 
         /// <summary>
         /// Parses an array of arguments into
@@ -35,12 +64,12 @@ namespace DotNetMigrations.Core
                 bool added = false;
                 if (name != null && !isName)
                 {
-                    set.NamedArgs.Add(name, args[i]);
+                    set._namedArgs.Add(name, args[i]);
                     added = true;
                 }
                 else if (name != null)
                 {
-                    set.NamedArgs.Add(name, null);
+                    set._namedArgs.Add(name, null);
                     added = true;
                 }
 
@@ -55,13 +84,13 @@ namespace DotNetMigrations.Core
                 }
                 else if (!added)
                 {
-                    set.AnonymousArgs.Add(args[i]);
+                    set._anonymousArgs.Add(args[i]);
                 }
             }
 
             if (name != null)
             {
-                set.NamedArgs.Add(name, null);
+                set._namedArgs.Add(name, null);
             }
 
             return set;

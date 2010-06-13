@@ -53,10 +53,10 @@ namespace DotNetMigrations
 
             var helpWriter = new CommandHelpWriter(_logger);
 
-            bool showHelp = argSet.NamedArgs.ContainsKey("help");
+            bool showHelp = argSet.ContainsName("help");
 
             string commandName = showHelp
-                                     ? argSet.NamedArgs["help"]
+                                     ? argSet.GetByName("help")
                                      : argSet.AnonymousArgs.FirstOrDefault();
 
             ICommand command = null;

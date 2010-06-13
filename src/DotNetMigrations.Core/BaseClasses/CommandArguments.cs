@@ -85,36 +85,41 @@ namespace DotNetMigrations.Core
             return p;
         }
 
-        private void AssignAnonymousArguments(IList<string> anonymousArgs,
+        private void AssignAnonymousArguments(IEnumerable<string> anonymousArgs,
                                               Dictionary<PropertyInfo, ArgumentAttribute> properties)
         {
-            for (int i = 0; i < anonymousArgs.Count; i++)
+            int argPosition = 1;
+            foreach (var argValue in anonymousArgs)
             {
-                int argumentPosition = i + 1;
                 PropertyInfo matchingProp = properties
-                    .Where(x => x.Value.Position == argumentPosition)
+                    .Where(x => x.Value.Position == argPosition)
                     .Select(x => x.Key)
                     .FirstOrDefault();
 
-                string value = anonymousArgs[i];
-                SetPropertyValue(matchingProp, value);
+                SetPropertyValue(matchingProp, argValue);
+
+                argPosition++;
+            }
+
+            for (int i = 0; i < anonymousArgs.Count(); i++)
+            {
+
             }
         }
 
-        private void AssignNamedArguments(Dictionary<string, string> namedArgs,
+        private void AssignNamedArguments(IEnumerable<KeyValuePair<string, string>> namedArgs,
                                           Dictionary<PropertyInfo, ArgumentAttribute> properties)
         {
-            foreach (string key in namedArgs.Keys)
+            foreach (var pair in namedArgs)
             {
-                string argumentName = key;
+                string argumentName = pair.Key;
                 PropertyInfo matchingProp = properties
                     .Where(x => string.Equals(x.Value.Name, argumentName, StringComparison.OrdinalIgnoreCase)
                                 || string.Equals(x.Value.ShortName, argumentName, StringComparison.OrdinalIgnoreCase))
                     .Select(x => x.Key)
                     .FirstOrDefault();
 
-                string value = namedArgs[key];
-                SetPropertyValue(matchingProp, value);
+                SetPropertyValue(matchingProp, pair.Value);
             }
         }
 
