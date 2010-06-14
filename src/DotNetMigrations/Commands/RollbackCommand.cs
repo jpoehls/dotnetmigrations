@@ -10,7 +10,8 @@ namespace DotNetMigrations.Commands
     {
         private readonly DatabaseCommandBase<MigrateCommandArgs> _migrateCommand;
 
-        public RollbackCommand() : this(new MigrateCommand())
+        public RollbackCommand()
+            : this(new MigrateCommand())
         {
         }
 
@@ -43,6 +44,12 @@ namespace DotNetMigrations.Commands
             long currentVersion = GetDatabaseVersion();
             long previousVersion = GetPreviousDatabaseVersion(currentVersion);
 
+            if (previousVersion == -1)
+            {
+                Log.WriteLine("No rollback is necessary. Database schema is already at version 0.");
+                return;
+            }
+
             _migrateCommand.Log = Log;
 
             var migrateCommandArgs = new MigrateCommandArgs();
@@ -61,24 +68,12 @@ namespace DotNetMigrations.Commands
             string cmdText = string.Format("SELECT MAX([version]) FROM [schema_migrations] WHERE [version] <> {0}",
                                            currentVersion);
 
-            long previousVersion = -1;
+            long previousVersion;
 
-            try
+            using (DbCommand cmd = Database.CreateCommand())
             {
-                using (DbCommand cmd = Database.CreateCommand())
-                {
-                    cmd.CommandText = cmdText;
-                    var version = cmd.ExecuteScalar<string>();
-                    if (version != null)
-                    {
-                        version = version.Trim();
-                    }
-                    long.TryParse(version, out previousVersion);
-                }
-            }
-            catch (DbException ex)
-            {
-                Log.WriteError(ex.Message);
+                cmd.CommandText = cmdText;
+                previousVersion = cmd.ExecuteScalar<long>(-1);
             }
 
             return previousVersion;

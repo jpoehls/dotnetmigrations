@@ -1,6 +1,7 @@
 using System;
 using System.Configuration;
 using System.Linq;
+using DotNetMigrations.Core.Data;
 
 namespace DotNetMigrations.UnitTests
 {
@@ -22,6 +23,19 @@ namespace DotNetMigrations.UnitTests
             {
                 helper.DropAllObjects();
             }
+        }
+
+        /// <summary>
+        /// Calls DatabaseInitializer.Initialize() for the test database.
+        /// </summary>
+        protected void InitializeDatabase()
+        {
+            using (var da = DataAccessFactory.Create(TestConnectionString))
+            {
+                da.OpenConnection();
+                var dbInit = new DatabaseInitializer(da);
+                dbInit.Initialize();
+            }   
         }
     }
 }

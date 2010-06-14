@@ -68,15 +68,9 @@ namespace DotNetMigrations.UnitTests.Commands
         public void Run_should_log_current_database_schema_version_from_schema_migrations_table()
         {
             //  arrange
-            _mockMigrationDir.Setup(dir => dir.GetScripts()).Returns(Enumerable.Empty<MigrationScriptFile>);
+            InitializeDatabase();
 
-            //  initialze the database with the schema_migrations table
-            using (DataAccess dataAccess = DataAccessFactory.Create(TestConnectionString))
-            {
-                dataAccess.OpenConnection();
-                var dbInit = new DatabaseInitializer(dataAccess);
-                dbInit.Initialize();
-            }
+            _mockMigrationDir.Setup(dir => dir.GetScripts()).Returns(Enumerable.Empty<MigrationScriptFile>);
 
             //  update schema_migrations table with a specific version number
             using (var sql = new SqlDatabaseHelper(TestConnectionString))
