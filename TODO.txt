@@ -1,6 +1,6 @@
 TODO
 
-* fix broken command unit tests
+* add tests for the MigrateCommand
 
 * unit test Run() method in CommandBase<>
 	4. CommandStarting event should fire before Run()
@@ -11,3 +11,5 @@ TODO
 	1. GetDatabaseVersion() (can use one of the VersionCommand tests almost exactly for this)
 
 * make the build script assign a version (including GIT repo version) to the AssemblyInfo.cs files
+
+* tag the git repo with each release (and push tag to github)
