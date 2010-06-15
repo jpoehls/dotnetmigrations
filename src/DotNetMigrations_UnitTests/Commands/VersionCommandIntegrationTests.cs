@@ -57,8 +57,7 @@ namespace DotNetMigrations.UnitTests.Commands
             using (var sql = new SqlDatabaseHelper(TestConnectionString))
             {
                 var r =
-                    (int)
-                    sql.ExecuteScalar(
+                    sql.ExecuteScalar<int>(
                         "SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME='schema_migrations'");
                 Assert.IsTrue(r == 1);
             }

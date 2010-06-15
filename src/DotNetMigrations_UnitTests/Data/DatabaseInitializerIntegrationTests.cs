@@ -41,14 +41,13 @@ namespace DotNetMigrations.UnitTests.Data
             _subject.Initialize();
 
             //  assert
-            string results;
+            long version;
             using (var helper = new SqlDatabaseHelper(TestConnectionString))
             {
-                results = helper.ExecuteScalar("SELECT COUNT(Version) FROM [schema_migrations]")
-                    .ToString();
+                version = helper.ExecuteScalar<long>("SELECT COUNT(Version) FROM [schema_migrations]");
             }
 
-            Assert.AreEqual("1", results);
+            Assert.AreEqual(1, version);
         }
 
         [Test]
@@ -61,14 +60,13 @@ namespace DotNetMigrations.UnitTests.Data
             _subject.Initialize();
 
             //  assert
-            string results;
+            long version;
             using (var helper = new SqlDatabaseHelper(TestConnectionString))
             {
-                results = helper.ExecuteScalar("SELECT COUNT(Version) FROM [schema_migrations]")
-                    .ToString();
+                version = helper.ExecuteScalar<long>("SELECT COUNT(Version) FROM [schema_migrations]");
             }
 
-            Assert.AreEqual("1", results);
+            Assert.AreEqual(1, version);
         }
     }
 }

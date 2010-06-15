@@ -27,13 +27,23 @@ namespace DotNetMigrations.UnitTests
 
         #endregion
 
-        public object ExecuteScalar(string commandText)
+        public T ExecuteScalar<T>(string commandText)
         {
-            var cmd = new SqlCommand(commandText);
-            return ExecuteScalar(cmd);
+            return ExecuteScalar(commandText, default(T));
         }
 
-        public object ExecuteScalar(SqlCommand command)
+        public T ExecuteScalar<T>(string commandText, T defaultValue)
+        {
+            var cmd = new SqlCommand(commandText);
+            var obj = ExecuteScalar(cmd);
+            if (obj == DBNull.Value)
+            {
+                return defaultValue;
+            }
+            return (T)Convert.ChangeType(obj, typeof(T));
+        }
+
+        private object ExecuteScalar(SqlCommand command)
         {
             try
             {
