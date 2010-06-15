@@ -1,10 +1,11 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
 
 namespace DotNetMigrations.Migrations
 {
-    public class MigrationScriptFile : IMigrationScriptFile
+    public class MigrationScriptFile : IMigrationScriptFile, IComparable<IMigrationScriptFile>, IEquatable<IMigrationScriptFile>
     {
         private const string SetupEndTag = "END_SETUP:";
         private const string SetupStartTag = "BEGIN_SETUP:";

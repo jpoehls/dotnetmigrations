@@ -41,6 +41,11 @@ namespace DotNetMigrations.Core.Data
                 }
             }
 
+            if (currentChunk.Length > 0)
+            {
+                chunks.Add(currentChunk.ToString());
+            }
+
             return chunks;
         }
     }

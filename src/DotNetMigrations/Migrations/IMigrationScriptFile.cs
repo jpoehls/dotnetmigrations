@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace DotNetMigrations.Migrations
 {
-    public interface IMigrationScriptFile : IComparable<IMigrationScriptFile>, IEquatable<IMigrationScriptFile>
+    public interface IMigrationScriptFile
     {
         string FilePath { get; }
         long Version { get; }

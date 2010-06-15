@@ -16,6 +16,9 @@ namespace DotNetMigrations.UnitTests.Commands
         [SetUp]
         public void Setup()
         {
+            _commandArgs = new MigrateCommandArgs();
+            _commandArgs.Connection = TestConnectionString;
+
             _mockLog = new MockLog1();
 
             _migrateCommand = new MigrateCommand(_mockMigrationDir.Object);
@@ -38,21 +41,16 @@ namespace DotNetMigrations.UnitTests.Commands
         [TestFixtureSetUp]
         public void FixtureSetup()
         {
-            _commandArgs = new MigrateCommandArgs();
-            _commandArgs.Connection = TestConnectionString;
-
             //  setup the mock migration scripts
             var mockScript1 = new Mock<IMigrationScriptFile>();
-            mockScript1.SetupGet(x => x.FilePath).Returns("C:\\1_add_table_and_initial_row.sql");
             mockScript1.SetupGet(x => x.Version).Returns(1);
             mockScript1.Setup(x => x.Read()).Returns(() => new MigrationScriptContents(
                                                                @"CREATE TABLE [TestTable] (Id INT NOT NULL)
                                                                 GO
-                                                                INSERT INTO [TestTable](Id) VALUES (1)",
+                                                                INSERT INTO [TestTable] (Id) VALUES (1)",
                                                                @"DROP TABLE [TestTable]"));
 
             var mockScript2 = new Mock<IMigrationScriptFile>();
-            mockScript2.SetupGet(x => x.FilePath).Returns("C:\\2_add_a_row.sql");
             mockScript2.SetupGet(x => x.Version).Returns(2);
             mockScript2.Setup(x => x.Read()).Returns(() => new MigrationScriptContents(
                                                                "INSERT INTO [TestTable] (Id) VALUES (2)",
@@ -165,6 +163,16 @@ namespace DotNetMigrations.UnitTests.Commands
                     sql.ExecuteScalar<int>("select count(*) from information_schema.tables where table_name='TestTable'");
                 Assert.AreEqual(0, testTableCount, "not all migration scripts were run as expected");
             }
+        }
+
+        [Test]
+        public void Run_should_leave_schema_unchanged_if_migration_script_throws_exception()
+        {
+            //  change 2nd migration script to have syntax error
+            //  migrate to version 2
+            //  assert that schema_migrations version is 0?
+            //  assert that testtable doesn't exist
+            throw new NotImplementedException();
         }
     }
 }

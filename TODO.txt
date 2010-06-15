@@ -17,3 +17,5 @@ TODO
 * test the MigrationScriptFile.Write() method (used to be in the CreateBlankScript() method)
 
 * update tests for the MigrationDirectory.CreateBlankScript() method
+
+* add tests for SqlParser
