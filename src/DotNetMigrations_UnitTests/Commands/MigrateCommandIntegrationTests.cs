@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using DotNetMigrations.Commands;
 using DotNetMigrations.Migrations;
@@ -23,6 +25,25 @@ namespace DotNetMigrations.UnitTests.Commands
 
             _migrateCommand = new MigrateCommand(_mockMigrationDir.Object);
             _migrateCommand.Log = _mockLog;
+
+            _mockMigrationScripts = new List<IMigrationScriptFile>();
+
+            //  setup the mock migration scripts
+            var mockScript1 = new Mock<IMigrationScriptFile>();
+            mockScript1.SetupGet(x => x.Version).Returns(1);
+            mockScript1.Setup(x => x.Read()).Returns(() => new MigrationScriptContents(
+                                                               @"CREATE TABLE [TestTable] (Id INT NOT NULL)
+                                                                GO
+                                                                INSERT INTO [TestTable] (Id) VALUES (1)",
+                                                               @"DROP TABLE [TestTable]"));
+            _mockMigrationScripts.Add(mockScript1.Object);
+
+            var mockScript2 = new Mock<IMigrationScriptFile>();
+            mockScript2.SetupGet(x => x.Version).Returns(2);
+            mockScript2.Setup(x => x.Read()).Returns(() => new MigrationScriptContents(
+                                                               "INSERT INTO [TestTable] (Id) VALUES (2)",
+                                                               "DELETE FROM [TestTable] WHERE Id = 2"));
+            _mockMigrationScripts.Add(mockScript2.Object);
         }
 
         [TearDown]
@@ -37,31 +58,13 @@ namespace DotNetMigrations.UnitTests.Commands
         private MigrateCommand _migrateCommand;
         private MockLog1 _mockLog;
         private Mock<IMigrationDirectory> _mockMigrationDir;
+        private List<IMigrationScriptFile> _mockMigrationScripts;
 
         [TestFixtureSetUp]
         public void FixtureSetup()
         {
-            //  setup the mock migration scripts
-            var mockScript1 = new Mock<IMigrationScriptFile>();
-            mockScript1.SetupGet(x => x.Version).Returns(1);
-            mockScript1.Setup(x => x.Read()).Returns(() => new MigrationScriptContents(
-                                                               @"CREATE TABLE [TestTable] (Id INT NOT NULL)
-                                                                GO
-                                                                INSERT INTO [TestTable] (Id) VALUES (1)",
-                                                               @"DROP TABLE [TestTable]"));
-
-            var mockScript2 = new Mock<IMigrationScriptFile>();
-            mockScript2.SetupGet(x => x.Version).Returns(2);
-            mockScript2.Setup(x => x.Read()).Returns(() => new MigrationScriptContents(
-                                                               "INSERT INTO [TestTable] (Id) VALUES (2)",
-                                                               "DELETE FROM [TestTable] WHERE Id = 2"));
-
             _mockMigrationDir = new Mock<IMigrationDirectory>();
-            _mockMigrationDir.Setup(x => x.GetScripts()).Returns(() => new[]
-                                                                           {
-                                                                               mockScript1.Object,
-                                                                               mockScript2.Object
-                                                                           });
+            _mockMigrationDir.Setup(x => x.GetScripts()).Returns(() => _mockMigrationScripts);
         }
 
         [Test]
@@ -166,12 +169,62 @@ namespace DotNetMigrations.UnitTests.Commands
         }
 
         [Test]
-        public void Run_should_leave_schema_unchanged_if_migration_script_throws_exception()
+        public void Run_should_leave_schema_unchanged_if_migration_script_throws_exception_when_migrating_up()
         {
-            //  change 2nd migration script to have syntax error
-            //  migrate to version 2
-            //  assert that schema_migrations version is 0?
-            //  assert that testtable doesn't exist
+            //  arrange
+            var mockErrorScript = new Mock<IMigrationScriptFile>();
+            mockErrorScript.SetupGet(x => x.Version).Returns(3);
+            mockErrorScript.Setup(x => x.Read()).Returns(() => new MigrationScriptContents(
+                                                               "INSERT INTO [NonExistantTable] (Id) VALUES (1)",
+                                                               "DELETE FROM [NonExistantTable] WHERE Id = 2"));
+            _mockMigrationScripts.Add(mockErrorScript.Object);
+
+            //  act
+            try
+            {
+                _migrateCommand.Run(_commandArgs);
+            }
+            catch (SqlException)
+            {
+            }
+            
+            //  assert
+            using (var sql = new SqlDatabaseHelper(TestConnectionString))
+            {
+                var version =
+                    sql.ExecuteScalar<long>(
+                        "select max(version) from schema_migrations");
+
+                Assert.AreEqual(0, version, "schema version doesn't match the original schema version");
+
+                var testTableCount =
+                    sql.ExecuteScalar<int>("select count(*) from information_schema.tables where table_name='TestTable'");
+                Assert.AreEqual(0, testTableCount, "not all migration script changes were rolled back");
+            }
+        }
+
+        [Test]
+        public void Run_should_leave_schema_unchanged_if_migration_script_throws_exception_when_migrating_down()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        public void Run_should_wrap_any_SqlExceptions_thrown_into_MigrationExceptions()
+        {
+            //  todo: create a MigrationException class that wraps gives the migration filepath that had an error and sets inner exception to the sql exception that occurred
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        public void Run_should_log_current_schema_version_before_performing_migrations()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        public void Run_should_log_ending_schema_version_after_performing_migrations()
+        {
             throw new NotImplementedException();
         }
     }
