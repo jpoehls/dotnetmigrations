@@ -70,7 +70,7 @@ namespace DotNetMigrations.Migrations
 
             if (files != null)
             {
-                return files.Select(x => (IMigrationScriptFile)new MigrationScriptFile(x)).OrderBy(x => x);
+                return files.Select(x => (IMigrationScriptFile)new MigrationScriptFile(x)).OrderBy(x => x.Version);
             }
 
             return Enumerable.Empty<IMigrationScriptFile>();

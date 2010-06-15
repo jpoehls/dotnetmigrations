@@ -9,24 +9,6 @@ namespace DotNetMigrations.UnitTests.Migrations
     public class MigrationScriptFileUnitTests
     {
         [Test]
-        public void CompareTo_should_find_two_with_the_same_version_equal()
-        {
-            //  arrange
-            const string path1 = "C:\\test\\123_my_migration_script.sql";
-            var script1 = new MigrationScriptFile(path1);
-
-            const string path2 = "C:\\test\\123_another_migration_script.sql";
-            var script2 = new MigrationScriptFile(path2);
-
-            //  act
-            int result = script1.CompareTo(script2);
-
-            //  assert
-            const int expectedResult = 0;
-            Assert.AreEqual(expectedResult, result);
-        }
-
-        [Test]
         public void Constructor_should_parse_path_correctly()
         {
             //  arrange
