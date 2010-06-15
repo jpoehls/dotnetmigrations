@@ -48,7 +48,7 @@ namespace DotNetMigrations.UnitTests.Commands
         public void Run_should_create_schema_migrations_table_if_it_doesnt_exist()
         {
             //  arrange
-            _mockMigrationDir.Setup(dir => dir.GetScripts()).Returns(Enumerable.Empty<MigrationScriptFile>);
+            _mockMigrationDir.Setup(dir => dir.GetScripts()).Returns(Enumerable.Empty<IMigrationScriptFile>);
 
             //  act
             _versionCommand.Run(_commandArgs);
@@ -70,7 +70,7 @@ namespace DotNetMigrations.UnitTests.Commands
             //  arrange
             InitializeDatabase();
 
-            _mockMigrationDir.Setup(dir => dir.GetScripts()).Returns(Enumerable.Empty<MigrationScriptFile>);
+            _mockMigrationDir.Setup(dir => dir.GetScripts()).Returns(Enumerable.Empty<IMigrationScriptFile>);
 
             //  update schema_migrations table with a specific version number
             using (var sql = new SqlDatabaseHelper(TestConnectionString))
@@ -89,7 +89,7 @@ namespace DotNetMigrations.UnitTests.Commands
         public void Run_should_log_database_schema_version_as_0_if_schema_migrations_table_doesnt_exist()
         {
             //  arrange
-            _mockMigrationDir.Setup(dir => dir.GetScripts()).Returns(Enumerable.Empty<MigrationScriptFile>);
+            _mockMigrationDir.Setup(dir => dir.GetScripts()).Returns(Enumerable.Empty<IMigrationScriptFile>);
 
             //  act
             _versionCommand.Run(_commandArgs);

@@ -43,7 +43,7 @@ namespace DotNetMigrations.Commands
         /// </summary>
         protected override void Run(MigrateCommandArgs args)
         {
-            IOrderedEnumerable<MigrationScriptFile> files = _migrationDirectory.GetScripts()
+            IOrderedEnumerable<IMigrationScriptFile> files = _migrationDirectory.GetScripts()
                 .OrderByDescending(x => x);
 
             if (files.Count() == 0)
@@ -83,7 +83,7 @@ namespace DotNetMigrations.Commands
         /// </summary>
         /// <param name="currentVersion">The current version of the database.</param>
         /// <param name="targetVersion">The targeted version of the database.</param>
-        private void MigrateUp(long currentVersion, long targetVersion, IEnumerable<MigrationScriptFile> files)
+        private void MigrateUp(long currentVersion, long targetVersion, IEnumerable<IMigrationScriptFile> files)
         {
             IEnumerable<KeyValuePair<long, string>> scripts = files.OrderBy(x => x)
                 .Where(x => x.Version > currentVersion && x.Version <= targetVersion)
@@ -116,7 +116,7 @@ namespace DotNetMigrations.Commands
         /// </summary>
         /// <param name="currentVersion">The current version of the database.</param>
         /// <param name="targetVersion">The targeted version of the database.</param>
-        private void MigrateDown(long currentVersion, long targetVersion, IEnumerable<MigrationScriptFile> files)
+        private void MigrateDown(long currentVersion, long targetVersion, IEnumerable<IMigrationScriptFile> files)
         {
             IEnumerable<KeyValuePair<long, string>> scripts = files.OrderByDescending(x => x)
                 .Where(x => x.Version <= currentVersion && x.Version > targetVersion)

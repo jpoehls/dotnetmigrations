@@ -56,10 +56,10 @@ namespace DotNetMigrations.Commands
         /// <returns>The latest script version</returns>
         private long GetLatestScriptVersion()
         {
-            IOrderedEnumerable<MigrationScriptFile> files = _migrationDirectory.GetScripts()
+            IOrderedEnumerable<IMigrationScriptFile> files = _migrationDirectory.GetScripts()
                 .OrderByDescending(x => x);
 
-            MigrationScriptFile latestFile = files.FirstOrDefault();
+            IMigrationScriptFile latestFile = files.FirstOrDefault();
 
             if (latestFile != null)
             {

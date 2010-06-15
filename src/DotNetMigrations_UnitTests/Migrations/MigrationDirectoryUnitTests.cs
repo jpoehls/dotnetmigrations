@@ -119,6 +119,11 @@ namespace DotNetMigrations.UnitTests.Migrations
             _configManager.AppSettings["versionStrategy"] = "utc_time";
             const string migrationName = "my first script";
 
+            const string setupStartTag = "BEGIN_SETUP:";
+            const string setupEndTag = "END_SETUP:";
+            const string teardownStartTag = "BEGIN_TEARDOWN:";
+            const string teardownEndTag = "END_TEARDOWN:";
+
             //  act
             string path = _subject.CreateBlankScript(migrationName);
 
@@ -126,10 +131,10 @@ namespace DotNetMigrations.UnitTests.Migrations
             {
                 //  assert
                 string contents = File.ReadAllText(file.FullName);
-                int index1 = contents.IndexOf(MigrationScriptFile.SetupStartTag, StringComparison.Ordinal);
-                int index2 = contents.IndexOf(MigrationScriptFile.SetupEndTag, StringComparison.Ordinal);
-                int index3 = contents.IndexOf(MigrationScriptFile.TeardownStartTag, StringComparison.Ordinal);
-                int index4 = contents.IndexOf(MigrationScriptFile.TeardownEndTag, StringComparison.Ordinal);
+                int index1 = contents.IndexOf(setupStartTag, StringComparison.Ordinal);
+                int index2 = contents.IndexOf(setupEndTag, StringComparison.Ordinal);
+                int index3 = contents.IndexOf(teardownStartTag, StringComparison.Ordinal);
+                int index4 = contents.IndexOf(teardownEndTag, StringComparison.Ordinal);
 
                 Assert.IsTrue(index1 != -1 && index1 < index2);
                 Assert.IsTrue(index2 != -1 && index2 < index3);
@@ -214,7 +219,7 @@ namespace DotNetMigrations.UnitTests.Migrations
                 FileHelper.Touch(Path.Combine(path, "2_script_two.sql"));
 
                 //  act
-                IEnumerable<MigrationScriptFile> files = _subject.GetScripts();
+                IEnumerable<IMigrationScriptFile> files = _subject.GetScripts();
 
                 //  assert
                 const int expectedCount = 2;
@@ -232,7 +237,7 @@ namespace DotNetMigrations.UnitTests.Migrations
                 _configManager.AppSettings["migrateFolder"] = emptyDir.FullName;
 
                 //  act
-                IEnumerable<MigrationScriptFile> files = _subject.GetScripts();
+                IEnumerable<IMigrationScriptFile> files = _subject.GetScripts();
 
                 //  assert
                 const int expectedCount = 0;
@@ -254,7 +259,7 @@ namespace DotNetMigrations.UnitTests.Migrations
                 FileHelper.Touch(Path.Combine(path, "10_script_ten.sql"));
 
                 //  act
-                IEnumerable<MigrationScriptFile> files = _subject.GetScripts();
+                IEnumerable<IMigrationScriptFile> files = _subject.GetScripts();
 
                 //  assert
                 Assert.IsTrue(files.First().Version == 1);

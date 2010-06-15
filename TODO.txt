@@ -13,3 +13,7 @@ TODO
 * make the build script assign a version (including GIT repo version) to the AssemblyInfo.cs files
 
 * tag the git repo with each release (and push tag to github)
+
+* test the MigrationScriptFile.Write() method (used to be in the CreateBlankScript() method)
+
+* update tests for the MigrationDirectory.CreateBlankScript() method

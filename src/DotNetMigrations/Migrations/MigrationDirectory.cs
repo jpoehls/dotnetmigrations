@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using DotNetMigrations.Core;
 
@@ -65,16 +64,16 @@ namespace DotNetMigrations.Migrations
         /// Returns a list of all the migration script file paths
         /// sorted by version number (ascending).
         /// </summary>
-        public IEnumerable<MigrationScriptFile> GetScripts()
+        public IEnumerable<IMigrationScriptFile> GetScripts()
         {
             string[] files = Directory.GetFiles(GetPath(null), ScriptFileNamePattern);
 
             if (files != null)
             {
-                return files.Select(x => new MigrationScriptFile(x)).OrderBy(x => x);
+                return files.Select(x => (IMigrationScriptFile)new MigrationScriptFile(x)).OrderBy(x => x);
             }
 
-            return Enumerable.Empty<MigrationScriptFile>();
+            return Enumerable.Empty<IMigrationScriptFile>();
         }
 
         /// <summary>
@@ -89,22 +88,11 @@ namespace DotNetMigrations.Migrations
             string path = GetPath(null);
             path = Path.Combine(path, version + "_" + SanitizeMigrationName(migrationName) + ".sql");
 
-            var contents = new StringBuilder();
-            contents.AppendLine(MigrationScriptFile.SetupStartTag);
-            contents.AppendLine();
-            contents.AppendLine();
-            contents.AppendLine();
-            contents.AppendLine(MigrationScriptFile.SetupEndTag);
-            contents.AppendLine();
-            contents.AppendLine();
-            contents.AppendLine();
-            contents.AppendLine(MigrationScriptFile.TeardownStartTag);
-            contents.AppendLine();
-            contents.AppendLine();
-            contents.AppendLine();
-            contents.AppendLine(MigrationScriptFile.TeardownEndTag);
+            var contents = new MigrationScriptContents(Environment.NewLine, Environment.NewLine);
+            
+            var file = new MigrationScriptFile(path);
+            file.Write(contents);
 
-            File.WriteAllText(path, contents.ToString());
             return path;
         }
 

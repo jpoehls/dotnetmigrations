@@ -17,7 +17,7 @@ namespace DotNetMigrations.Migrations
         /// Returns a list of all the migration script file paths
         /// sorted by version number (ascending).
         /// </summary>
-        IEnumerable<MigrationScriptFile> GetScripts();
+        IEnumerable<IMigrationScriptFile> GetScripts();
 
         /// <summary>
         /// Creates a blank migration script with the given name.

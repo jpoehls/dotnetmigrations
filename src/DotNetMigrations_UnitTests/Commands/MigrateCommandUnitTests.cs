@@ -3,7 +3,10 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using DotNetMigrations.Commands;
+using DotNetMigrations.Core;
+using DotNetMigrations.Migrations;
 using DotNetMigrations.UnitTests.Mocks;
+using Moq;
 using NUnit.Framework;
 
 namespace DotNetMigrations.UnitTests.Commands
@@ -11,17 +14,38 @@ namespace DotNetMigrations.UnitTests.Commands
     [TestFixture]
     public class MigrateCommandUnitTests : DatabaseIntegrationTests
     {
+        private MigrateCommandArgs _commandArgs;
+        private MigrateCommand _migrateCommand;
+        private MockLog1 _mockLog;
+        private Mock<IMigrationDirectory> _mockMigrationDir;
+
+        [TestFixtureSetUp]
+        public void FixtureSetup()
+        {
+            _commandArgs = new MigrateCommandArgs();
+            _commandArgs.Connection = TestConnectionString;
+
+            //  create some test scripts
+
+            _mockMigrationDir = new Mock<IMigrationDirectory>();
+            //_mockMigrationDir.Setup(x => x.GetScripts()).Returns(migrationScriptPaths);
+        }
+
         #region Setup/Teardown
 
         [SetUp]
-        public void TestSetup()
+        public void Setup()
         {
-            using (var helper = new SqlDatabaseHelper(TestConnectionString))
-            {
-                helper.SwallowSqlExceptions = true;
-                helper.ExecuteNonQuery("DROP TABLE [schema_migrations]");
-                helper.ExecuteNonQuery("DROP TABLE [TestTable]");
-            }
+            _mockLog = new MockLog1();
+
+            _migrateCommand = new MigrateCommand(_mockMigrationDir.Object);
+            _migrateCommand.Log = _mockLog;
+        }
+
+        [TearDown]
+        public void Teardown()
+        {
+            TeardownDatabase();
         }
 
         #endregion
@@ -31,21 +55,6 @@ namespace DotNetMigrations.UnitTests.Commands
         private string _secondScriptName;
         private string _dbVersion;
         private long _testTableVersion;
-
-        [TestFixtureSetUp]
-        public void SetupFixture()
-        {
-            SetupInitialTestScript();
-        }
-
-        [TestFixtureTearDown]
-        public void TeardownFixture()
-        {
-            if (Directory.Exists(_migrationPath))
-            {
-                Directory.Delete(_migrationPath, true);
-            }
-        }
 
         private void SetupInitialTestScript()
         {
@@ -145,6 +154,33 @@ namespace DotNetMigrations.UnitTests.Commands
             Assert.AreEqual(_secondScriptName.Split('_')[0], _dbVersion);
             Assert.AreEqual(2, _testTableVersion);
         }
+
+        [Test]
+        public void Run_should_migrate_to_latest_script_version_if_no_TargetVersion_is_given()
+        {
+
+
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        public void Run_should_migrate_down_to_TargetVersion_if_less_than_current_schema_version()
+        {
+        throw new NotImplementedException();    
+        }
+
+        [Test]
+        public void Run_should_migrate_up_to_TargetVersion_if_greater_than_current_schema_version()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        public void Run_should_rollback_all_migrations_if_TargetVersion_is_0()
+        {
+            throw new NotImplementedException();
+        }
+
 
         [Test]
         public void Should_Be_Able_To_Migrate_Down_To_Original_Schema()

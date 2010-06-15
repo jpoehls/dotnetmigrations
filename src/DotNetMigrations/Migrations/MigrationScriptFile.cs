@@ -1,17 +1,16 @@
-using System;
 using System.IO;
 using System.Linq;
 using System.Text;
 
 namespace DotNetMigrations.Migrations
 {
-    public class MigrationScriptFile : IComparable<MigrationScriptFile>, IEquatable<MigrationScriptFile>
+    public class MigrationScriptFile : IMigrationScriptFile
     {
-        public const string SetupStartTag = "BEGIN_SETUP:";
-        public const string SetupEndTag = "END_SETUP:";
+        private const string SetupEndTag = "END_SETUP:";
+        private const string SetupStartTag = "BEGIN_SETUP:";
 
-        public const string TeardownStartTag = "BEGIN_TEARDOWN:";
-        public const string TeardownEndTag = "END_TEARDOWN:";
+        private const string TeardownEndTag = "END_TEARDOWN:";
+        private const string TeardownStartTag = "BEGIN_TEARDOWN:";
 
         public MigrationScriptFile(string filePath)
         {
@@ -23,18 +22,18 @@ namespace DotNetMigrations.Migrations
         public string FilePath { get; private set; }
         public long Version { get; private set; }
 
-        #region IComparable<MigrationScriptFile> Members
+        #region IComparable<IMigrationScriptFile> Members
 
-        public int CompareTo(MigrationScriptFile other)
+        public int CompareTo(IMigrationScriptFile other)
         {
             return Version.CompareTo(other.Version);
         }
 
         #endregion
 
-        #region IEquatable<MigrationScriptFile> Members
+        #region IEquatable<IMigrationScriptFile> Members
 
-        public bool Equals(MigrationScriptFile other)
+        public bool Equals(IMigrationScriptFile other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -77,6 +76,29 @@ namespace DotNetMigrations.Migrations
             var contents = new MigrationScriptContents(setupBuilder.ToString(),
                                                        teardownBuilder.ToString());
             return contents;
+        }
+
+        /// <summary>
+        /// Writes the given contents into the migration script file.
+        /// </summary>
+        public void Write(MigrationScriptContents contents)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine(SetupStartTag);
+            sb.AppendLine();
+            sb.AppendLine(contents.Setup);
+            sb.AppendLine();
+            sb.AppendLine(SetupEndTag);
+            sb.AppendLine();
+            sb.AppendLine();
+            sb.AppendLine();
+            sb.AppendLine(TeardownStartTag);
+            sb.AppendLine();
+            sb.AppendLine(contents.Teardown);
+            sb.AppendLine();
+            sb.AppendLine(TeardownEndTag);
+
+            File.WriteAllText(FilePath, sb.ToString());
         }
 
         private void ParseVersion()
