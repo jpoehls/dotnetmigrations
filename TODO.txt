@@ -23,3 +23,11 @@ TODO
 * CreateBlankScript() outputs a template with too many empty lines in it
 
 * add version command tests to confirm log writing of "your database is up-to-date" if true
+
+* add tests for ConnectionsCommand
+
+* refactor ConnectionsCommand - we are doing some custom argument validation here that should use the same
+	routines as the command argument validation.
+	
+* refactor the ConnectionsCommandArgsActionValidator attribute into a more generic, OptionSetValidatorAttribute that takes
+	a list of valid values for the property
