@@ -35,7 +35,7 @@ namespace DotNetMigrations.Commands
         /// </summary>
         public override string Description
         {
-            get { return "Migrates the database up and down the versions."; }
+            get { return "Migrates the database up or down to a specific version."; }
         }
 
         /// <summary>
@@ -48,34 +48,38 @@ namespace DotNetMigrations.Commands
 
             if (files.Count() == 0)
             {
+                Log.WriteLine("No migration scripts were found.");
                 return;
             }
 
             long currentVersion = GetDatabaseVersion();
             long targetVersion = args.TargetVersion;
 
-            //  if version not provided, assume latest migration script version
             if (targetVersion == -1)
             {
+                //  if version not provided, assume we want to migrate to the latest migration script version
                 targetVersion = files.Select(x => x.Version).First();
             }
 
-            if (currentVersion == -1 || targetVersion == -1 || currentVersion == targetVersion)
+            if (currentVersion == targetVersion)
             {
+                Log.WriteLine("Database is already at version: " + targetVersion);
                 return;
             }
+
+            Log.WriteLine("Database is at version:".PadRight(30) + currentVersion);
 
             if (currentVersion < targetVersion)
             {
                 MigrateUp(currentVersion, targetVersion, files);
+                Log.WriteLine("Migrated up to version:".PadRight(30) + targetVersion);
             }
 
             if (currentVersion > targetVersion)
             {
                 MigrateDown(currentVersion, targetVersion, files);
+                Log.WriteLine("Migrated down to version:".PadRight(30) + targetVersion);
             }
-
-            Log.WriteLine("Database is now on version:".PadRight(30) + targetVersion);
         }
 
         /// <summary>
@@ -83,32 +87,14 @@ namespace DotNetMigrations.Commands
         /// </summary>
         /// <param name="currentVersion">The current version of the database.</param>
         /// <param name="targetVersion">The targeted version of the database.</param>
+        /// <param name="files">All migration script files.</param>
         private void MigrateUp(long currentVersion, long targetVersion, IEnumerable<IMigrationScriptFile> files)
         {
-            IEnumerable<KeyValuePair<long, string>> scripts = files.OrderBy(x => x.Version)
+            IEnumerable<KeyValuePair<IMigrationScriptFile, string>> scripts = files.OrderBy(x => x.Version)
                 .Where(x => x.Version > currentVersion && x.Version <= targetVersion)
-                .Select(x => new KeyValuePair<long, string>(x.Version, x.Read().Setup));
+                .Select(x => new KeyValuePair<IMigrationScriptFile, string>(x, x.Read().Setup));
 
-            using (DbTransaction tran = Database.BeginTransaction())
-            {
-                try
-                {
-                    foreach (var script in scripts)
-                    {
-                        Database.ExecuteScript(tran, script.Value);
-                        UpdateSchemaVersionUp(tran, script.Key);
-                    }
-
-                    tran.Commit();
-                }
-                catch
-                {
-                    tran.Rollback();
-                    throw;
-                }
-            }
-
-            Log.WriteLine("Migrated to Version:".PadRight(30) + targetVersion);
+            ExecuteMigrationScripts(scripts, UpdateSchemaVersionUp);
         }
 
         /// <summary>
@@ -116,32 +102,40 @@ namespace DotNetMigrations.Commands
         /// </summary>
         /// <param name="currentVersion">The current version of the database.</param>
         /// <param name="targetVersion">The targeted version of the database.</param>
+        /// <param name="files">All migration script files.</param>
         private void MigrateDown(long currentVersion, long targetVersion, IEnumerable<IMigrationScriptFile> files)
         {
-            IEnumerable<KeyValuePair<long, string>> scripts = files.OrderByDescending(x => x.Version)
+            IEnumerable<KeyValuePair<IMigrationScriptFile, string>> scripts = files.OrderByDescending(x => x.Version)
                 .Where(x => x.Version <= currentVersion && x.Version > targetVersion)
-                .Select(x => new KeyValuePair<long, string>(x.Version, x.Read().Teardown));
+                .Select(x => new KeyValuePair<IMigrationScriptFile, string>(x, x.Read().Teardown));
 
+            ExecuteMigrationScripts(scripts, UpdateSchemaVersionDown);
+        }
+
+        private void ExecuteMigrationScripts(IEnumerable<KeyValuePair<IMigrationScriptFile, string>> scripts, Action<DbTransaction, long> updateVersionAction)
+        {
             using (DbTransaction tran = Database.BeginTransaction())
             {
+                IMigrationScriptFile currentScript = null;
                 try
                 {
                     foreach (var script in scripts)
                     {
+                        currentScript = script.Key;
                         Database.ExecuteScript(tran, script.Value);
-                        UpdateSchemaVersionDown(tran, script.Key);
+                        updateVersionAction(tran, script.Key.Version);
                     }
 
                     tran.Commit();
                 }
-                catch
+                catch (Exception ex)
                 {
                     tran.Rollback();
-                    throw;
+
+                    string filePath = (currentScript == null) ? "NULL" : currentScript.FilePath;
+                    throw new MigrationException("Error executing migration script: " + filePath, filePath, ex);
                 }
             }
-
-            Log.WriteLine("Migrated From Version:".PadRight(30) + targetVersion);
         }
 
         /// <summary>

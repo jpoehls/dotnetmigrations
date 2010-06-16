@@ -86,9 +86,9 @@ namespace DotNetMigrations.Core
                     }
                     long.TryParse(version, out currentVersion);
 
-                    if (currentVersion != -1)
+                    if (currentVersion < 0)
                     {
-                        Log.WriteLine("Current Database Version:".PadRight(30) + version);
+                        throw new SchemaException("schema_migrations table appears to be corrupted");
                     }
                 }
             }

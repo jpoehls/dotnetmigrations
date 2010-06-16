@@ -50,5 +50,13 @@ namespace DotNetMigrations.UnitTests.Mocks
         {
             _logger.AppendLine("Disposed!");
         }
+
+        /// <summary>
+        /// Clears the log output.
+        /// </summary>
+        public void Clear()
+        {
+            _logger.Remove(0, _logger.Length);
+        }
     }
 }

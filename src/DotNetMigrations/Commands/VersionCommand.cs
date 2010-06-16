@@ -46,8 +46,8 @@ namespace DotNetMigrations.Commands
             // Obtain Latest Database Version
             long databaseVersion = GetDatabaseVersion();
 
-            Log.WriteLine("Current database version:".PadRight(30) + databaseVersion);
-            Log.WriteLine("Current script version:".PadRight(30) + scriptVersion);
+            Log.WriteLine("Database is at version:".PadRight(30) + databaseVersion);
+            Log.WriteLine("Scripts are at version:".PadRight(30) + scriptVersion);
         }
 
         /// <summary>

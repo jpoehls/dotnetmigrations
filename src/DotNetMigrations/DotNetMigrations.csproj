@@ -84,6 +84,7 @@
     <Compile Include="Commands\GenerateScriptCommandArgs.cs" />
     <Compile Include="Commands\MigrateCommand.cs" />
     <Compile Include="Commands\MigrateCommandArgs.cs" />
+    <Compile Include="Commands\MigrationException.cs" />
     <Compile Include="Migrations\IMigrationDirectory.cs" />
     <Compile Include="Migrations\IMigrationScriptFile.cs" />
     <Compile Include="Migrations\IVersionStrategy.cs" />

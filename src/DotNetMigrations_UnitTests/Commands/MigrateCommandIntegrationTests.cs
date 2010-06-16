@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using DotNetMigrations.Commands;
 using DotNetMigrations.Migrations;
@@ -23,10 +22,13 @@ namespace DotNetMigrations.UnitTests.Commands
 
             _mockLog = new MockLog1();
 
+            _mockMigrationScripts = new List<IMigrationScriptFile>();
+
+            _mockMigrationDir = new Mock<IMigrationDirectory>();
+            _mockMigrationDir.Setup(x => x.GetScripts()).Returns(() => _mockMigrationScripts);
+
             _migrateCommand = new MigrateCommand(_mockMigrationDir.Object);
             _migrateCommand.Log = _mockLog;
-
-            _mockMigrationScripts = new List<IMigrationScriptFile>();
 
             //  setup the mock migration scripts
             var mockScript1 = new Mock<IMigrationScriptFile>();
@@ -44,6 +46,22 @@ namespace DotNetMigrations.UnitTests.Commands
                                                                "INSERT INTO [TestTable] (Id) VALUES (2)",
                                                                "DELETE FROM [TestTable] WHERE Id = 2"));
             _mockMigrationScripts.Add(mockScript2.Object);
+
+            //  setup a migration script that throws an exception during Setup, but don't add it to the scripts collection
+            _mockScriptWithBadSetup = new Mock<IMigrationScriptFile>();
+            _mockScriptWithBadSetup.SetupGet(x => x.Version).Returns(3);
+            _mockScriptWithBadSetup.SetupGet(x => x.FilePath).Returns("C:\\3_my_bad_script.sql");
+            _mockScriptWithBadSetup.Setup(x => x.Read()).Returns(() => new MigrationScriptContents(
+                                                               "INSERT INTO [NonExistantTable] (Id) VALUES (1)",
+                                                               null));
+
+            //  setup a migration script that throws an exception during Teardown, but don't add it to the scripts collection
+            _mockScriptWithBadTeardown = new Mock<IMigrationScriptFile>();
+            _mockScriptWithBadTeardown.SetupGet(x => x.Version).Returns(4);
+            _mockScriptWithBadTeardown.SetupGet(x => x.FilePath).Returns("C:\\4_my_bad_script.sql");
+            _mockScriptWithBadTeardown.Setup(x => x.Read()).Returns(() => new MigrationScriptContents(
+                                                               "INSERT INTO [TestTable] (Id) VALUES (4)",
+                                                               "DELETE FROM [NonExistantTable] WHERE Id = 4"));
         }
 
         [TearDown]
@@ -59,13 +77,8 @@ namespace DotNetMigrations.UnitTests.Commands
         private MockLog1 _mockLog;
         private Mock<IMigrationDirectory> _mockMigrationDir;
         private List<IMigrationScriptFile> _mockMigrationScripts;
-
-        [TestFixtureSetUp]
-        public void FixtureSetup()
-        {
-            _mockMigrationDir = new Mock<IMigrationDirectory>();
-            _mockMigrationDir.Setup(x => x.GetScripts()).Returns(() => _mockMigrationScripts);
-        }
+        private Mock<IMigrationScriptFile> _mockScriptWithBadSetup;
+        private Mock<IMigrationScriptFile> _mockScriptWithBadTeardown;
 
         [Test]
         public void Run_should_migrate_down_to_TargetVersion_if_less_than_current_schema_version()
@@ -172,22 +185,22 @@ namespace DotNetMigrations.UnitTests.Commands
         public void Run_should_leave_schema_unchanged_if_migration_script_throws_exception_when_migrating_up()
         {
             //  arrange
-            var mockErrorScript = new Mock<IMigrationScriptFile>();
-            mockErrorScript.SetupGet(x => x.Version).Returns(3);
-            mockErrorScript.Setup(x => x.Read()).Returns(() => new MigrationScriptContents(
-                                                               "INSERT INTO [NonExistantTable] (Id) VALUES (1)",
-                                                               "DELETE FROM [NonExistantTable] WHERE Id = 2"));
-            _mockMigrationScripts.Add(mockErrorScript.Object);
+            //  migrate up first
+            _migrateCommand.Run(_commandArgs);
+
+            _commandArgs.TargetVersion = 0;
+
+            _mockMigrationScripts.Add(_mockScriptWithBadSetup.Object);
 
             //  act
             try
             {
                 _migrateCommand.Run(_commandArgs);
             }
-            catch (SqlException)
+            catch (MigrationException)
             {
             }
-            
+
             //  assert
             using (var sql = new SqlDatabaseHelper(TestConnectionString))
             {
@@ -206,26 +219,134 @@ namespace DotNetMigrations.UnitTests.Commands
         [Test]
         public void Run_should_leave_schema_unchanged_if_migration_script_throws_exception_when_migrating_down()
         {
-            throw new NotImplementedException();
+            //  arrange
+            _mockMigrationScripts.Add(_mockScriptWithBadTeardown.Object);
+            //  migrate up first
+            _migrateCommand.Run(_commandArgs);
+
+            _commandArgs.TargetVersion = 0;
+
+            //  act
+            try
+            {
+                _migrateCommand.Run(_commandArgs);
+            }
+            catch (MigrationException)
+            {
+            }
+
+            //  assert
+            using (var sql = new SqlDatabaseHelper(TestConnectionString))
+            {
+                var version =
+                    sql.ExecuteScalar<long>(
+                        "select max(version) from schema_migrations");
+
+                Assert.AreEqual(4, version, "schema version doesn't match the original schema version");
+
+                var testTableCount =
+                    sql.ExecuteScalar<int>("select count(*) from information_schema.tables where table_name='TestTable'");
+                Assert.AreEqual(1, testTableCount, "schema changed");
+            }
         }
 
         [Test]
-        public void Run_should_wrap_any_SqlExceptions_thrown_into_MigrationExceptions()
+        public void Run_should_wrap_any_Exception_thrown_while_executing_a_migration_script_into_a_MigrationException()
         {
-            //  todo: create a MigrationException class that wraps gives the migration filepath that had an error and sets inner exception to the sql exception that occurred
-            throw new NotImplementedException();
+            //  arrange
+            _mockMigrationScripts.Add(_mockScriptWithBadSetup.Object);
+
+            //  act
+            try
+            {
+                _migrateCommand.Run(_commandArgs);
+            }
+            catch (MigrationException ex)
+            {
+                Assert.AreEqual(ex.FilePath, _mockScriptWithBadSetup.Object.FilePath);
+                Assert.IsNotNull(ex.InnerException, "InnerException was null");
+                return;
+            }
+
+            //  assert
+            Assert.Fail("MigrationException was not thrown.");
+        }
+
+        [Test]
+        public void Run_should_not_throw_exception_if_there_arent_any_migration_scripts()
+        {
+            //  arrange
+            _mockMigrationScripts.Clear();
+
+            //  act
+            _migrateCommand.Run(_commandArgs);
+        }
+
+        [Test]
+        public void Run_should_log_message_if_there_arent_any_migration_scripts()
+        {
+            //  arrange
+            _mockMigrationScripts.Clear();
+
+            //  act
+            _migrateCommand.Run(_commandArgs);
+
+            //  assert
+            Assert.AreEqual("No migration scripts were found.\r\n", _mockLog.Output);
+        }
+
+        [Test]
+        public void Run_should_log_message_if_schema_is_already_at_TargetVersion()
+        {
+            //  arrange
+            _commandArgs.TargetVersion = 0;
+
+            //  act
+            _migrateCommand.Run(_commandArgs);
+
+            //  assert
+            Assert.AreEqual("Database is already at version: 0\r\n", _mockLog.Output);
         }
 
         [Test]
         public void Run_should_log_current_schema_version_before_performing_migrations()
         {
-            throw new NotImplementedException();
+            //  arrange
+
+            //  act
+            _migrateCommand.Run(_commandArgs);
+
+            //  assert
+            Assert.IsTrue(_mockLog.Output.StartsWith("Database is at version:".PadRight(30) + 0 + "\r\n"));
         }
 
         [Test]
-        public void Run_should_log_ending_schema_version_after_performing_migrations()
+        public void Run_should_log_TargetVersion_after_performing_migration_up()
         {
-            throw new NotImplementedException();
+            //  arrange
+
+            //  act
+            _migrateCommand.Run(_commandArgs);
+
+            //  assert
+            Assert.IsTrue(_mockLog.Output.EndsWith("Migrated up to version:".PadRight(30) + 2 + "\r\n"));
+        }
+
+        [Test]
+        public void Run_should_log_TargetVersion_after_performing_migration_down()
+        {
+            //  arrange
+            //  migrate up first
+            _migrateCommand.Run(_commandArgs);
+
+            _commandArgs.TargetVersion = 0;
+            _mockLog.Clear();
+
+            //  act
+            _migrateCommand.Run(_commandArgs);
+
+            //  assert
+            Assert.IsTrue(_mockLog.Output.EndsWith("Migrated down to version:".PadRight(30) + 0 + "\r\n"));
         }
     }
 }

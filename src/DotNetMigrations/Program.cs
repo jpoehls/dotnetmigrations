@@ -116,7 +116,7 @@ namespace DotNetMigrations
                         }
                         else
                         {
-                            _logger.WriteError(ex.Message);
+                            WriteShortErrorMessages(ex);
                         }
 
                         if (Debugger.IsAttached)
@@ -137,6 +137,19 @@ namespace DotNetMigrations
                     _logger.WriteLine(string.Empty);
                     helpWriter.WriteCommandHelp(command, executableName);
                 }
+            }
+        }
+
+        private void WriteShortErrorMessages(Exception ex)
+        {
+            _logger.WriteLine(ex.Message);
+            Exception innerEx = ex.InnerException;
+            while (innerEx != null)
+            {
+                _logger.WriteLine(string.Empty);
+                _logger.WriteLine(innerEx.Message);
+
+                innerEx = innerEx.InnerException;
             }
         }
 
