@@ -48,6 +48,12 @@ namespace DotNetMigrations.Commands
 
             Log.WriteLine("Database is at version:".PadRight(30) + databaseVersion);
             Log.WriteLine("Scripts are at version:".PadRight(30) + scriptVersion);
+
+            if (databaseVersion == scriptVersion)
+            {
+                Log.WriteLine(string.Empty);
+                Log.WriteLine("Your database is up-to-date!");
+            }
         }
 
         /// <summary>
@@ -66,7 +72,7 @@ namespace DotNetMigrations.Commands
                 return latestFile.Version;
             }
 
-            return -1;
+            return 0;
         }
     }
 }

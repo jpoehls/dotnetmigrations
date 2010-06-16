@@ -19,3 +19,7 @@ TODO
 * update tests for the MigrationDirectory.CreateBlankScript() method
 
 * add tests for SqlParser
+
+* CreateBlankScript() outputs a template with too many empty lines in it
+
+* add version command tests to confirm log writing of "your database is up-to-date" if true
