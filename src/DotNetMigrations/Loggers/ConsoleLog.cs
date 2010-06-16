@@ -10,6 +10,12 @@ namespace DotNetMigrations.Loggers
         private const ConsoleColor WarningColor = ConsoleColor.Yellow;
         private const ConsoleColor ErrorColor = ConsoleColor.Red;
 
+        public ConsoleLog()
+        {
+            //  pad the console with a blank line
+            Console.WriteLine();
+        }
+
         /// <summary>
         /// The name of the log.
         /// </summary>

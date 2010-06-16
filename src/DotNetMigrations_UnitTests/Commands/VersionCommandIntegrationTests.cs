@@ -80,7 +80,7 @@ namespace DotNetMigrations.UnitTests.Commands
                 _versionCommand.Run(_commandArgs);
 
                 //  assert
-                Assert.IsTrue(_mockLog.Output.Contains("Current database version:".PadRight(30) + "1234"));
+                Assert.IsTrue(_mockLog.Output.Contains("Database is at version:".PadRight(30) + "1234"));
             }
         }
 
@@ -94,7 +94,7 @@ namespace DotNetMigrations.UnitTests.Commands
             _versionCommand.Run(_commandArgs);
 
             //  assert
-            Assert.IsTrue(_mockLog.Output.Contains("Current database version:".PadRight(30) + "0"));
+            Assert.IsTrue(_mockLog.Output.Contains("Database is at version:".PadRight(30) + "0"));
         }
 
         [Test]
@@ -113,7 +113,7 @@ namespace DotNetMigrations.UnitTests.Commands
             _versionCommand.Run(_commandArgs);
 
             //  assert
-            Assert.IsTrue(_mockLog.Output.Contains("Current script version:".PadRight(30) + "3"));
+            Assert.IsTrue(_mockLog.Output.Contains("Scripts are at version:".PadRight(30) + "3"));
         }
     }
 }

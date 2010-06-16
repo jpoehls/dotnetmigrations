@@ -49,21 +49,20 @@ namespace DotNetMigrations
         private void Run(string[] args)
         {
             string executableName = Process.GetCurrentProcess().ProcessName + ".exe";
-            ArgumentSet argSet = ArgumentSet.Parse(args);
+            ArgumentSet allArguments = ArgumentSet.Parse(args);
 
             var helpWriter = new CommandHelpWriter(_logger);
 
-            bool showHelp = argSet.ContainsName("help");
+            bool showHelp = allArguments.ContainsName("help");
 
             string commandName = showHelp
-                                     ? argSet.GetByName("help")
-                                     : argSet.AnonymousArgs.FirstOrDefault();
+                                     ? allArguments.GetByName("help")
+                                     : allArguments.AnonymousArgs.FirstOrDefault();
 
             ICommand command = null;
 
             if (commandName != null)
             {
-                _logger.WriteLine("command name = " + commandName);
                 command = _commandRepo.GetCommand(commandName);
             }
             
@@ -94,8 +93,9 @@ namespace DotNetMigrations
             {
                 command.Log = _logger;
 
+                var commandArgumentSet = ArgumentSet.Parse(args.Skip(1).ToArray());
                 IArguments commandArgs = command.CreateArguments();
-                commandArgs.Parse(argSet);
+                commandArgs.Parse(commandArgumentSet);
 
                 if (commandArgs.IsValid)
                 {
@@ -125,6 +125,8 @@ namespace DotNetMigrations
                     finally
                     {
                         timer.Stop();
+
+                        _logger.WriteLine(string.Empty);
                         _logger.WriteLine(string.Format("Command duration was {0}.",
                                                                decimal.Divide(timer.ElapsedMilliseconds, 1000).ToString(
                                                                    "0.0000s")));
