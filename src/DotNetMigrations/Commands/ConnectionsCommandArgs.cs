@@ -4,7 +4,7 @@ namespace DotNetMigrations.Commands
 {
     internal class ConnectionsCommandArgs : CommandArguments
     {
-        [ValueSetValidator("list", "add", "set", "remove", ErrorMessage = "-action must be 'list', 'add', 'set', or 'remove'")]
+        [ValueSetValidator("", "list", "add", "set", "remove", ErrorMessage = "-action must be 'list', 'add', 'set', or 'remove'")]
         [Argument("action", "a", "Action to perform. [ list | add | set | remove ]",
             Position = 1)]
         public string Action { get; set; }
