@@ -82,7 +82,6 @@
   <ItemGroup>
     <Compile Include="Commands\ConnectionsCommand.cs" />
     <Compile Include="Commands\ConnectionsCommandArgs.cs" />
-    <Compile Include="Commands\ConnectionsCommandArgsActionValidator.cs" />
     <Compile Include="Commands\GenerateScriptCommand.cs" />
     <Compile Include="Commands\GenerateScriptCommandArgs.cs" />
     <Compile Include="Commands\MigrateCommand.cs" />
