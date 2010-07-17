@@ -77,7 +77,8 @@
     <Compile Include="Data\ConnectionStringFactory.cs" />
     <Compile Include="Data\DataAccess.cs" />
     <Compile Include="Data\DbCommandExtensions.cs" />
-    <Compile Include="Data\SqlParser.cs" />
+    <Compile Include="Data\ScriptSplitter.cs" />
+    <Compile Include="Data\SqlParseException.cs" />
     <Compile Include="IEnumerableExtensions.cs" />
     <Compile Include="Interfaces\IArguments.cs" />
     <Compile Include="IConfigurationManager.cs" />

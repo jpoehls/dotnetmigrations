@@ -66,7 +66,7 @@ namespace DotNetMigrations.Core.Data
         /// </summary>
         public void ExecuteScript(DbTransaction tran, string script)
         {
-            var batches = SqlParser.SplitByGoKeyword(script);
+            var batches = new ScriptSplitter(script);
             foreach (var batch in batches)
             {
                 using (var cmd = CreateCommand())

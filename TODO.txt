@@ -12,8 +12,6 @@ TODO
 
 * tag the git repo with each release (and push tag to github)
 
-* add tests for SqlParser
-
 * add tests for ConnectionsCommand
 
 * refactor ConnectionsCommand - we are doing some custom argument validation here that should use the same

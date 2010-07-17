@@ -129,7 +129,7 @@ namespace DotNetMigrations.UnitTests
             {
                 using (var reader = new StreamReader(s))
                 {
-                    var scripts = SqlParser.SplitByGoKeyword(reader.ReadToEnd());
+                    var scripts = new ScriptSplitter(reader.ReadToEnd());
                     ExecuteNonQuery(scripts.ToArray());
                 }
             }
