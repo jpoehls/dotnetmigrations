@@ -115,5 +115,18 @@ namespace DotNetMigrations.UnitTests.Commands
             //  assert
             Assert.IsTrue(_mockLog.Output.Contains("Scripts are at version:".PadRight(30) + "3"));
         }
+
+        [Test]
+        public void Run_should_add_message_that_database_is_up_to_date_if_version_is_equal_to_latest_script()
+        {
+            //  arrange
+            _mockMigrationDir.Setup(dir => dir.GetScripts()).Returns(Enumerable.Empty<IMigrationScriptFile>);
+
+            //  act
+            _versionCommand.Run(_commandArgs);
+
+            //  assert
+            Assert.IsTrue(_mockLog.Output.Contains("Your database is up-to-date!"));
+        }
     }
 }
