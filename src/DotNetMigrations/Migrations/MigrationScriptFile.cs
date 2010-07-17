@@ -39,14 +39,23 @@ namespace DotNetMigrations.Migrations
                     continue;
 
                 if (string.Equals(line, SetupStartTag))
+                {
                     activeBuilder = setupBuilder;
+                    continue;
+                }
 
                 if (string.Equals(line, TeardownStartTag))
+                {
                     activeBuilder = teardownBuilder;
+                    continue;
+                }
 
                 if (string.Equals(line, SetupEndTag) ||
                     string.Equals(line, TeardownEndTag))
+                {
                     activeBuilder = null;
+                    continue;
+                }
 
                 if (activeBuilder != null)
                 {

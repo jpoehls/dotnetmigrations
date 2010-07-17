@@ -88,7 +88,7 @@ namespace DotNetMigrations.Migrations
             string path = GetPath(null);
             path = Path.Combine(path, version + "_" + SanitizeMigrationName(migrationName) + ".sql");
 
-            var contents = new MigrationScriptContents(Environment.NewLine, Environment.NewLine);
+            var contents = new MigrationScriptContents(null, null);
             
             var file = new MigrationScriptFile(path);
             file.Write(contents);

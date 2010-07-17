@@ -1,7 +1,5 @@
 TODO
 
-* add tests for the MigrateCommand
-
 * unit test Run() method in CommandBase<>
 	4. CommandStarting event should fire before Run()
 	5. CommandEnding event should fire after Run()
@@ -14,13 +12,7 @@ TODO
 
 * tag the git repo with each release (and push tag to github)
 
-* test the MigrationScriptFile.Write() method (used to be in the CreateBlankScript() method)
-
-* update tests for the MigrationDirectory.CreateBlankScript() method
-
 * add tests for SqlParser
-
-* CreateBlankScript() outputs a template with too many empty lines in it
 
 * add version command tests to confirm log writing of "your database is up-to-date" if true
 
@@ -31,3 +23,9 @@ TODO
 	
 * refactor the ConnectionsCommandArgsActionValidator attribute into a more generic, OptionSetValidatorAttribute that takes
 	a list of valid values for the property
+	
+==================================	
+==================================
+
+CONFIRM FIXED
+* CreateBlankScript() outputs a template with too many empty lines in it

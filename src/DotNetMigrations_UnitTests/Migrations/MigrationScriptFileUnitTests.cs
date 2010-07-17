@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using DotNetMigrations.Migrations;
 using NUnit.Framework;
@@ -81,6 +82,27 @@ namespace DotNetMigrations.UnitTests.Migrations
 
             //  assertS
             Assert.IsTrue(result);
+        }
+
+        [Test]
+        public void Read_should_parse_file_contents_correctly()
+        {
+            //  arrange
+            var tempFilePath = Path.GetTempFileName();
+            using (DisposableFile.Watch(tempFilePath))
+            {
+                var file = new MigrationScriptFile(tempFilePath);
+                const string setupText = "my setup text";
+                const string teardownText = "my teardown text";
+                file.Write(new MigrationScriptContents(setupText, teardownText));
+
+                //  act
+                var contents = file.Read();
+
+                //  assert
+                Assert.AreEqual(setupText, contents.Setup.Trim(), "setup does not match");
+                Assert.AreEqual(teardownText, contents.Teardown.Trim(), "teardown does not match");
+            }
         }
     }
 }
