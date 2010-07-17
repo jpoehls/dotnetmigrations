@@ -77,7 +77,6 @@ namespace DotNetMigrations
                 else
                 {
                     //  invalid command name was given
-                    _logger.WriteLine(string.Empty);
                     _logger.WriteError("'{0}' is not a DotNetMigrations command.", commandName);
                     _logger.WriteLine(string.Empty);
                     _logger.WriteError("See '{0} -help' for a list of available commands.", executableName);
@@ -160,7 +159,7 @@ namespace DotNetMigrations
         /// </summary>
         private void WriteAppUsageHelp(string executableName)
         {
-            _logger.WriteLine(string.Empty);
+            //_logger.WriteLine(string.Empty);
             _logger.Write("Usage: ");
             _logger.Write(executableName);
             _logger.WriteLine(" [-help] command [args]");

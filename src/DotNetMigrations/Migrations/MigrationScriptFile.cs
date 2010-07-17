@@ -81,12 +81,11 @@ namespace DotNetMigrations.Migrations
             sb.AppendLine(SetupEndTag);
             sb.AppendLine();
             sb.AppendLine();
-            sb.AppendLine();
             sb.AppendLine(TeardownStartTag);
             sb.AppendLine();
             sb.AppendLine(contents.Teardown);
             sb.AppendLine();
-            sb.AppendLine(TeardownEndTag);
+            sb.Append(TeardownEndTag);
 
             File.WriteAllText(FilePath, sb.ToString());
         }

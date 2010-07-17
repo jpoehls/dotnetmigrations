@@ -87,7 +87,7 @@ namespace DotNetMigrations.UnitTests
             _helpWriter.WriteCommandHelp(command, exeName);
 
             //  assert
-            string expectedOutput = "\r\nUsage: " +
+            string expectedOutput = "Usage: " +
                                     exeName + " " + command.CommandName + " " + argumentSyntax + "\r\n" +
                                     argumentList;
             Assert.AreEqual(expectedOutput, _logger.Output);

@@ -111,8 +111,6 @@ namespace DotNetMigrations.Core
             //    -f, -firstArg       description of first argument
             //    -s, -secondArg      description of second argument       
 
-            _log.WriteLine(string.Empty);
-
             _log.Write("Usage: ");
             _log.Write(executableName);
             _log.Write(" ");
