@@ -14,6 +14,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build Script", "Build Scrip
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2F33E86A-EC08-463C-A380-61B01D377561}"
 	ProjectSection(SolutionItems) = preProject
+		CHANGELOG.txt = CHANGELOG.txt
+		CONTRIBUTORS.txt = CONTRIBUTORS.txt
+		LICENSE.txt = LICENSE.txt
 		TODO.txt = TODO.txt
 	EndProjectSection
 EndProject

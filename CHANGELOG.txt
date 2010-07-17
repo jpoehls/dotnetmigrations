@@ -1,0 +1,104 @@
+= 0.7 / IN PROGRESS
+
+	This release brings yet another significant rewrite. Building
+	on the MEF integration and innovations of 0.6, many improvements
+	have been made to make writing commands easier and safer.
+	
+	* New strongly-typed parsing of command line arguments with
+	  support DataAnnotation attributes for validation and
+	  automatic integration with the help system.
+	  
+	* Revamped help system that provides detailed info on the
+	  usage of all commands, including custom commands.
+	
+	* New CommandBase and DatabaseCommandBase classes for building
+	  custom commands.
+	  
+	* Rewritten data access routines that wrap all bulk operations
+	  in transactions. Also much smarter database connection
+	  handling.
+	  
+	* Smarter, more robust parsing of migrations scripts that contain
+	  GO keywords. Special thanks to the Subtext project who we
+	  borrowed these improvements from!
+	
+	* New 'connections' command that provides a command line interface
+	  for viewing, adding, editing and removing stored connection
+	  strings in the config file.
+	
+	* Beefed up unit tests suite with full coverage of all critical
+	  routines.
+	  
+	* Various bug fixes.
+
+= 0.6 / 2010-01-28
+
+	This version has been completely rewritten from the ground up using
+	.Net 3.5 and the Managed Extensibility Framework.
+	
+	* Completely new directory structure and codebase
+	
+	* MEF has been used to assist in the inner workings of the application
+	  as well as allow for new logs and commands to be created.
+	
+	* Unit Tests Project has been added - tests use the NUnit framework
+	
+	* An automated build file has been created for NAnt v0.86 b1
+	
+	* Core project has been created to allow for easy access to classes
+	  required for extending DotNetMigrations
+	
+	* BREAKING CHANGE: BulkCopy Command has been removed.
+	  The BulkCopy command has temporarily been removed from the bundled
+	  commands of the application. This command will be moved to the
+	  DotNetMigrations-Contrib project as soon as it's ready. If you use
+	  the bulkcopy command, please continue using v0.5.
+	  
+	== Notes about the DotNetMigrations-Contrib Project
+	Thanks to the Managed Extensibility Framework, DotNetMigrations is
+	now able to have new commands and logging mechanisms to be created
+	and added by anyone who wants. Because of this, the
+	DotNetMigrations-Contrib project is being launched in the very near
+	future (target launch date is Feb 01, 2010). The goal of this sister
+	project is to provide a location for people to share new commands
+	and logs to the application without having to worry about getting a
+	different version of the core DotNetMigrations application from
+	this project.
+
+= 0.5 / 2008-05-21
+
+	* fixed bug where blank lines before a "GO" in the migration script would
+	  cause an exception to be thrown
+
+	* refactored the code for each 'command' into individual classes that inherit
+	  from a base ConsoleCommand class.
+
+	* fixed bug that caused a sql error to be thrown whenever the schema_info
+	  table did not exist
+
+	* added "bulkload" command
+
+	* added return codes to the application
+
+= 0.4 / 2008-05-08
+
+	* fixed bug where lines in the SQL migration script were being
+	  concatenated together without any whitespace to separate them
+
+= 0.3
+
+	* uses DbProviderFactories to perform all database connections
+	  default provider is System.Data.SqlClient
+	  you can specify a specific provider by adding a "PROVIDER=" setting
+	  to your connection string
+	  ex. "PROVIDER=System.Data.SqlClient;SERVER=(local);DATABASE=TEST123"
+
+	* misc updates made to specifically support SQL Compact 3.5 databases
+
+= 0.2
+
+	* added "version" command
+
+= 0.1
+
+	* initial release
