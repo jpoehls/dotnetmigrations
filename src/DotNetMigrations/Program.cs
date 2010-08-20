@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using DotNetMigrations.Core;
 using DotNetMigrations.Repositories;
 
@@ -27,7 +29,10 @@ namespace DotNetMigrations
         private readonly LogRepository _logger;
         private readonly bool _logFullErrors;
 
-        private Program() : this(new ConfigurationManagerWrapper())
+        private readonly bool _keepConsoleOpen;
+
+        private Program()
+            : this(new ConfigurationManagerWrapper())
         {
         }
 
@@ -41,6 +46,8 @@ namespace DotNetMigrations
 
             string logFullErrorsSetting = configManager.AppSettings["logFullErrors"];
             bool.TryParse(logFullErrorsSetting, out _logFullErrors);
+
+            _keepConsoleOpen = ProgramLaunchedInSeparateConsoleWindow();
         }
 
         /// <summary>
@@ -65,7 +72,7 @@ namespace DotNetMigrations
             {
                 command = _commandRepo.GetCommand(commandName);
             }
-            
+
             if (command == null)
             {
                 if (showHelp)
@@ -139,6 +146,46 @@ namespace DotNetMigrations
                     helpWriter.WriteCommandHelp(command, executableName);
                 }
             }
+
+            if (_keepConsoleOpen)
+            {
+                Console.WriteLine();
+                Console.WriteLine("  > Uh-oh. It looks like you didn't run me from a console.");
+                Console.WriteLine("  > Did you double-click me?");
+                Console.WriteLine("  > I don't like to be clicked.");
+                Console.WriteLine("  > Please open a command prompt and run me by typing " + Path.GetFileName(Assembly.GetExecutingAssembly().Location) + ".");
+                Console.WriteLine();
+                Console.WriteLine("Press any key to exit...");
+                Console.Read();
+            }
+        }
+
+        /// <summary>
+        /// Determines if the program was launched in a separate console window
+        /// or whether it was run from within an existing console.
+        /// i.e. launched by click the EXE in Windows Explorer or by typing db.exe at the command line
+        /// </summary>
+        /// <remarks>
+        /// This method isn't full proof.
+        /// http://support.microsoft.com/kb/99115
+        /// and
+        /// http://stackoverflow.com/questions/510805/can-a-win32-console-application-detect-if-it-has-been-run-from-the-explorer-or-no
+        /// </remarks>
+        private static bool ProgramLaunchedInSeparateConsoleWindow()
+        {
+            //  if no debugger is attached
+            if (!Debugger.IsAttached)
+                //  and the cursor position appears untouched
+                if (Console.CursorLeft == 0 && Console.CursorTop == 1)
+                    //  and there are no arguments
+                    //  (we allow for 1 arg because the first arg appears
+                    //   to always be the path to the executable being run)
+                    if (Environment.GetCommandLineArgs().Length <= 1)
+                        //  then assume we were launched into a separate console window
+                        return true;
+
+            //  looks like we were launched from command line, good!
+            return false;
         }
 
         private void WriteShortErrorMessages(Exception ex)
