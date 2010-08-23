@@ -5,7 +5,7 @@ using DotNetMigrations.Core;
 
 namespace DotNetMigrations.Commands
 {
-    internal class GenerateScriptCommandArgs : CommandArguments
+    public class GenerateScriptCommandArgs : CommandArguments
     {
         [Required(ErrorMessage = "-name is required")]
         [Argument("name", "n", "Name of the migration script to generate",

@@ -6,3 +6,6 @@ _ReSharper*
 *.resharper
 build
 staging
+@build
+@artifacts
+*.sln.cache

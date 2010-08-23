@@ -8,7 +8,7 @@ using DotNetMigrations.Core.Provider;
 
 namespace DotNetMigrations.Repositories
 {
-    internal class LogRepository : ILogger
+    public class LogRepository : ILogger
     {
         private readonly TypeCatalog catalog;
         private readonly CompositionContainer container;
@@ -17,7 +17,7 @@ namespace DotNetMigrations.Repositories
         /// <summary>
         /// Instantiates a new instance of the LogRepository Class.
         /// </summary>
-        internal LogRepository()
+        public LogRepository()
         {
             Logs = new List<ILogger>();
             catalog = new ConfigurableTypeCatalog("dnm.logs");
@@ -29,7 +29,7 @@ namespace DotNetMigrations.Repositories
         /// The log collection used in the application.
         /// </summary>
         [ImportMany("Logs", typeof (ILogger))]
-        internal IList<ILogger> Logs { get; set; }
+        public IList<ILogger> Logs { get; set; }
 
         #region ILogger Members
 

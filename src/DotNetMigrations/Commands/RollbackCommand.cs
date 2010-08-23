@@ -6,7 +6,7 @@ using DotNetMigrations.Core.Data;
 
 namespace DotNetMigrations.Commands
 {
-    internal class RollbackCommand : DatabaseCommandBase<DatabaseCommandArguments>
+    public class RollbackCommand : DatabaseCommandBase<DatabaseCommandArguments>
     {
         private readonly DatabaseCommandBase<MigrateCommandArgs> _migrateCommand;
 

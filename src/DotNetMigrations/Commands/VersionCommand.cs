@@ -5,7 +5,7 @@ using DotNetMigrations.Migrations;
 
 namespace DotNetMigrations.Commands
 {
-    internal class VersionCommand : DatabaseCommandBase<DatabaseCommandArguments>
+    public class VersionCommand : DatabaseCommandBase<DatabaseCommandArguments>
     {
         private readonly IMigrationDirectory _migrationDirectory;
 

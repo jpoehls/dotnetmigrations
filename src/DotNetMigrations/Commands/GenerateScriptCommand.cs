@@ -5,7 +5,7 @@ using DotNetMigrations.Migrations;
 
 namespace DotNetMigrations.Commands
 {
-    internal class GenerateScriptCommand : CommandBase<GenerateScriptCommandArgs>
+    public class GenerateScriptCommand : CommandBase<GenerateScriptCommandArgs>
     {
         private readonly IMigrationDirectory _migrationDirectory;
 

@@ -1,0 +1,2 @@
+@echo off 
+echo DO_NOT_HANG | powershell -NoProfile -ExecutionPolicy unrestricted -Command "& {Import-Module '.\tools\psake\psake.psm1'; invoke-psake -b %1 -t %2; if ($Error -ne '') {write-host "ERROR: $error" -fore RED; exit $error.Count} }"

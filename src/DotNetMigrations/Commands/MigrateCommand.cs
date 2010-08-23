@@ -8,7 +8,7 @@ using DotNetMigrations.Migrations;
 
 namespace DotNetMigrations.Commands
 {
-    internal class MigrateCommand : DatabaseCommandBase<MigrateCommandArgs>
+    public class MigrateCommand : DatabaseCommandBase<MigrateCommandArgs>
     {
         private readonly IMigrationDirectory _migrationDirectory;
 

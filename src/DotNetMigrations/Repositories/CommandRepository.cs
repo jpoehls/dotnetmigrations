@@ -9,7 +9,7 @@ using DotNetMigrations.Core;
 
 namespace DotNetMigrations.Repositories
 {
-    internal class CommandRepository
+    public class CommandRepository
     {
         private readonly AggregateCatalog catalog;
         private readonly CompositionContainer container;
@@ -18,12 +18,12 @@ namespace DotNetMigrations.Repositories
         /// A collection of the commands in the system.
         /// </summary>
         [ImportMany("Commands", typeof(ICommand))]
-        internal IList<ICommand> Commands { get; set; }
+        public IList<ICommand> Commands { get; set; }
 
         /// <summary>
         /// Instantiates a new instance of the CommandRepository class.
         /// </summary>
-        internal CommandRepository()
+        public CommandRepository()
         {
             var pluginDirectory = ConfigurationManager.AppSettings["pluginFolder"];
 
@@ -45,7 +45,7 @@ namespace DotNetMigrations.Repositories
         /// </summary>
         /// <param name="commandName">The name of the command to retrieve.</param>
         /// <returns>An instance of the command or null if not found.</returns>
-        internal ICommand GetCommand(string commandName)
+        public ICommand GetCommand(string commandName)
         {
             ICommand cmd = (from c in Commands
                     where c.CommandName.ToLowerInvariant() == commandName.ToLowerInvariant()
