@@ -1,1 +1,0 @@
-tools\nant\nant.exe -buildfile:BuildFile.build Package-All %1 %2 %3 %4 %5 %6 %7 %8

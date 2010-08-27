@@ -1,1 +1,2 @@
-tools\nant\nant.exe -buildfile:BuildFile.build %1 %2 %3 %4 %5 %6 %7 %8
+@echo off
+.\tools\psake\psake.bat build.ps1 default
