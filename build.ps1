@@ -5,7 +5,7 @@ properties {
 	$source_dir = Resolve-Path ./
 	$build_dir = "$source_dir\@build"
 	$checkout_dir = [Environment]::GetEnvironmentVariable("teamcity.build.checkoutDir")
-	$artifact_dir = if ($checkout_dir.length -gt 0) { "$checkout_dir/@artifacts" } else { "$source_dir/@artifacts" }
+	$artifact_dir = if ($checkout_dir.length -gt 0) { "$checkout_dir\@artifacts" } else { "$source_dir\@artifacts" }
 	$configuration = "Release"
 	$build_number = if ("$env:BUILD_NUMBER".length -gt 0) { "$env:BUILD_NUMBER" } else { "0" }
 	$build_vcs_number = if ("$env:BUILD_VCS_NUMBER".length -gt 0) { "$env:BUILD_VCS_NUMBER" } else { "0" }
@@ -19,19 +19,33 @@ task ZipBinaries {
 	$zip_name = "DotNetMigrations-v" + $version + "-BIN.zip"
 	
 	# zip the build output
-    $i1 = "$build_dir\*.exe"
-	exec { ./tools/7zip/7za.exe a -tzip "$artifact_dir\$zip_name" -ir!""$i1"" }
+    # exclude unit tests and debug symbols
+    exec { ./tools/7zip/7za.exe a -tzip `"$artifact_dir\$zip_name`" `"$build_dir\*`" `
+           `"-x!*.pdb`" `
+           `"-x!*Tests*`" `
+           `"-x!Moq.*`" `
+           `"-x!nunit.*`" ` }
     
-    TeamCity-PublishArtifact "@artifacts/$zip_name"
+    TeamCity-PublishArtifact "@artifacts\$zip_name"
 }
 
 task ZipSource {
     $zip_name = "DotNetMigrations-v" + $version + "-SRC.zip"
     
-    # zip the build output
-	exec { ./tools/7zip/7za.exe a -tzip "$artifact_dir\$zip_name" "$source_dir" }
+    # zip the source code
+    # exclude the cruft
+    exec { ./tools/7zip/7za.exe a -tzip `"$artifact_dir\$zip_name`" `"$source_dir\*`" `
+           `"-x!.git`" `
+           `"-x!@build`" `
+           `"-x!@artifacts`" `
+           `"-x!*resharper*`" `
+           `"-x!.gitignore`" `
+           `"-x!TODO.txt`" `
+           `"-xr!*.cache`" `
+           `"-xr!*.suo`" `
+           `"-xr!*.user`" }
     
-    TeamCity-PublishArtifact "@artifacts/$zip_name"
+    TeamCity-PublishArtifact "@artifacts\$zip_name"
 }
 
 task Compile -depends Init {
