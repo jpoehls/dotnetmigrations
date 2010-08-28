@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Data.SqlClient;
+using System.Data.Common;
+using System.Data.SqlServerCe;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -9,11 +10,20 @@ namespace DotNetMigrations.UnitTests
 {
     public class SqlDatabaseHelper : IDisposable
     {
-        private readonly SqlConnection _connection;
+        private readonly SqlCeConnection _connection;
 
         public SqlDatabaseHelper(string connectionString)
         {
-            _connection = new SqlConnection(connectionString);
+            _connection = new SqlCeConnection(GetConnectionStringWithoutProvider(connectionString));
+        }
+
+        public static string GetConnectionStringWithoutProvider(string connStr)
+        {
+            var builder = new DbConnectionStringBuilder();
+            builder.ConnectionString = connStr;
+            if (builder.ContainsKey("provider"))
+                builder.Remove("provider");
+            return builder.ConnectionString;
         }
 
         public bool SwallowSqlExceptions { get; set; }
@@ -34,7 +44,7 @@ namespace DotNetMigrations.UnitTests
 
         public T ExecuteScalar<T>(string commandText, T defaultValue)
         {
-            var cmd = new SqlCommand(commandText);
+            var cmd = new SqlCeCommand(commandText);
             var obj = ExecuteScalar(cmd);
             if (obj == DBNull.Value)
             {
@@ -43,7 +53,7 @@ namespace DotNetMigrations.UnitTests
             return (T)Convert.ChangeType(obj, typeof(T));
         }
 
-        private object ExecuteScalar(SqlCommand command)
+        private object ExecuteScalar(SqlCeCommand command)
         {
             try
             {
@@ -51,7 +61,7 @@ namespace DotNetMigrations.UnitTests
                 _connection.Open();
                 return command.ExecuteScalar();
             }
-            catch (SqlException)
+            catch (SqlCeException)
             {
                 if (!SwallowSqlExceptions)
                 {
@@ -65,7 +75,7 @@ namespace DotNetMigrations.UnitTests
             }
         }
 
-        public int ExecuteNonQuery(SqlCommand command)
+        public int ExecuteNonQuery(SqlCeCommand command)
         {
             try
             {
@@ -73,7 +83,7 @@ namespace DotNetMigrations.UnitTests
                 _connection.Open();
                 return command.ExecuteNonQuery();
             }
-            catch (SqlException)
+            catch (SqlCeException)
             {
                 if (!SwallowSqlExceptions)
                 {
@@ -89,27 +99,27 @@ namespace DotNetMigrations.UnitTests
 
         public int ExecuteNonQuery(string commandText)
         {
-            var cmd = new SqlCommand(commandText);
+            var cmd = new SqlCeCommand(commandText);
             return ExecuteNonQuery(cmd);
         }
 
         public void ExecuteNonQuery(params string[] commandTexts)
         {
-            ExecuteNonQuery(commandTexts.Select(x => new SqlCommand(x)).ToArray());
+            ExecuteNonQuery(commandTexts.Select(x => new SqlCeCommand(x)).ToArray());
         }
 
-        public void ExecuteNonQuery(params SqlCommand[] commands)
+        public void ExecuteNonQuery(params SqlCeCommand[] commands)
         {
             try
             {
                 _connection.Open();
-                foreach (SqlCommand cmd in commands)
+                foreach (SqlCeCommand cmd in commands)
                 {
                     cmd.Connection = _connection;
                     cmd.ExecuteNonQuery();
                 }
             }
-            catch (SqlException)
+            catch (SqlCeException)
             {
                 if (!SwallowSqlExceptions)
                 {

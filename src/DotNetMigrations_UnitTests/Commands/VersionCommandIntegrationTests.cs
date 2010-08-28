@@ -11,7 +11,6 @@ using NUnit.Framework;
 namespace DotNetMigrations.UnitTests.Commands
 {
     [TestFixture]
-    [Category("SqlServer")]
     public class VersionCommandIntegrationTests : DatabaseIntegrationTests
     {
         #region Setup/Teardown
@@ -23,6 +22,7 @@ namespace DotNetMigrations.UnitTests.Commands
             _mockMigrationDir = new Mock<IMigrationDirectory>();
             _versionCommand = new VersionCommand(_mockMigrationDir.Object);
             _versionCommand.Log = _mockLog;
+            CreateDatabase();
         }
 
         [TearDown]

@@ -8,7 +8,6 @@ using NUnit.Framework;
 namespace DotNetMigrations.UnitTests.Data
 {
     [TestFixture]
-    [Category("SqlServer")]
     public class DataAccessIntegrationTests : DatabaseIntegrationTests
     {
         #region Setup/Teardown

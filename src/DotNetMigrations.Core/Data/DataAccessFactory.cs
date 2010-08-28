@@ -16,7 +16,7 @@ namespace DotNetMigrations.Core.Data
 
             string provider = GetProvider(csb);
 
-            var da = new DataAccess(GetFactory(provider), connectionString);
+            var da = new DataAccess(GetFactory(provider), csb.ConnectionString);
             return da;
         }
 

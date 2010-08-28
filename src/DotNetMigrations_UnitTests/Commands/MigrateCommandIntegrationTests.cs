@@ -10,7 +10,6 @@ using NUnit.Framework;
 namespace DotNetMigrations.UnitTests.Commands
 {
     [TestFixture]
-    [Category("SqlServer")]
     public class MigrateCommandIntegrationTests : DatabaseIntegrationTests
     {
         #region Setup/Teardown
@@ -63,6 +62,7 @@ namespace DotNetMigrations.UnitTests.Commands
             _mockScriptWithBadTeardown.Setup(x => x.Read()).Returns(() => new MigrationScriptContents(
                                                                "INSERT INTO [TestTable] (Id) VALUES (4)",
                                                                "DELETE FROM [NonExistantTable] WHERE Id = 4"));
+            CreateDatabase();
         }
 
         [TearDown]

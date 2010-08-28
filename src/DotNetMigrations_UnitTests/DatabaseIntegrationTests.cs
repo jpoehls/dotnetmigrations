@@ -1,5 +1,6 @@
 using System;
-using System.Configuration;
+using System.Data.SqlServerCe;
+using System.IO;
 using System.Linq;
 using DotNetMigrations.Core.Data;
 
@@ -7,9 +8,12 @@ namespace DotNetMigrations.UnitTests
 {
     public abstract class DatabaseIntegrationTests
     {
+        private readonly string _testDatabaseFile;
+
         protected DatabaseIntegrationTests()
         {
-            TestConnectionString = ConfigurationManager.ConnectionStrings["testDb"].ConnectionString;
+            _testDatabaseFile = Path.Combine(Path.GetTempPath(), "DotNetMigrationsTestDb.sdf");
+            TestConnectionString = string.Format("Data Source={0};Persist Security Info=False;Provider=System.Data.SqlServerCe.3.5", _testDatabaseFile);
         }
 
         protected string TestConnectionString { get; private set; }
@@ -19,9 +23,20 @@ namespace DotNetMigrations.UnitTests
         /// </summary>
         protected void TeardownDatabase()
         {
-            using (var helper = new SqlDatabaseHelper(TestConnectionString))
+            if (File.Exists(_testDatabaseFile))
             {
-                helper.DropAllObjects();
+                File.Delete(_testDatabaseFile);
+            }
+        }
+
+        protected void CreateDatabase()
+        {
+            if (!File.Exists(_testDatabaseFile))
+            {
+                using (var engine = new SqlCeEngine(SqlDatabaseHelper.GetConnectionStringWithoutProvider(TestConnectionString)))
+                {
+                    engine.CreateDatabase();
+                }
             }
         }
 
@@ -30,12 +45,17 @@ namespace DotNetMigrations.UnitTests
         /// </summary>
         protected void InitializeDatabase()
         {
+            if (!File.Exists(_testDatabaseFile))
+            {
+                CreateDatabase();
+            }
+
             using (var da = DataAccessFactory.Create(TestConnectionString))
             {
                 da.OpenConnection();
                 var dbInit = new DatabaseInitializer(da);
                 dbInit.Initialize();
-            }   
+            }
         }
     }
 }

@@ -11,7 +11,6 @@ using NUnit.Framework;
 namespace DotNetMigrations.UnitTests.Commands
 {
     [TestFixture]
-    [Category("SqlServer")]
     public class RollbackCommandIntegrationTests : DatabaseIntegrationTests
     {
         private DatabaseCommandArguments _commandArgs;
@@ -38,6 +37,8 @@ namespace DotNetMigrations.UnitTests.Commands
 
             _rollbackCommand = new RollbackCommand(_mockMigrateCommand.Object);
             _rollbackCommand.Log = _mockLog;
+
+            CreateDatabase();
         }
 
         [TearDown]
