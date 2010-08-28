@@ -67,7 +67,7 @@ task RunTests {
         exec { & $nunitLauncher v2.0 x86 NUnit-2.4.8 $build_dir\DotNetMigrations.UnitTests.dll /category-exclude:SqlServer }
     } else {
         # run tests using our own copy of NUnit
-        exec { & "$source_dir\tools\nunit\nunit-console.exe" $build_dir\DotNetMigrations.UnitTests.dll /exclude=SqlServer /labels } `
+        exec { & "$source_dir\tools\nunit\nunit-console.exe" $build_dir\DotNetMigrations.UnitTests.dll /exclude=SqlServer /labels /xml=$artifact_dir\TestResults.xml } `
             "Oops! Build failed due to some failing tests."
     }
     
@@ -104,6 +104,7 @@ task Init -depends Clean {
         -Copyright "Copyright (c) Joshua Poehls 2007-$year"
 
 	New-Item $build_dir -ItemType directory
+    New-Item $artifact_dir -ItemType directory
     
     TeamCity-ReportBuildFinish "Init"
 }

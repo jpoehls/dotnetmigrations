@@ -7,4 +7,3 @@ _ReSharper*
 @build
 @artifacts
 *.sln.cache
-TestResult.xml
