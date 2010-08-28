@@ -13,9 +13,11 @@ properties {
     $info_version = "$version (rev $build_vcs_number)"
 }
 
-task default -depends Compile, ZipBinaries, ZipSource 
+task default -depends Compile, RunTests, ZipBinaries, ZipSource 
 
 task ZipBinaries {
+    TeamCity-ReportBuildStart "ZipBinaries"
+    
 	$zip_name = "DotNetMigrations-v" + $version + "-BIN.zip"
 	
 	# zip the build output
@@ -27,9 +29,12 @@ task ZipBinaries {
            `"-x!nunit.*`" ` }
     
     TeamCity-PublishArtifact "@artifacts\$zip_name"
+    TeamCity-ReportBuildFinish "ZipBinaries"
 }
 
 task ZipSource {
+    TeamCity-ReportBuildStart "ZipSource"
+    
     $zip_name = "DotNetMigrations-v" + $version + "-SRC.zip"
     
     # zip the source code
@@ -46,25 +51,42 @@ task ZipSource {
            `"-xr!*.user`" }
     
     TeamCity-PublishArtifact "@artifacts\$zip_name"
+    TeamCity-ReportBuildFinish "ZipSource"
+}
+
+task RunTests {
+    TeamCity-ReportBuildStart "RunTests"
+    
+    $nunitLauncher = [Environment]::GetEnvironmentVariable("teamcity.dotnet.nunitlauncher")
+       
+    # we are excluding tests in the "SqlServer" category
+    # since those are integration tests that have a dependency
+    # on SQL Server which may not be available
+    if ($nunitLauncher -ne $null) {
+        # run tests using the TeamCity NUnit runner
+        exec { & $nunitLauncher v2.0 x86 NUnit-2.4.8 $build_dir\DotNetMigrations.UnitTests.dll /category-exclude:SqlServer }
+    } else {
+        # run tests using our own copy of NUnit
+        exec { & "$source_dir\tools\nunit\nunit-console.exe" $build_dir\DotNetMigrations.UnitTests.dll /exclude=SqlServer /labels } `
+            "Oops! Build failed due to some failing tests."
+    }
+    
+    TeamCity-ReportBuildFinish "RunTests"
 }
 
 task Compile -depends Init {
+    TeamCity-ReportBuildStart "Compile"
 	"Building version $version for $configuration"
 	
 	# build the solution
 	exec { msbuild ""$source_dir\DotNetMigrations.sln"" /m /nologo /t:Rebuild /p:Configuration=$configuration /p:OutDir=""$build_dir\\"" }
     
-    # run tests
-    $nunitLauncher = [Environment]::GetEnvironmentVariable("teamcity.dotnet.nunitlauncher")
-       
-    if ($nunitLauncher -eq $null) {
-        "Skipping tests. The teamcity.dotnet.nunitlauncher environment variable was not found."
-    } else {
-        exec { & $nunitLauncher v2.0 x86 NUnit-2.4.8 $build_dir\DotNetMigrations.UnitTests.dll }
-    }
+    TeamCity-ReportBuildFinish "Compile"
 }
 
 task Init -depends Clean {
+    TeamCity-ReportBuildStart "Init"
+    
 	Assert($version.length -gt 0) "No version number was specified."
     
     TeamCity-SetBuildNumber $version
@@ -82,9 +104,15 @@ task Init -depends Clean {
         -Copyright "Copyright (c) Joshua Poehls 2007-$year"
 
 	New-Item $build_dir -ItemType directory
+    
+    TeamCity-ReportBuildFinish "Init"
 }
 
 task Clean {
+    TeamCity-ReportBuildStart "Clean"
+    
     if (Test-Path $build_dir) { Remove-Item -Force -Recurse $build_dir }
     if (Test-Path $artifact_dir) { Remove-Item -Force -Recurse $artifact_dir }
+    
+    TeamCity-ReportBuildFinish "Clean"
 }

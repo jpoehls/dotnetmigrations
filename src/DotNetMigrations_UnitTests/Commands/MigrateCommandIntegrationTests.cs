@@ -10,6 +10,7 @@ using NUnit.Framework;
 namespace DotNetMigrations.UnitTests.Commands
 {
     [TestFixture]
+    [Category("SqlServer")]
     public class MigrateCommandIntegrationTests : DatabaseIntegrationTests
     {
         #region Setup/Teardown

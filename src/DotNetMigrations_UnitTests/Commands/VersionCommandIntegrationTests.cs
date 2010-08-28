@@ -11,6 +11,7 @@ using NUnit.Framework;
 namespace DotNetMigrations.UnitTests.Commands
 {
     [TestFixture]
+    [Category("SqlServer")]
     public class VersionCommandIntegrationTests : DatabaseIntegrationTests
     {
         #region Setup/Teardown
