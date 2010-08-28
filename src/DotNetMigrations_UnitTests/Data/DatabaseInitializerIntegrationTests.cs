@@ -14,6 +14,7 @@ namespace DotNetMigrations.UnitTests.Data
         [SetUp]
         public void Setup()
         {
+            CreateDatabase();
             _dataAccess = DataAccessFactory.Create(TestConnectionString);
             _dataAccess.OpenConnection();
             _subject = new DatabaseInitializer(_dataAccess);

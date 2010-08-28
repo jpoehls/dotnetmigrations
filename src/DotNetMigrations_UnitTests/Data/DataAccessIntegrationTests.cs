@@ -15,6 +15,7 @@ namespace DotNetMigrations.UnitTests.Data
         [SetUp]
         public void Setup()
         {
+            CreateDatabase();
             _subject = DataAccessFactory.Create(TestConnectionString);
         }
 
@@ -31,7 +32,7 @@ namespace DotNetMigrations.UnitTests.Data
         private DataAccess _subject;
 
         [Test]
-        public void BeginTranscation_should_return_DbTransaction_with_connection_set()
+        public void BeginTransaction_should_return_DbTransaction_with_connection_set()
         {
             //  arrange
             _subject.OpenConnection();
