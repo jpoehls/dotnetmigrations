@@ -2,6 +2,9 @@
 . .\tools\psake\teamcity.ps1
 
 properties {
+	# version advertised. also used as the tag name in git.
+	$public_version = "0.70"
+
 	$source_dir = Resolve-Path ./
 	$build_dir = "$source_dir\@build"
 	$checkout_dir = [Environment]::GetEnvironmentVariable("teamcity.build.checkoutDir")
@@ -9,7 +12,7 @@ properties {
 	$configuration = "Release"
 	$build_number = if ("$env:BUILD_NUMBER".length -gt 0) { "$env:BUILD_NUMBER" } else { "0" }
 	$build_vcs_number = if ("$env:BUILD_VCS_NUMBER".length -gt 0) { "$env:BUILD_VCS_NUMBER" } else { "0" }
-    $version = "0.7.$build_number"
+    $version = "$public_version.$build_number"
     $info_version = "$version (rev $build_vcs_number)"
 }
 
@@ -18,7 +21,7 @@ task default -depends Compile, RunTests, ZipBinaries, ZipSource
 task ZipBinaries {
     TeamCity-ReportBuildStart "ZipBinaries"
     
-	$zip_name = "DotNetMigrations-v" + $version + "-BIN.zip"
+	$zip_name = "DotNetMigrations-v" + $public_version + "-BIN.zip"
 	
 	# zip the build output
     # exclude unit tests and debug symbols
@@ -35,7 +38,7 @@ task ZipBinaries {
 task ZipSource {
     TeamCity-ReportBuildStart "ZipSource"
     
-    $zip_name = "DotNetMigrations-v" + $version + "-SRC.zip"
+    $zip_name = "DotNetMigrations-v" + $public_version + "-SRC.zip"
     
     # zip the source code
     # exclude the cruft
