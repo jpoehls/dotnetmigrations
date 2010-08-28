@@ -131,18 +131,5 @@ namespace DotNetMigrations.UnitTests
                 _connection.Close();
             }
         }
-
-        public void DropAllObjects()
-        {
-            var assm = Assembly.GetExecutingAssembly();
-            using (var s = assm.GetManifestResourceStream("DotNetMigrations.UnitTests.Resources.drop_all_objects.sql"))
-            {
-                using (var reader = new StreamReader(s))
-                {
-                    var scripts = new ScriptSplitter(reader.ReadToEnd());
-                    ExecuteNonQuery(scripts.ToArray());
-                }
-            }
-        }
     }
 }
