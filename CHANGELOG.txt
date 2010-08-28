@@ -1,15 +1,23 @@
-= 0.7 / IN PROGRESS
+= 0.70 / 2010-08-28
 
 	This release brings yet another significant rewrite. Building
 	on the MEF integration and innovations of 0.6, many improvements
 	have been made to make writing commands easier and safer.
+
+	* New 'connections' command that provides a command line interface
+	  for viewing, adding, editing and removing stored connection
+	  strings in the config file.
+
+	* Revamped help system that provides detailed info on the
+	  usage of all commands, including custom commands.
+
+	* Smarter, more robust parsing of migrations scripts that contain
+	  GO keywords. Special thanks to the Subtext project who we
+	  borrowed these improvements from!
 	
 	* New strongly-typed parsing of command line arguments with
 	  support DataAnnotation attributes for validation and
 	  automatic integration with the help system.
-	  
-	* Revamped help system that provides detailed info on the
-	  usage of all commands, including custom commands.
 	
 	* New CommandBase and DatabaseCommandBase classes for building
 	  custom commands.
@@ -17,21 +25,21 @@
 	* Rewritten data access routines that wrap all bulk operations
 	  in transactions. Also much smarter database connection
 	  handling.
-	  
-	* Smarter, more robust parsing of migrations scripts that contain
-	  GO keywords. Special thanks to the Subtext project who we
-	  borrowed these improvements from!
-	
-	* New 'connections' command that provides a command line interface
-	  for viewing, adding, editing and removing stored connection
-	  strings in the config file.
 	
 	* Beefed up unit tests suite with full coverage of all critical
 	  routines.
-	  
-	* Various bug fixes.
 
-= 0.6 / 2010-01-28
+	* Changed unit tests to use SQL Server CE 3.5.1 instead of
+	  SQL Server Express. This means anyone can run the unit tests
+	  now without having to setup a database first.
+
+	* Major updates to the build script to use Psake instead of NAnt
+	  to run the unit tests after compilation and improvements for
+	  integrating with TeamCity.
+	  
+	* Lots of bug fixes.
+
+= 0.60 / 2010-01-28
 
 	This version has been completely rewritten from the ground up using
 	.Net 3.5 and the Managed Extensibility Framework.
@@ -65,7 +73,7 @@
 	different version of the core DotNetMigrations application from
 	this project.
 
-= 0.5 / 2008-05-21
+= 0.50 / 2008-05-21
 
 	* fixed bug where blank lines before a "GO" in the migration script would
 	  cause an exception to be thrown
@@ -80,12 +88,12 @@
 
 	* added return codes to the application
 
-= 0.4 / 2008-05-08
+= 0.40 / 2008-05-08
 
 	* fixed bug where lines in the SQL migration script were being
 	  concatenated together without any whitespace to separate them
 
-= 0.3
+= 0.30
 
 	* uses DbProviderFactories to perform all database connections
 	  default provider is System.Data.SqlClient
@@ -95,10 +103,10 @@
 
 	* misc updates made to specifically support SQL Compact 3.5 databases
 
-= 0.2
+= 0.20
 
 	* added "version" command
 
-= 0.1
+= 0.10
 
 	* initial release
