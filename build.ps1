@@ -64,10 +64,10 @@ task RunTests {
     # on SQL Server which may not be available
     if ($nunitLauncher -ne $null) {
         # run tests using the TeamCity NUnit runner
-        exec { & $nunitLauncher v2.0 x86 NUnit-2.4.8 $build_dir\DotNetMigrations.UnitTests.dll /category-exclude:SqlServer }
+        exec { & $nunitLauncher v2.0 x86 NUnit-2.4.8 $build_dir\DotNetMigrations.UnitTests.dll }
     } else {
         # run tests using our own copy of NUnit
-        exec { & "$source_dir\tools\nunit\nunit-console.exe" $build_dir\DotNetMigrations.UnitTests.dll /exclude=SqlServer /labels /xml=$artifact_dir\TestResults.xml } `
+        exec { & "$source_dir\tools\nunit\nunit-console.exe" $build_dir\DotNetMigrations.UnitTests.dll /labels /xml=$artifact_dir\TestResults.xml } `
             "Oops! Build failed due to some failing tests."
     }
     
