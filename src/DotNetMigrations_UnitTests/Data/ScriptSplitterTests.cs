@@ -211,11 +211,10 @@ gO
                 Assert.IsFalse(sqlScript.StartsWith("GO"), "Script '" + i + "' failed had a GO statement");
             }
 
-            string expectedThirdScriptBeginning = "SET ANSI_NULLS ON "
-                                                  + Environment.NewLine
-                                                  + Environment.NewLine
-                                                  + Environment.NewLine +
-                                                  "CREATE TABLE [<username,varchar,dbo>].[blog_Gost]";
+            string expectedThirdScriptBeginning = @"SET ANSI_NULLS ON 
+
+
+CREATE TABLE [<username,varchar,dbo>].[blog_Gost]";
 
             Assert.AreEqual(expectedThirdScriptBeginning,
                             scripts[2].Substring(0, expectedThirdScriptBeginning.Length),
