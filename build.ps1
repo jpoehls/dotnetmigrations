@@ -93,6 +93,8 @@ task Init -depends Clean {
 	Assert($version.length -gt 0) "No version number was specified."
     
     TeamCity-SetBuildNumber $version
+
+	"Informational Version: $info_version"
     
     $year = [DateTime]::Now.ToString("yyyy")
 
