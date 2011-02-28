@@ -153,7 +153,7 @@ namespace DotNetMigrations
                 Console.WriteLine("  > Uh-oh. It looks like you didn't run me from a console.");
                 Console.WriteLine("  > Did you double-click me?");
                 Console.WriteLine("  > I don't like to be clicked.");
-                Console.WriteLine("  > Please open a command prompt and run me by typing " + Path.GetFileName(Assembly.GetExecutingAssembly().Location) + ".");
+                Console.WriteLine("  > Please open a command prompt and run me by typing " + executableName + ".");
                 Console.WriteLine();
                 Console.WriteLine("Press any key to exit...");
                 Console.Read();
