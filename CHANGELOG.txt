@@ -1,3 +1,7 @@
+= 0.80 / IN PROGRES
+
+    * New sequential number 'seq_num' versioning strategy
+
 = 0.70 / 2010-08-28
 
 	This release brings yet another significant rewrite. Building
