@@ -93,7 +93,7 @@ namespace DotNetMigrations.Core.Data
         private void AddOldVersionsToNewTable(long currentVersion)
         {
             const string scriptNamePattern = "*.sql";
-            string migrationDirectory = ConfigurationManager.AppSettings["migrateFolder"];
+            string migrationDirectory = ConfigurationManager.AppSettings[AppSettingKeys.MigrateFolder];
 
             if (!Directory.Exists(migrationDirectory))
             {

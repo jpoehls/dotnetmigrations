@@ -8,6 +8,10 @@ namespace DotNetMigrations.Migrations
     {
         private readonly IConfigurationManager _configurationManager;
 
+        public const string LocalTime = "local_time";
+        public const string UtcTime = "utc_time";
+        public const string SequentialNumber = "seq_num";
+
         public VersionStrategyFactory(IConfigurationManager configurationManager)
         {
             _configurationManager = configurationManager;
@@ -15,21 +19,27 @@ namespace DotNetMigrations.Migrations
 
         public IVersionStrategy GetStrategy()
         {
-            string setting = _configurationManager.AppSettings["versionStrategy"];
+            string setting = _configurationManager.AppSettings[AppSettingKeys.VersionStrategy];
 
-            if (string.Equals("local_time", setting, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(LocalTime, setting, StringComparison.OrdinalIgnoreCase))
             {
                 return new LocalTimestampVersion();
             }
 
-            if (string.Equals("utc_time", setting, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(UtcTime, setting, StringComparison.OrdinalIgnoreCase))
             {
                 return new UtcTimestampVersion();
             }
 
-            throw new ApplicationException(
+            if (string.Equals(SequentialNumber, setting, StringComparison.OrdinalIgnoreCase))
+            {
+                return new SequentialNumberVersion();
+            }
+
+            throw new ApplicationException(string.Format(
                 "Invalid value proved for the versionStrategy appSetting. "
-                + "Acceptable values are 'local_time' or 'utc_time'.");
+                + "Acceptable values are '{0}', '{1}', or '{2}'.",
+                UtcTime, LocalTime, SequentialNumber));
         }
     }
 }

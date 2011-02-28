@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using DotNetMigrations.Core;
 using DotNetMigrations.Migrations;
 using DotNetMigrations.UnitTests.Mocks;
 using DotNetMigrations.UnitTests.Stubs;
@@ -30,7 +31,7 @@ namespace DotNetMigrations.UnitTests.Migrations
         public void CreateBlankScript_file_name_should_include_migration_name_with_invalid_chars_replaced_with_a_dash()
         {
             //  arrange
-            _configManager.AppSettings["versionStrategy"] = "utc_time";
+            _configManager.AppSettings[AppSettingKeys.VersionStrategy] = VersionStrategyFactory.UtcTime;
 
             char[] invalidChars = Path.GetInvalidFileNameChars();
             string migrationName = "my first script";
@@ -56,7 +57,7 @@ namespace DotNetMigrations.UnitTests.Migrations
             CreateBlankScript_file_name_should_include_migration_name_with_whitespace_replaced_with_an_underscore()
         {
             //  arrange
-            _configManager.AppSettings["versionStrategy"] = "utc_time";
+            _configManager.AppSettings[AppSettingKeys.VersionStrategy] = VersionStrategyFactory.UtcTime;
             const string migrationName = "my first     script";
 
             //  act
@@ -75,7 +76,7 @@ namespace DotNetMigrations.UnitTests.Migrations
         public void CreateBlankScript_file_name_should_include_migration_name_with_whitespace_trimmed()
         {
             //  arrange
-            _configManager.AppSettings["versionStrategy"] = "utc_time";
+            _configManager.AppSettings[AppSettingKeys.VersionStrategy] = VersionStrategyFactory.UtcTime;
             const string migrationName = "    my first script    ";
 
             //  act
@@ -94,7 +95,7 @@ namespace DotNetMigrations.UnitTests.Migrations
         public void CreateBlankScript_file_name_should_start_with_version_number_followed_by_an_underscore()
         {
             //  arrange
-            _configManager.AppSettings["versionStrategy"] = "utc_time";
+            _configManager.AppSettings[AppSettingKeys.VersionStrategy] = VersionStrategyFactory.UtcTime;
             const string migrationName = "my first script";
 
             //  act
@@ -116,7 +117,7 @@ namespace DotNetMigrations.UnitTests.Migrations
         public void CreateBlankScript_file_should_contain_template_tags_in_correct_order()
         {
             //  arrange
-            _configManager.AppSettings["versionStrategy"] = "utc_time";
+            _configManager.AppSettings[AppSettingKeys.VersionStrategy] = VersionStrategyFactory.UtcTime;
             const string migrationName = "my first script";
 
             const string setupStartTag = "BEGIN_SETUP:";
@@ -147,7 +148,7 @@ namespace DotNetMigrations.UnitTests.Migrations
         public void CreateBlankScript_should_create_file()
         {
             //  arrange
-            _configManager.AppSettings["versionStrategy"] = "utc_time";
+            _configManager.AppSettings[AppSettingKeys.VersionStrategy] = VersionStrategyFactory.UtcTime;
             const string migrationName = "my first script";
 
             //  act
@@ -167,7 +168,7 @@ namespace DotNetMigrations.UnitTests.Migrations
             string path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             using (DisposableDirectory.Watch(path))
             {
-                _configManager.AppSettings["migrateFolder"] = path;
+                _configManager.AppSettings[AppSettingKeys.MigrateFolder] = path;
 
                 //  act
                 _subject.GetPath(null);
@@ -213,7 +214,7 @@ namespace DotNetMigrations.UnitTests.Migrations
             string path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             using (DisposableDirectory.Create(path))
             {
-                _configManager.AppSettings["migrateFolder"] = path;
+                _configManager.AppSettings[AppSettingKeys.MigrateFolder] = path;
 
                 FileHelper.Touch(Path.Combine(path, "1_script_one.sql"));
                 FileHelper.Touch(Path.Combine(path, "2_script_two.sql"));
@@ -234,7 +235,7 @@ namespace DotNetMigrations.UnitTests.Migrations
             string pathToEmptyDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             using (DisposableDirectory emptyDir = DisposableDirectory.Create(pathToEmptyDir))
             {
-                _configManager.AppSettings["migrateFolder"] = emptyDir.FullName;
+                _configManager.AppSettings[AppSettingKeys.MigrateFolder] = emptyDir.FullName;
 
                 //  act
                 IEnumerable<IMigrationScriptFile> files = _subject.GetScripts();
@@ -252,7 +253,7 @@ namespace DotNetMigrations.UnitTests.Migrations
             string path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             using (DisposableDirectory.Create(path))
             {
-                _configManager.AppSettings["migrateFolder"] = path;
+                _configManager.AppSettings[AppSettingKeys.MigrateFolder] = path;
 
                 FileHelper.Touch(Path.Combine(path, "1_script_one.sql"));
                 FileHelper.Touch(Path.Combine(path, "2_script_two.sql"));

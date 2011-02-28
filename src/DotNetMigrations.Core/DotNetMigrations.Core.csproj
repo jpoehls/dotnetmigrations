@@ -83,6 +83,7 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AppSettingKeys.cs" />
     <Compile Include="ArgumentAttribute.cs" />
     <Compile Include="ArgumentSet.cs" />
     <Compile Include="BaseClasses\CommandBase.cs" />

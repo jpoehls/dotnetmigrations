@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using DotNetMigrations.Core;
 using DotNetMigrations.Migrations;
 using DotNetMigrations.UnitTests.Stubs;
 using NUnit.Framework;
@@ -31,7 +32,7 @@ namespace DotNetMigrations.UnitTests.Migrations
         public void GetStrategy_should_return_correct_local_time_implementation()
         {
             //  arrange
-            _configManager.AppSettings["versionStrategy"] = "local_time";
+            _configManager.AppSettings[AppSettingKeys.VersionStrategy] = VersionStrategyFactory.LocalTime;
 
             //  act
             IVersionStrategy strategy = _subject.GetStrategy();
@@ -44,7 +45,7 @@ namespace DotNetMigrations.UnitTests.Migrations
         public void GetStrategy_should_return_correct_utc_time_implementation()
         {
             //  arrange
-            _configManager.AppSettings["versionStrategy"] = "utc_time";
+            _configManager.AppSettings[AppSettingKeys.VersionStrategy] = VersionStrategyFactory.UtcTime;
 
             //  act
             IVersionStrategy strategy = _subject.GetStrategy();
@@ -54,11 +55,24 @@ namespace DotNetMigrations.UnitTests.Migrations
         }
 
         [Test]
+        public void GetStrategy_should_return_correct_seq_num_implementation()
+        {
+            //  arrange
+            _configManager.AppSettings[AppSettingKeys.VersionStrategy] = VersionStrategyFactory.SequentialNumber;
+
+            //  act
+            IVersionStrategy strategy = _subject.GetStrategy();
+
+            //  assert
+            Assert.IsInstanceOfType(typeof(SequentialNumberVersion), strategy);
+        }
+
+        [Test]
         [ExpectedException(ExceptionType = typeof (ApplicationException))]
         public void GetStrategy_should_throw_ApplicationException_if_config_setting_is_invalidS()
         {
             //  arrange
-            _configManager.AppSettings["versionStrategy"] = "i am not a valid option";
+            _configManager.AppSettings[AppSettingKeys.VersionStrategy] = "i am not a valid option";
 
             //  act
             _subject.GetStrategy();

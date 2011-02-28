@@ -41,15 +41,14 @@ namespace DotNetMigrations.Migrations
         /// </summary>
         public string GetPath(ILogger log)
         {
-            const string appSettingName = "migrateFolder";
-            string path = _configurationManager.AppSettings[appSettingName];
+            string path = _configurationManager.AppSettings[AppSettingKeys.MigrateFolder];
 
             if (string.IsNullOrEmpty(path))
             {
                 if (log != null)
                 {
                     log.WriteWarning(
-                        "The " + appSettingName + " setting was not present in the configuration file so the default " +
+                        "The " + AppSettingKeys.MigrateFolder + " setting was not present in the configuration file so the default " +
                         DefaultMigrationScriptPath + " folder will be used instead.");
                 }
                 path = DefaultMigrationScriptPath;
@@ -68,12 +67,7 @@ namespace DotNetMigrations.Migrations
         {
             string[] files = Directory.GetFiles(GetPath(null), ScriptFileNamePattern);
 
-            if (files != null)
-            {
-                return files.Select(x => (IMigrationScriptFile)new MigrationScriptFile(x)).OrderBy(x => x.Version);
-            }
-
-            return Enumerable.Empty<IMigrationScriptFile>();
+            return files.Select(x => (IMigrationScriptFile)new MigrationScriptFile(x)).OrderBy(x => x.Version);
         }
 
         /// <summary>
@@ -84,8 +78,7 @@ namespace DotNetMigrations.Migrations
         public string CreateBlankScript(string migrationName)
         {
             long version = GetNewVersionNumber();
-
-            string path = GetPath(null);
+            var path = GetPath(null);
             path = Path.Combine(path, version + "_" + SanitizeMigrationName(migrationName) + ".sql");
 
             var contents = new MigrationScriptContents(null, null);
@@ -128,7 +121,7 @@ namespace DotNetMigrations.Migrations
         {
             var factory = new VersionStrategyFactory(_configurationManager);
             IVersionStrategy strategy = factory.GetStrategy();
-            long version = strategy.GetNewVersionNumber();
+            long version = strategy.GetNewVersionNumber(this);
             return version;
         }
     }

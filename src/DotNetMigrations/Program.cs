@@ -44,7 +44,7 @@ namespace DotNetMigrations
             _commandRepo = new CommandRepository();
             _logger = new LogRepository();
 
-            string logFullErrorsSetting = configManager.AppSettings["logFullErrors"];
+            string logFullErrorsSetting = configManager.AppSettings[AppSettingKeys.LogFullErrors];
             bool.TryParse(logFullErrorsSetting, out _logFullErrors);
 
             _keepConsoleOpen = ProgramLaunchedInSeparateConsoleWindow();

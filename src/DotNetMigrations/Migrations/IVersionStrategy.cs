@@ -5,6 +5,6 @@ namespace DotNetMigrations.Migrations
 {
     public interface IVersionStrategy
     {
-        long GetNewVersionNumber();
+        long GetNewVersionNumber(IMigrationDirectory migrationDirectory);
     }
 }
