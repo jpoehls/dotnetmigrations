@@ -1,6 +1,8 @@
 = 0.80 / IN PROGRES
 
     * New sequential number 'seq_num' versioning strategy
+    * Added support for a ##DNM:PROVIDER## token in migration scripts that is
+      replaced with the connection string's provider name.
 
 = 0.70 / 2010-08-28
 

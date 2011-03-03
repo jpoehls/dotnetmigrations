@@ -8,10 +8,12 @@ namespace DotNetMigrations.Core.Data
     {
         private readonly DbConnection _connection;
         private readonly DbProviderFactory _factory;
+        private readonly string _provider;
 
-        public DataAccess(DbProviderFactory factory, string connectionString)
+        public DataAccess(DbProviderFactory factory, string connectionString, string provider)
         {
             _factory = factory;
+            _provider = provider;
             _connection = GetConnection(connectionString);
         }
 
@@ -55,6 +57,11 @@ namespace DotNetMigrations.Core.Data
         private DbConnection GetConnection(string connectionString)
         {
             DbConnection conn = _factory.CreateConnection();
+            if (conn == null)
+            {
+                throw new InvalidOperationException("Factory failed to create connection. Returned null.");
+            }
+
             conn.ConnectionString = connectionString;
 
             return conn;
@@ -66,12 +73,17 @@ namespace DotNetMigrations.Core.Data
         /// </summary>
         public void ExecuteScript(DbTransaction tran, string script)
         {
+            const string providerVariableName = "##DNM:PROVIDER##";
+
             var batches = new ScriptSplitter(script);
             foreach (var batch in batches)
             {
+                // replace the provider name token in the script
+                var bakedBatch = batch.Replace(providerVariableName, _provider, StringComparison.OrdinalIgnoreCase);
+                
                 using (var cmd = CreateCommand())
                 {
-                    cmd.CommandText = batch;
+                    cmd.CommandText = bakedBatch;
                     cmd.Transaction = tran;
                     cmd.ExecuteNonQuery();
                 }
