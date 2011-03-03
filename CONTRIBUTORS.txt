@@ -1,2 +1,3 @@
-Joshua Poehls
-James Eggers
+(sorted alphabetically)
+- James Eggers
+- Joshua Poehls
