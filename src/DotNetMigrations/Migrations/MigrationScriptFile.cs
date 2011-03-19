@@ -2,16 +2,37 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace DotNetMigrations.Migrations
 {
     public class MigrationScriptFile : IMigrationScriptFile
     {
-        private const string SetupEndTag = "END_SETUP:";
         private const string SetupStartTag = "BEGIN_SETUP:";
-
-        private const string TeardownEndTag = "END_TEARDOWN:";
+        private const string SetupEndTag = "END_SETUP:";
         private const string TeardownStartTag = "BEGIN_TEARDOWN:";
+        private const string TeardownEndTag = "END_TEARDOWN:";
+
+        private static readonly Regex SetupRegex;
+        private static readonly Regex TeardownRegex;
+
+        static MigrationScriptFile()
+        {
+            SetupRegex =
+                new Regex(
+                    @"^\s*" + Regex.Escape(SetupStartTag) + @"\s*$  (.*)  ^\s*" + Regex.Escape(SetupEndTag) + @"\s*$",
+                    RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Multiline |
+                    RegexOptions.IgnorePatternWhitespace |
+                    RegexOptions.Compiled);
+
+            TeardownRegex =
+                new Regex(
+                    @"^\s*" + Regex.Escape(TeardownStartTag) + @"\s*$  (.*)  ^\s*" + Regex.Escape(TeardownEndTag) +
+                    @"\s*$",
+                    RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Multiline |
+                    RegexOptions.IgnorePatternWhitespace |
+                    RegexOptions.Compiled);
+        }
 
         public MigrationScriptFile(string filePath)
         {
@@ -19,6 +40,8 @@ namespace DotNetMigrations.Migrations
 
             ParseVersion();
         }
+
+        #region IMigrationScriptFile Members
 
         public string FilePath { get; private set; }
         public long Version { get; private set; }
@@ -28,44 +51,32 @@ namespace DotNetMigrations.Migrations
         /// </summary>
         public MigrationScriptContents Read()
         {
-            var setupBuilder = new StringBuilder();
-            var teardownBuilder = new StringBuilder();
+            string setupScript = string.Empty;
+            string teardownScript = string.Empty;
 
-            string[] lines = File.ReadAllLines(FilePath);
-            StringBuilder activeBuilder = null;
-            foreach (string line in lines)
+            string allLines = File.ReadAllText(FilePath);
+
+            Match setupMatch = SetupRegex.Match(allLines);
+            if (setupMatch.Success)
             {
-                if (string.IsNullOrEmpty(line))
-                    continue;
-
-                if (string.Equals(line, SetupStartTag))
-                {
-                    activeBuilder = setupBuilder;
-                    continue;
-                }
-
-                if (string.Equals(line, TeardownStartTag))
-                {
-                    activeBuilder = teardownBuilder;
-                    continue;
-                }
-
-                if (string.Equals(line, SetupEndTag) ||
-                    string.Equals(line, TeardownEndTag))
-                {
-                    activeBuilder = null;
-                    continue;
-                }
-
-                if (activeBuilder != null)
-                {
-                    activeBuilder.AppendLine(line);
-                }
+                setupScript = setupMatch.Groups[1].Value;
             }
 
-            var contents = new MigrationScriptContents(setupBuilder.ToString(),
-                                                       teardownBuilder.ToString());
-            return contents;
+            // don't include the setup portion of the script
+            // when matching the teardown
+            Match teardownMatch = TeardownRegex.Match(allLines, setupMatch.Length);
+            if (teardownMatch.Success)
+            {
+                teardownScript = teardownMatch.Groups[1].Value;
+            }
+
+            if (!setupMatch.Success && !teardownMatch.Success)
+            {
+                // assume entire file is the setup and there is no teardown
+                setupScript = allLines;
+            }
+
+            return new MigrationScriptContents(setupScript, teardownScript);
         }
 
         /// <summary>
@@ -89,6 +100,8 @@ namespace DotNetMigrations.Migrations
 
             File.WriteAllText(FilePath, sb.ToString());
         }
+
+        #endregion
 
         private void ParseVersion()
         {

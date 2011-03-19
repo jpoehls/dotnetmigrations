@@ -104,5 +104,127 @@ namespace DotNetMigrations.UnitTests.Migrations
                 Assert.AreEqual(teardownText, contents.Teardown.Trim(), "teardown does not match");
             }
         }
+
+        [Test]
+        public void Read_should_parse_file_with_setup_tags_but_no_teardown_correctly()
+        {
+            //  arrange
+            var tempFilePath = Path.GetTempFileName();
+            using (DisposableFile.Watch(tempFilePath))
+            {
+                File.WriteAllText(tempFilePath, @"
+BEGIN_SETUP:
+
+    this is the setup
+
+END_SETUP:
+
+There is no teardown, this should be ignored.
+");
+                var file = new MigrationScriptFile(tempFilePath);
+
+                //  act
+                var contents = file.Read();
+
+                //  assert
+                Assert.IsNotNull(contents.Setup, "setup is null");
+                Assert.AreEqual("this is the setup", contents.Setup.Trim(), "setup not parsed correctly");
+                Assert.AreEqual(string.Empty, contents.Teardown, "teardown should be empty");
+            }
+        }
+
+        [Test]
+        public void Read_should_preserve_whitespace_in_scripts()
+        {
+            //  arrange
+            var tempFilePath = Path.GetTempFileName();
+            using (DisposableFile.Watch(tempFilePath))
+            {
+                File.WriteAllText(tempFilePath, @"
+BEGIN_SETUP:
+
+    this is the setup
+
+END_SETUP:
+
+BEGIN_TEARDOWN:
+
+ one
+  two
+   
+   three
+    four
+
+END_TEARDOWN:
+");
+                var file = new MigrationScriptFile(tempFilePath);
+
+                //  act
+                var contents = file.Read();
+
+                // we are normalizing \r\n to just \n because for some reason
+                // some \r\n's are returned as just \n from the regex matching
+
+                //  assert
+                Assert.AreEqual(@"
+    this is the setup
+
+".Replace("\r\n", "\n"), contents.Setup.Replace("\r\n", "\n"), "setup not parsed correctly");
+                Assert.AreEqual(@"
+ one
+  two
+   
+   three
+    four
+
+".Replace("\r\n", "\n"), contents.Teardown.Replace("\r\n", "\n"), "teardown should be empty");
+            }
+        }
+
+        [Test]
+        public void Read_should_assume_entire_script_is_the_setup_if_no_tags_are_present()
+        {
+            //  arrange
+            var tempFilePath = Path.GetTempFileName();
+            using (DisposableFile.Watch(tempFilePath))
+            {
+                File.WriteAllText(tempFilePath, "this is the setup");
+                var file = new MigrationScriptFile(tempFilePath);
+
+                //  act
+                var contents = file.Read();
+
+                //  assert
+                Assert.AreEqual("this is the setup", contents.Setup, "setup not parsed correctly");
+                Assert.AreEqual(string.Empty, contents.Teardown, "teardown should be empty");
+            }
+        }
+
+        [Test]
+        public void Read_should_support_varied_casing_in_tag_names()
+        {
+            //  arrange
+            var tempFilePath = Path.GetTempFileName();
+            using (DisposableFile.Watch(tempFilePath))
+            {
+                File.WriteAllText(tempFilePath, @"
+BeGiN_sETup:
+this is the setup
+enD_SEtUp:
+
+BEgin_teARDOWn:
+this is the teardown
+eNd_tEaRdOWn:
+");
+                var file = new MigrationScriptFile(tempFilePath);
+
+                //  act
+                var contents = file.Read();
+
+                //  assert
+                Assert.AreEqual("this is the setup", contents.Setup.Trim(), "setup not parsed correctly");
+                Assert.AreEqual("this is the teardown", contents.Teardown.Trim(), "teardown should be empty");
+            }
+        }
     }
 }
