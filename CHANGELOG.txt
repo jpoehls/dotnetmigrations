@@ -1,8 +1,13 @@
-= 0.80 / IN PROGRES
+= 0.80 / IN PROGRESS
 
     * New sequential number 'seq_num' versioning strategy
+
     * Added support for a ##DNM:PROVIDER## token in migration scripts that is
       replaced with the connection string's provider name.
+
+    * Added support for migration scripts without placeholders. When the script
+      doesn't have any BEGIN_SETUP/END_SETUP/BEGIN_TEARDOWN/END_TEARDOWN tags
+      then the entire script is assumed to be a Setup with no Teardown.
 
 = 0.70 / 2010-08-28
 
