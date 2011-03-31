@@ -1,4 +1,4 @@
-= 0.80 / IN PROGRESS
+= 0.80 / 2011-03-30
 
     * New sequential number 'seq_num' versioning strategy
 
