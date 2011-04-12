@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using DotNetMigrations.Commands;
 using DotNetMigrations.Migrations;
 using DotNetMigrations.UnitTests.Mocks;
@@ -306,7 +307,7 @@ namespace DotNetMigrations.UnitTests.Commands
             _migrateCommand.Run(_commandArgs);
 
             //  assert
-            Assert.AreEqual("Database is already at version: 0\r\n", _mockLog.Output);
+            Assert.IsTrue(Regex.IsMatch(_mockLog.Output, @"Database is at version:\s*0\r\n"));
         }
 
         [Test]
