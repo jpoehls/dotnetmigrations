@@ -3,7 +3,7 @@
 
 properties {
 	# version advertised. also used as the tag name in git.
-	$public_version = "0.80"
+	$public_version = "0.81"
 
 	$source_dir = Resolve-Path ./
 	$build_dir = "$source_dir\@build"
