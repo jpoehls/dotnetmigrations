@@ -11,7 +11,7 @@ namespace DotNetMigrations.Commands
             TargetVersion = -1;
         }
 
-        [Argument("version", "v", "Target version to migrate up or down to",
+        [Argument("version", "v", "Target version to migrate up or down to.",
             Position = 2)]
         public long TargetVersion { get; set; }
     }
