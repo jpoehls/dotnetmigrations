@@ -37,10 +37,11 @@ namespace DotNetMigrations.Commands
                 string currentScript = null;
                 try
                 {
+                    Log.WriteLine("Planting...");
                     foreach (var script in seedScripts)
                     {
                         currentScript = script;
-                        Log.WriteLine("Planting {0}", Path.GetFileName(script));
+                        Log.WriteLine("  {0}", Path.GetFileName(script));
                         Database.ExecuteScript(tran, File.ReadAllText(script));
                     }
 

@@ -4,6 +4,9 @@ namespace DotNetMigrations.Commands
 {
     public class SetupCommand : DatabaseCommandBase<SeedCommandArgs>
     {
+        private readonly DatabaseCommandBase<MigrateCommandArgs> _migrateCommand;
+        private readonly DatabaseCommandBase<SeedCommandArgs> _seedCommand;
+
         public override string CommandName
         {
             get { return "setup"; }
@@ -18,17 +21,29 @@ namespace DotNetMigrations.Commands
             }
         }
 
+        public SetupCommand()
+            : this(new MigrateCommand(), new SeedCommand())
+        {
+        }
+
+        public SetupCommand(DatabaseCommandBase<MigrateCommandArgs> migrateCommand,
+            DatabaseCommandBase<SeedCommandArgs> seedCommand)
+        {
+            _migrateCommand = migrateCommand;
+            _seedCommand = seedCommand;
+        }
+
         protected override void Run(SeedCommandArgs args)
         {
             // migrate the schema first
-            var migrateCmd = new MigrateCommand();
-            var migrateCmdArgs = new MigrateCommandArgs() {Connection = args.Connection};
+            _migrateCommand.Log = this.Log;
+            var migrateCmdArgs = new MigrateCommandArgs() { Connection = args.Connection };
 
-            migrateCmd.Run(migrateCmdArgs);
+            _migrateCommand.Run(migrateCmdArgs);
 
             // run the seed scripts
-            var seedCmd = new SeedCommand();
-            seedCmd.Run(args);
+            _seedCommand.Log = this.Log;
+            _seedCommand.Run(args);
         }
     }
 }
