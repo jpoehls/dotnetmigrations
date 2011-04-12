@@ -94,8 +94,13 @@
     <Compile Include="Commands\MigrateCommand.cs" />
     <Compile Include="Commands\MigrateCommandArgs.cs" />
     <Compile Include="Commands\MigrationException.cs" />
+    <Compile Include="Commands\SeedCommand.cs" />
+    <Compile Include="Commands\SeedCommandArgs.cs" />
+    <Compile Include="SeedDirectory.cs" />
+    <Compile Include="Commands\SetupCommand.cs" />
     <Compile Include="Migrations\IMigrationDirectory.cs" />
     <Compile Include="Migrations\IMigrationScriptFile.cs" />
+    <Compile Include="ISeedDirectory.cs" />
     <Compile Include="Migrations\IVersionStrategy.cs" />
     <Compile Include="Migrations\LocalTimestampVersion.cs" />
     <Compile Include="Migrations\MigrationScriptContents.cs" />

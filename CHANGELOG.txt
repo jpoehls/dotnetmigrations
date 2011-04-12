@@ -1,3 +1,14 @@
+= 0.81 / 2011-04-11
+
+    * New 'seed' command that executes scripts in the .\seeds\ folder.
+
+	* New 'setup' command that migrates a database to the latest version
+	  and executes scripts in the seed folder.
+	  
+	  This is the same as running:
+	  > db migrate myConnection
+	  > db seed myConnection
+
 = 0.80 / 2011-03-30
 
     * New sequential number 'seq_num' versioning strategy

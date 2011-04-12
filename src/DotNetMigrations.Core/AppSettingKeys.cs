@@ -10,6 +10,11 @@ namespace DotNetMigrations.Core
         /// </summary>
         public const string MigrateFolder = "migrateFolder";
 
+        /// <summary>
+        /// The path to where the seed scripts are stored.
+        /// </summary>
+        public const string SeedFolder = "seedFolder";
+
         public const string VersionStrategy = "versionStrategy";
 
         /// <summary>
