@@ -28,6 +28,7 @@ namespace DotNetMigrations.Repositories
             var pluginDirectory = ConfigurationManager.AppSettings[AppSettingKeys.PluginFolder];
 
             Commands = new List<ICommand>();
+
             catalog = new AggregateCatalog();
             catalog.Catalogs.Add(new AssemblyCatalog(Assembly.GetCallingAssembly()));
 

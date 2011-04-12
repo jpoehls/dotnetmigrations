@@ -5,6 +5,7 @@ using System.Linq;
 using DotNetMigrations.Core;
 using DotNetMigrations.Core.Data;
 using DotNetMigrations.Migrations;
+using DotNetMigrations.Repositories;
 
 namespace DotNetMigrations.Commands
 {
@@ -61,12 +62,6 @@ namespace DotNetMigrations.Commands
                 targetVersion = files.Select(x => x.Version).First();
             }
 
-            if (currentVersion == targetVersion)
-            {
-                Log.WriteLine("Database is already at version: " + targetVersion);
-                return;
-            }
-
             Log.WriteLine("Database is at version:".PadRight(30) + currentVersion);
 
             if (currentVersion < targetVersion)
@@ -74,11 +69,34 @@ namespace DotNetMigrations.Commands
                 MigrateUp(currentVersion, targetVersion, files);
                 Log.WriteLine("Migrated up to version:".PadRight(30) + targetVersion);
             }
-
-            if (currentVersion > targetVersion)
+            else if (currentVersion > targetVersion)
             {
                 MigrateDown(currentVersion, targetVersion, files);
                 Log.WriteLine("Migrated down to version:".PadRight(30) + targetVersion);
+            }
+            else
+            {
+                return;
+            }
+
+            // execute the post migration actions
+            var postMigrationHooks = Program.Current.CommandRepository.Commands
+                .Where(cmd => cmd is IPostMigrationHook)
+                .Cast<IPostMigrationHook>();
+            if (postMigrationHooks.Count() > 0)
+            {
+                Log.WriteLine("Executing post migration hooks...");
+
+                foreach (var hook in postMigrationHooks)
+                {
+                    Log.WriteLine("  {0}", hook.CommandName);
+                    hook.Log = Log;
+                    hook.OnPostMigration(args);
+                }
+            }
+            else
+            {
+                Log.WriteLine("No post migration hooks found.");
             }
         }
 

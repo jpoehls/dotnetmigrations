@@ -11,6 +11,17 @@ namespace DotNetMigrations
 {
     internal class Program
     {
+        private static Program _current = null;
+        public static Program Current
+        {
+            get
+            {
+                if (_current == null)
+                    _current = new Program();
+                return _current;
+            }
+        }
+
         #region Void Main
 
         /// <summary>
@@ -19,8 +30,7 @@ namespace DotNetMigrations
         /// <param name="args"></param>
         private static void Main(string[] args)
         {
-            var p = new Program();
-            p.Run(args);
+            Current.Run(args);
         }
 
         #endregion
@@ -30,6 +40,8 @@ namespace DotNetMigrations
         private readonly bool _logFullErrors;
 
         private readonly bool _keepConsoleOpen;
+
+        public CommandRepository CommandRepository { get { return _commandRepo; } }
 
         private Program()
             : this(new ConfigurationManagerWrapper())
