@@ -64,13 +64,16 @@ namespace DotNetMigrations.Commands
 
             Log.WriteLine("Database is at version:".PadRight(30) + currentVersion);
 
+            MigrationDirection direction;
             if (currentVersion < targetVersion)
             {
+                direction = MigrationDirection.Up;
                 MigrateUp(currentVersion, targetVersion, files);
                 Log.WriteLine("Migrated up to version:".PadRight(30) + targetVersion);
             }
             else if (currentVersion > targetVersion)
             {
+                direction = MigrationDirection.Down;
                 MigrateDown(currentVersion, targetVersion, files);
                 Log.WriteLine("Migrated down to version:".PadRight(30) + targetVersion);
             }
@@ -82,7 +85,9 @@ namespace DotNetMigrations.Commands
             // execute the post migration actions
             var postMigrationHooks = Program.Current.CommandRepository.Commands
                 .Where(cmd => cmd is IPostMigrationHook)
-                .Cast<IPostMigrationHook>();
+                .Cast<IPostMigrationHook>()
+                .Where(hook => hook.ShouldRun(direction));
+
             if (postMigrationHooks.Count() > 0)
             {
                 Log.WriteLine("Executing post migration hooks...");
@@ -91,12 +96,12 @@ namespace DotNetMigrations.Commands
                 {
                     Log.WriteLine("  {0}", hook.CommandName);
                     hook.Log = Log;
-                    hook.OnPostMigration(args);
+                    hook.OnPostMigration(args, direction);
                 }
             }
             else
             {
-                Log.WriteLine("No post migration hooks found.");
+                Log.WriteLine("No post migration hooks were run.");
             }
         }
 

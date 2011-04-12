@@ -108,6 +108,7 @@
     <Compile Include="Interfaces\ICommand.cs" />
     <Compile Include="Interfaces\ILogger.cs" />
     <Compile Include="Interfaces\IPostMigrationHook.cs" />
+    <Compile Include="MigrationDirection.cs" />
     <Compile Include="NaturalSortComparer.cs" />
     <Compile Include="Provider\ConfigurableTypeCatalog.cs" />
     <Compile Include="Provider\ConfigurableTypeCollection.cs" />

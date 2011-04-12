@@ -1,8 +1,8 @@
-= 0.82 / 2011-04-11
+= 0.82 / 2011-04-12
 
     * Added support for post migration actions that plugins can use
 	  to inject functionality that should run after a migration completes.
-	  (This was added to support the new PerpetualMigrations [pmigrate] command
+	  (This was added to support the new PersistentMigrate [pmigrate] command
 	  in the dotnetmigrations-contrib project.)
 
 = 0.81 / 2011-04-11
