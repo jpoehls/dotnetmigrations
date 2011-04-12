@@ -331,7 +331,7 @@ namespace DotNetMigrations.UnitTests.Commands
             _migrateCommand.Run(_commandArgs);
 
             //  assert
-            Assert.IsTrue(_mockLog.Output.EndsWith("Migrated up to version:".PadRight(30) + 2 + "\r\n"));
+            Assert.IsTrue(_mockLog.Output.Contains("Migrated up to version:".PadRight(30) + 2 + "\r\n"));
         }
 
         [Test]
@@ -348,7 +348,7 @@ namespace DotNetMigrations.UnitTests.Commands
             _migrateCommand.Run(_commandArgs);
 
             //  assert
-            Assert.IsTrue(_mockLog.Output.EndsWith("Migrated down to version:".PadRight(30) + 0 + "\r\n"));
+            Assert.IsTrue(_mockLog.Output.Contains("Migrated down to version:".PadRight(30) + 0 + "\r\n"));
         }
     }
 }

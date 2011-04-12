@@ -186,7 +186,7 @@ namespace DotNetMigrations
         private static bool ProgramLaunchedInSeparateConsoleWindow()
         {
             //  if no debugger is attached
-            if (!Debugger.IsAttached)
+            if (!Debugger.IsAttached && TestConsole())
                 //  and the cursor position appears untouched
                 if (Console.CursorLeft == 0 && Console.CursorTop == 1)
                     //  and there are no arguments
@@ -198,6 +198,24 @@ namespace DotNetMigrations
 
             //  looks like we were launched from command line, good!
             return false;
+        }
+
+        /// <summary>
+        /// Returns true/false whether a console window is available.
+        /// </summary>
+        private static bool TestConsole()
+        {
+            try
+            {
+#pragma warning disable 168
+                var x = Console.CursorLeft;
+#pragma warning restore 168
+                return true;
+            }
+            catch (IOException)
+            {
+                return false;
+            }
         }
 
         private void WriteShortErrorMessages(Exception ex)
