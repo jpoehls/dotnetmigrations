@@ -20,7 +20,6 @@ namespace DotNetMigrations.UnitTests.Migrations
         {
             _configManager = new InMemoryConfigurationManager();
             _subject = new SequentialNumberVersion();
-
         }
 
         #endregion
