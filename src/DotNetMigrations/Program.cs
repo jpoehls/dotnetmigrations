@@ -59,8 +59,14 @@ namespace DotNetMigrations
             _logger = new LogRepository();
 
             var pluginDirectory = configManager.AppSettings[AppSettingKeys.PluginFolder];
-            
-            _commander = Commander.Standard(new AssemblyCatalog(Assembly.GetCallingAssembly()), new DirectoryCatalog(pluginDirectory));
+
+            var catalog = new AggregateCatalog();
+            catalog.Catalogs.Add(new AssemblyCatalog(Assembly.GetCallingAssembly()));
+            if (!string.IsNullOrWhiteSpace(pluginDirectory) && Directory.Exists(pluginDirectory))
+            {
+                catalog.Catalogs.Add(new DirectoryCatalog(pluginDirectory));
+            }
+            _commander = Commander.Standard(catalog);
            
             string logFullErrorsSetting = configManager.AppSettings[AppSettingKeys.LogFullErrors];
             bool.TryParse(logFullErrorsSetting, out _logFullErrors);

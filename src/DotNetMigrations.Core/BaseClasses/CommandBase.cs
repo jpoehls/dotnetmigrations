@@ -14,7 +14,7 @@ namespace DotNetMigrations.Core
 
         #endregion
 
-        public void Run()
+        public virtual void Run()
         {
             if (Log == null)
                 throw new InvalidOperationException("ICommand.Log cannot be null.");

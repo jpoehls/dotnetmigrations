@@ -55,7 +55,7 @@ namespace DotNetMigrations.UnitTests.Commands
             }
 
             bool runCalled = false;
-            _mockMigrateCommand.Protected().Setup("Run").Callback(() => runCalled = true);
+            _mockMigrateCommand.Setup(x => x.Run()).Callback(() => runCalled = true);
 
             //  act
             _rollbackCommand.Run();
@@ -81,7 +81,7 @@ namespace DotNetMigrations.UnitTests.Commands
         {
             //  arrange
             bool runCalled = false;
-            _mockMigrateCommand.Protected().Setup("Run").Callback(() => runCalled = true);
+            _mockMigrateCommand.Setup(x => x.Run()).Callback(() => runCalled = true);
 
             //  act
             _rollbackCommand.Run();
@@ -104,9 +104,9 @@ namespace DotNetMigrations.UnitTests.Commands
                 sql.ExecuteNonQuery("insert into [schema_migrations] ([version]) values (2)");
             }
 
-            _mockMigrateCommand.Protected().Setup("Run")
-                .Callback((MigrateCommand args) =>
-                Assert.AreEqual(2, args.TargetVersion));
+            _mockMigrateCommand.Setup(x=>x.Run())
+                .Callback(() =>
+                Assert.AreEqual(2, _mockMigrateCommand.Object.TargetVersion));
 
             //  act
             _rollbackCommand.Run();
@@ -138,9 +138,9 @@ namespace DotNetMigrations.UnitTests.Commands
         public void Run_should_set_MigrateCommandArgs_Connection_to_its_own_Connection()
         {
             //  arrange
-            _mockMigrateCommand.Protected().Setup("Run")
-                .Callback((MigrateCommand args) =>
-                Assert.AreEqual(_rollbackCommand.Connection, args.Connection));
+            _mockMigrateCommand.Setup(x=>x.Run())
+                .Callback(() =>
+                Assert.AreEqual(_rollbackCommand.Connection, _mockMigrateCommand.Object.Connection));
 
             //  act
             _rollbackCommand.Run();
