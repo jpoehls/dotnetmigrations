@@ -30,6 +30,7 @@ namespace DotNetMigrations.UnitTests
             //  arrange
             var validator = new DotConsole.DataAnnotationValidator();
             var cmd = new MockDatabaseCommand1();
+            cmd.Connection = "something";
 
             //  act
             bool valid = validator.ValidateParameters(cmd);
