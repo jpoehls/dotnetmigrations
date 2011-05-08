@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DotNetMigrations</RootNamespace>
     <AssemblyName>db</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <StartupObject>DotNetMigrations.Program</StartupObject>
     <IsWebBootstrapper>false</IsWebBootstrapper>
@@ -40,6 +40,7 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -59,6 +60,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DotConsole">
+      <HintPath>..\..\lib\DotConsole.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition, Version=2009.22.10.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -88,14 +92,10 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Commands\ConnectionsCommand.cs" />
-    <Compile Include="Commands\ConnectionsCommandArgs.cs" />
     <Compile Include="Commands\GenerateScriptCommand.cs" />
-    <Compile Include="Commands\GenerateScriptCommandArgs.cs" />
     <Compile Include="Commands\MigrateCommand.cs" />
-    <Compile Include="Commands\MigrateCommandArgs.cs" />
     <Compile Include="Commands\MigrationException.cs" />
     <Compile Include="Commands\SeedCommand.cs" />
-    <Compile Include="Commands\SeedCommandArgs.cs" />
     <Compile Include="SeedDirectory.cs" />
     <Compile Include="Commands\SetupCommand.cs" />
     <Compile Include="Migrations\IMigrationDirectory.cs" />

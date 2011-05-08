@@ -1,13 +1,30 @@
 using System;
+using System.ComponentModel;
 using System.Configuration;
 using System.Linq;
+using DotConsole;
 using DotNetMigrations.Core;
 
 namespace DotNetMigrations.Commands
 {
-    internal class ConnectionsCommand : CommandBase<ConnectionsCommandArgs>
+    [Command("connections")]
+    [Description("Allows you to list, add or edit the saved connection strings.")]
+    internal class ConnectionsCommand : CommandBase
     {
         private readonly IConfigurationManager _configManager;
+
+        [ValueSetValidator("", "list", "add", "set", "remove", ErrorMessage = "-action must be 'list', 'add', 'set', or 'remove'")]
+        [Parameter("action", Flag='a', Position = 0)]
+        [Description("Action to perform. [ list | add | set | remove ]")]
+        public string Action { get; set; }
+
+        [Parameter("name", Flag='n', Position = 1)]
+        [Description("Name of connection to 'add', 'set' or 'remove'.")]
+        public string Name { get; set; }
+
+        [Parameter("connectionString", Flag='C', Position = 2)]
+        [Description("Connection string to 'add' or 'set'.")]
+        public string ConnectionString { get; set; }
 
         public ConnectionsCommand()
             : this(new ConfigurationManagerWrapper())
@@ -19,97 +36,81 @@ namespace DotNetMigrations.Commands
             _configManager = configurationManager;
         }
 
-        /// <summary>
-        /// The name of the command that is typed as a command line argument.
-        /// </summary>
-        public override string CommandName
-        {
-            get { return "connections"; }
-        }
-
-        /// <summary>
-        /// The help text information for the command.
-        /// </summary>
-        public override string Description
-        {
-            get { return "Allows you to list, add or edit the saved connection strings."; }
-        }
-
-        protected override void Run(ConnectionsCommandArgs args)
+        public override void Execute()
         {
             //  if no Action was specified, use 'list' as the default
-            if (string.IsNullOrEmpty(args.Action))
+            if (string.IsNullOrEmpty(Action))
             {
-                args.Action = "list";
+                Action = "list";
             }
 
-            if (string.Equals(args.Action, "list", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(Action, "list", StringComparison.OrdinalIgnoreCase))
             {
                 ListConnectionStrings();
             }
-            else if (string.Equals(args.Action, "add", StringComparison.OrdinalIgnoreCase))
+            else if (string.Equals(Action, "add", StringComparison.OrdinalIgnoreCase))
             {
-                if (!ValidNameArg(args) || !ValidConnectionStringArg(args))
+                if (!ValidNameArg() || !ValidConnectionStringArg())
                     return;
 
-                AddConnectionString(args);
+                AddConnectionString();
             }
-            else if (string.Equals(args.Action, "set", StringComparison.OrdinalIgnoreCase))
+            else if (string.Equals(Action, "set", StringComparison.OrdinalIgnoreCase))
             {
-                if (!ValidNameArg(args) || !ValidConnectionStringArg(args))
+                if (!ValidNameArg() || !ValidConnectionStringArg())
                     return;
 
-                UpdateConnectionString(args);
+                UpdateConnectionString();
             }
-            else if (string.Equals(args.Action, "remove", StringComparison.OrdinalIgnoreCase))
+            else if (string.Equals(Action, "remove", StringComparison.OrdinalIgnoreCase))
             {
-                if (!ValidNameArg(args))
+                if (!ValidNameArg())
                     return;
 
-                RemoveConnectionString(args);
+                RemoveConnectionString();
             }
         }
 
-        private void RemoveConnectionString(ConnectionsCommandArgs args)
+        private void RemoveConnectionString()
         {
             Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            if (config.ConnectionStrings.ConnectionStrings[args.Name] != null)
+            if (config.ConnectionStrings.ConnectionStrings[Name] != null)
             {
-                config.ConnectionStrings.ConnectionStrings.Remove(args.Name);
+                config.ConnectionStrings.ConnectionStrings.Remove(Name);
                 config.Save(ConfigurationSaveMode.Modified);
 
-                Log.WriteLine("The '{0}' connection string has been removed.", args.Name);
+                Log.WriteLine("The '{0}' connection string has been removed.", Name);
             }
             else
             {
-                Log.WriteError("No connection string was found with the name '{0}'.", args.Name);
+                Log.WriteError("No connection string was found with the name '{0}'.", Name);
             }
         }
 
-        private void UpdateConnectionString(ConnectionsCommandArgs args)
+        private void UpdateConnectionString()
         {
             Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            if (config.ConnectionStrings.ConnectionStrings[args.Name] != null)
+            if (config.ConnectionStrings.ConnectionStrings[Name] != null)
             {
-                config.ConnectionStrings.ConnectionStrings[args.Name].ConnectionString = args.ConnectionString;
+                config.ConnectionStrings.ConnectionStrings[Name].ConnectionString = ConnectionString;
                 config.Save(ConfigurationSaveMode.Modified);
 
-                Log.WriteLine("The '{0}' connection string has been updated.", args.Name);
+                Log.WriteLine("The '{0}' connection string has been updated.", Name);
             }
             else
             {
-                Log.WriteError("No connection string was found with the name '{0}'.", args.Name);
+                Log.WriteError("No connection string was found with the name '{0}'.", Name);
             }
         }
 
-        private void AddConnectionString(ConnectionsCommandArgs args)
+        private void AddConnectionString()
         {
             Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            config.ConnectionStrings.ConnectionStrings.Add(new ConnectionStringSettings(args.Name,
-                                                                                        args.ConnectionString));
+            config.ConnectionStrings.ConnectionStrings.Add(new ConnectionStringSettings(Name,
+                                                                                        ConnectionString));
             config.Save(ConfigurationSaveMode.Modified);
 
-            Log.WriteLine("The '{0}' connection string has been added.", args.Name);
+            Log.WriteLine("The '{0}' connection string has been added.", Name);
         }
 
         private void ListConnectionStrings()
@@ -128,9 +129,9 @@ namespace DotNetMigrations.Commands
             }
         }
 
-        private bool ValidConnectionStringArg(ConnectionsCommandArgs args)
+        private bool ValidConnectionStringArg()
         {
-            if (string.IsNullOrEmpty(args.ConnectionString))
+            if (string.IsNullOrEmpty(ConnectionString))
             {
                 Log.WriteError("Invalid arguments:");
                 Log.WriteError("* -connectionString is required");
@@ -139,9 +140,9 @@ namespace DotNetMigrations.Commands
             return true;
         }
 
-        private bool ValidNameArg(ConnectionsCommandArgs args)
+        private bool ValidNameArg()
         {
-            if (string.IsNullOrEmpty(args.Name))
+            if (string.IsNullOrEmpty(Name))
             {
                 Log.WriteError("Invalid arguments:");
                 Log.WriteError("* -name is required");

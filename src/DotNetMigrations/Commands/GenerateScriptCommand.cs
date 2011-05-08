@@ -1,13 +1,23 @@
-﻿using System.IO;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
+using DotConsole;
 using DotNetMigrations.Core;
 using DotNetMigrations.Migrations;
 
 namespace DotNetMigrations.Commands
 {
-    public class GenerateScriptCommand : CommandBase<GenerateScriptCommandArgs>
+    [Command("generate")]
+    [Description("Generates a new migration script in the migration directory.")]
+    public class GenerateScriptCommand : CommandBase
     {
         private readonly IMigrationDirectory _migrationDirectory;
+
+        [Required(ErrorMessage = "-name is required")]
+        [Parameter("name", Flag='n', Position = 0, MetaName = "migration_name")]
+        [Description("Name of the migration script to generate")]
+        public string MigrationName { get; set; }
 
         public GenerateScriptCommand()
             : this(new MigrationDirectory())
@@ -20,27 +30,11 @@ namespace DotNetMigrations.Commands
         }
 
         /// <summary>
-        /// The name of the command that is typed as a command line argument.
-        /// </summary>
-        public override string CommandName
-        {
-            get { return "generate"; }
-        }
-
-        /// <summary>
-        /// The help text information for the command.
-        /// </summary>
-        public override string Description
-        {
-            get { return "Generates a new migration script in the migration directory."; }
-        }
-
-        /// <summary>
         /// Creates the .sql file and sends the final message.
         /// </summary>
-        protected override void Run(GenerateScriptCommandArgs args)
+        public override void Execute()
         {
-            string path = _migrationDirectory.CreateBlankScript(args.MigrationName);
+            string path = _migrationDirectory.CreateBlankScript(MigrationName);
 
             Log.WriteLine("The new migration script " + Path.GetFileName(path) + " was created successfully!");
         }

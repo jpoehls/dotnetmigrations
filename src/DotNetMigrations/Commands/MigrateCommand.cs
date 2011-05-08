@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data.Common;
 using System.Linq;
+using DotConsole;
 using DotNetMigrations.Core;
 using DotNetMigrations.Core.Data;
 using DotNetMigrations.Migrations;
@@ -9,7 +11,9 @@ using DotNetMigrations.Repositories;
 
 namespace DotNetMigrations.Commands
 {
-    public class MigrateCommand : DatabaseCommandBase<MigrateCommandArgs>
+    [Command("migrate")]
+    [Description("Migrates the database up or down to a specific version.")]
+    public class MigrateCommand : DatabaseCommandBase
     {
         private readonly IMigrationDirectory _migrationDirectory;
 
@@ -21,28 +25,17 @@ namespace DotNetMigrations.Commands
         public MigrateCommand(IMigrationDirectory migrationDirectory)
         {
             _migrationDirectory = migrationDirectory;
+            TargetVersion = -1;
         }
 
-        /// <summary>
-        /// The name of the command that is typed as a command line argument.
-        /// </summary>
-        public override string CommandName
-        {
-            get { return "migrate"; }
-        }
-
-        /// <summary>
-        /// The help text information for the command.
-        /// </summary>
-        public override string Description
-        {
-            get { return "Migrates the database up or down to a specific version."; }
-        }
+        [Parameter("version", Flag='v', Position = 1)]
+        [Description("Target version to migrate up or down to.")]
+        public long TargetVersion { get; set; }
 
         /// <summary>
         /// Executes the Command's logic.
         /// </summary>
-        protected override void Run(MigrateCommandArgs args)
+        public override void Execute()
         {
             IOrderedEnumerable<IMigrationScriptFile> files = _migrationDirectory.GetScripts()
                 .OrderByDescending(x => x.Version);
@@ -54,28 +47,27 @@ namespace DotNetMigrations.Commands
             }
 
             long currentVersion = GetDatabaseVersion();
-            long targetVersion = args.TargetVersion;
 
-            if (targetVersion == -1)
+            if (TargetVersion == -1)
             {
                 //  if version not provided, assume we want to migrate to the latest migration script version
-                targetVersion = files.Select(x => x.Version).First();
+                TargetVersion = files.Select(x => x.Version).First();
             }
 
             Log.WriteLine("Database is at version:".PadRight(30) + currentVersion);
 
             MigrationDirection direction;
-            if (currentVersion < targetVersion)
+            if (currentVersion < TargetVersion)
             {
                 direction = MigrationDirection.Up;
-                MigrateUp(currentVersion, targetVersion, files);
-                Log.WriteLine("Migrated up to version:".PadRight(30) + targetVersion);
+                MigrateUp(currentVersion, TargetVersion, files);
+                Log.WriteLine("Migrated up to version:".PadRight(30) + TargetVersion);
             }
-            else if (currentVersion > targetVersion)
+            else if (currentVersion > TargetVersion)
             {
                 direction = MigrationDirection.Down;
-                MigrateDown(currentVersion, targetVersion, files);
-                Log.WriteLine("Migrated down to version:".PadRight(30) + targetVersion);
+                MigrateDown(currentVersion, TargetVersion, files);
+                Log.WriteLine("Migrated down to version:".PadRight(30) + TargetVersion);
             }
             else
             {
@@ -96,7 +88,7 @@ namespace DotNetMigrations.Commands
                 {
                     Log.WriteLine("  {0}", hook.CommandName);
                     hook.Log = Log;
-                    hook.OnPostMigration(args, direction);
+                    hook.OnPostMigration(this, direction);
                 }
             }
             else

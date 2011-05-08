@@ -1,11 +1,14 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Linq;
 using DotNetMigrations.Core;
 using DotNetMigrations.Migrations;
 
 namespace DotNetMigrations.Commands
 {
-    public class VersionCommand : DatabaseCommandBase<DatabaseCommandArguments>
+    [DotConsole.Command("version")]
+    [Description("Displays the latest version of the database and the migration scripts.")]
+    public class VersionCommand : DatabaseCommandBase
     {
         private readonly IMigrationDirectory _migrationDirectory;
 
@@ -20,25 +23,9 @@ namespace DotNetMigrations.Commands
         }
 
         /// <summary>
-        /// The name of the command that is typed as a command line argument.
-        /// </summary>
-        public override string CommandName
-        {
-            get { return "version"; }
-        }
-
-        /// <summary>
-        /// The help text information for the command.
-        /// </summary>
-        public override string Description
-        {
-            get { return "Displays the latest version of the database and the migration scripts."; }
-        }
-
-        /// <summary>
         /// Executes the Command's logic.
         /// </summary>
-        protected override void Run(DatabaseCommandArguments args)
+        public override void Execute()
         {
             // Obtain Latest Script Version
             long scriptVersion = GetLatestScriptVersion();

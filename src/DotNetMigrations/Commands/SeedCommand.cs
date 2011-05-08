@@ -1,24 +1,22 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Data.Common;
 using System.IO;
+using DotConsole;
 using DotNetMigrations.Core;
 using DotNetMigrations.Migrations;
 
 namespace DotNetMigrations.Commands
 {
-    public class SeedCommand : DatabaseCommandBase<SeedCommandArgs>
+    [Command("seed")]
+    [Description("Plants seed data into the database.")]
+    public class SeedCommand : DatabaseCommandBase
     {
         private readonly ISeedDirectory _seedDirectory;
 
-        public override string CommandName
-        {
-            get { return "seed"; }
-        }
-
-        public override string Description
-        {
-            get { return "Plants seed data into the database."; }
-        }
+        [Parameter("set", Flag = 's', Position = 1)]
+        [Description("Set of seed data to plant.")]
+        public string SetName { get; set; }
 
         public SeedCommand() : this(new SeedDirectory()) { }
 
@@ -27,9 +25,9 @@ namespace DotNetMigrations.Commands
             _seedDirectory = seedDirectory;
         }
 
-        protected override void Run(SeedCommandArgs args)
+        public override void Execute()
         {
-            var seedScripts = _seedDirectory.GetScripts(args.Set);
+            var seedScripts = _seedDirectory.GetScripts(SetName);
 
             // run the scripts
             using (DbTransaction tran = Database.BeginTransaction())

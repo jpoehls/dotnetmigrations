@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DotNetMigrations.Core</RootNamespace>
     <AssemblyName>DotNetMigrations.Core</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
     </SccProjectName>
@@ -39,6 +39,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -58,6 +59,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DotConsole">
+      <HintPath>..\..\lib\DotConsole.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition, Version=2009.22.10.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -84,15 +88,10 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AppSettingKeys.cs" />
-    <Compile Include="ArgumentAttribute.cs" />
-    <Compile Include="ArgumentSet.cs" />
     <Compile Include="BaseClasses\CommandBase.cs" />
     <Compile Include="BaseClasses\CommandEventArgs.cs" />
     <Compile Include="BaseClasses\DatabaseCommandBase.cs" />
-    <Compile Include="BaseClasses\CommandArguments.cs" />
-    <Compile Include="CommandHelpWriter.cs" />
     <Compile Include="ConfigurationManagerWrapper.cs" />
-    <Compile Include="BaseClasses\DatabaseCommandArguments.cs" />
     <Compile Include="Data\DataAccessFactory.cs" />
     <Compile Include="Data\DatabaseInitializer.cs" />
     <Compile Include="Data\DbTransactionExtensions.cs" />
@@ -103,7 +102,6 @@
     <Compile Include="Data\ScriptSplitter.cs" />
     <Compile Include="Data\SqlParseException.cs" />
     <Compile Include="IEnumerableExtensions.cs" />
-    <Compile Include="Interfaces\IArguments.cs" />
     <Compile Include="IConfigurationManager.cs" />
     <Compile Include="Interfaces\ICommand.cs" />
     <Compile Include="Interfaces\ILogger.cs" />

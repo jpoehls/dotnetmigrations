@@ -3,14 +3,13 @@ using System.Linq;
 
 namespace DotNetMigrations.Core
 {
-    public class CommandEventArgs<TArgs> : EventArgs
-        where TArgs : CommandArguments
+    public class CommandEventArgs : EventArgs
     {
-        public TArgs CommandArguments { get; private set; }
+        public ICommand Command { get; private set; }
 
-        public CommandEventArgs(TArgs commandArguments)
+        public CommandEventArgs(ICommand command)
         {
-            CommandArguments = commandArguments;
+            Command = command;
         }
     }
 }

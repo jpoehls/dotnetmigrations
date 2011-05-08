@@ -1,45 +1,33 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Data.Common;
 using System.Linq;
+using DotConsole;
 using DotNetMigrations.Core;
 using DotNetMigrations.Core.Data;
 
 namespace DotNetMigrations.Commands
 {
-    public class RollbackCommand : DatabaseCommandBase<DatabaseCommandArguments>
+    [Command("rollback")]
+    [Description("Rolls back the database by one version.")]
+    public class RollbackCommand : DatabaseCommandBase
     {
-        private readonly DatabaseCommandBase<MigrateCommandArgs> _migrateCommand;
+        private readonly MigrateCommand _migrateCommand;
 
         public RollbackCommand()
             : this(new MigrateCommand())
         {
         }
 
-        public RollbackCommand(DatabaseCommandBase<MigrateCommandArgs> migrateCommand)
+        public RollbackCommand(MigrateCommand migrateCommand)
         {
             _migrateCommand = migrateCommand;
         }
 
         /// <summary>
-        /// The name of the command that is typed as a command line argument.
-        /// </summary>
-        public override string CommandName
-        {
-            get { return "rollback"; }
-        }
-
-        /// <summary>
-        /// The help text information for the command.
-        /// </summary>
-        public override string Description
-        {
-            get { return "Rolls back the database by one version."; }
-        }
-
-        /// <summary>
         /// Executes the Command's logic.
         /// </summary>
-        protected override void Run(DatabaseCommandArguments args)
+        public override void Execute()
         {
             long currentVersion = GetDatabaseVersion();
             long previousVersion = GetPreviousDatabaseVersion(currentVersion);
@@ -51,12 +39,10 @@ namespace DotNetMigrations.Commands
             }
 
             _migrateCommand.Log = Log;
+            _migrateCommand.Connection = Connection;
+            _migrateCommand.TargetVersion = previousVersion;
 
-            var migrateCommandArgs = new MigrateCommandArgs();
-            migrateCommandArgs.Connection = args.Connection;
-            migrateCommandArgs.TargetVersion = previousVersion;
-
-            _migrateCommand.Run(migrateCommandArgs);
+            _migrateCommand.Run();
         }
 
         /// <summary>
