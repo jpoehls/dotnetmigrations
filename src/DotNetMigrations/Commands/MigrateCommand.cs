@@ -75,7 +75,7 @@ namespace DotNetMigrations.Commands
             }
 
             // execute the post migration actions
-            var postMigrationHooks = Program.Current.CommandRepository.Commands
+            var postMigrationHooks = Program.Current.CommandLocator.GetAllCommands()
                 .Where(cmd => cmd is IPostMigrationHook)
                 .Cast<IPostMigrationHook>()
                 .Where(hook => hook.ShouldRun(direction));

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using DotConsole;
 using DotNetMigrations.Core;
 using DotNetMigrations.Repositories;
+using ICommand = DotNetMigrations.Core.ICommand;
 
 namespace DotNetMigrations
 {
@@ -35,13 +38,13 @@ namespace DotNetMigrations
 
         #endregion
 
-        private readonly CommandRepository _commandRepo;
         private readonly LogRepository _logger;
         private readonly bool _logFullErrors;
+        private readonly Commander _commander;
 
         private readonly bool _keepConsoleOpen;
 
-        public CommandRepository CommandRepository { get { return _commandRepo; } }
+        public ICommandLocator CommandLocator { get { return _commander.Router.Locator; } }
 
         private Program()
             : this(new ConfigurationManagerWrapper())
@@ -53,9 +56,12 @@ namespace DotNetMigrations
         /// </summary>
         private Program(IConfigurationManager configManager)
         {
-            _commandRepo = new CommandRepository();
             _logger = new LogRepository();
 
+            var pluginDirectory = configManager.AppSettings[AppSettingKeys.PluginFolder];
+            
+            _commander = Commander.Standard(new AssemblyCatalog(Assembly.GetCallingAssembly()), new DirectoryCatalog(pluginDirectory));
+           
             string logFullErrorsSetting = configManager.AppSettings[AppSettingKeys.LogFullErrors];
             bool.TryParse(logFullErrorsSetting, out _logFullErrors);
 
@@ -65,102 +71,14 @@ namespace DotNetMigrations
         /// <summary>
         /// Primary Program Execution
         /// </summary>
-        private void Run(string[] args)
+        private void Run(IEnumerable<string> args)
         {
-            string executableName = Process.GetCurrentProcess().ProcessName + ".exe";
-            ArgumentSet allArguments = ArgumentSet.Parse(args);
-
-            var helpWriter = new CommandHelpWriter(_logger);
-
-            bool showHelp = allArguments.ContainsName("help");
-
-            string commandName = showHelp
-                                     ? allArguments.GetByName("help")
-                                     : allArguments.AnonymousArgs.FirstOrDefault();
-
-            ICommand command = null;
-
-            if (commandName != null)
-            {
-                command = _commandRepo.GetCommand(commandName);
-            }
-
-            if (command == null)
-            {
-                if (showHelp)
-                {
-                    //  no command name was found, show the list of available commands
-                    WriteAppUsageHelp(executableName);
-                    helpWriter.WriteCommandList(_commandRepo.Commands);
-                }
-                else
-                {
-                    //  invalid command name was given
-                    _logger.WriteError("'{0}' is not a DotNetMigrations command.", commandName);
-                    _logger.WriteLine(string.Empty);
-                    _logger.WriteError("See '{0} -help' for a list of available commands.", executableName);
-                }
-            }
-
-            if (showHelp && command != null)
-            {
-                //  show help for the given command
-                helpWriter.WriteCommandHelp(command, executableName);
-            }
-            else if (command != null)
-            {
-                command.Log = _logger;
-
-                var commandArgumentSet = ArgumentSet.Parse(args.Skip(1).ToArray());
-                IArguments commandArgs = command.CreateArguments();
-                commandArgs.Parse(commandArgumentSet);
-
-                if (commandArgs.IsValid)
-                {
-                    var timer = new Stopwatch();
-                    timer.Start();
-
-                    try
-                    {
-                        command.Run(commandArgs);
-                    }
-                    catch (Exception ex)
-                    {
-                        //_logger.WriteLine(string.Empty);
-
-                        if (_logFullErrors)
-                        {
-                            _logger.WriteError(ex.ToString());
-                        }
-                        else
-                        {
-                            WriteShortErrorMessages(ex);
-                        }
-
-                        if (Debugger.IsAttached)
-                            throw;
-                    }
-                    finally
-                    {
-                        timer.Stop();
-
-                        _logger.WriteLine(string.Empty);
-                        _logger.WriteLine(string.Format("Command duration was {0}.",
-                                                               decimal.Divide(timer.ElapsedMilliseconds, 1000).ToString(
-                                                                   "0.0000s")));
-                    }
-                }
-                else
-                {
-                    //  argument validation failed, show errors
-                    WriteValidationErrors(command.CommandName, commandArgs.Errors);
-                    _logger.WriteLine(string.Empty);
-                    helpWriter.WriteCommandHelp(command, executableName);
-                }
-            }
+            _commander.Run(args);
 
             if (_keepConsoleOpen)
             {
+                string executableName = Process.GetCurrentProcess().ProcessName + ".exe";
+
                 Console.WriteLine();
                 Console.WriteLine("  > Uh-oh. It looks like you didn't run me from a console.");
                 Console.WriteLine("  > Did you double-click me?");
@@ -216,40 +134,6 @@ namespace DotNetMigrations
             {
                 return false;
             }
-        }
-
-        private void WriteShortErrorMessages(Exception ex)
-        {
-            _logger.WriteError(ex.Message);
-            Exception innerEx = ex.InnerException;
-            while (innerEx != null)
-            {
-                _logger.WriteLine(string.Empty);
-                _logger.WriteError(innerEx.Message);
-
-                innerEx = innerEx.InnerException;
-            }
-        }
-
-        /// <summary>
-        /// Writes usage help for the app to the logger.
-        /// </summary>
-        private void WriteAppUsageHelp(string executableName)
-        {
-            //_logger.WriteLine(string.Empty);
-            _logger.Write("Usage: ");
-            _logger.Write(executableName);
-            _logger.WriteLine(" [-help] command [args]");
-        }
-
-        /// <summary>
-        /// Writes out all validation errors to the logger.
-        /// </summary>
-        private void WriteValidationErrors(string commandName, IEnumerable<string> errors)
-        {
-            _logger.WriteError("Invalid arguments for the {0} command", commandName);
-            _logger.WriteLine(string.Empty);
-            errors.ForEach(x => _logger.WriteError("\t* " + x));
         }
     }
 }
