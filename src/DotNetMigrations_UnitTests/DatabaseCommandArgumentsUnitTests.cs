@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using DotNetMigrations.Core;
+using DotNetMigrations.UnitTests.Mocks;
 using NUnit.Framework;
 
 namespace DotNetMigrations.UnitTests
@@ -12,29 +13,29 @@ namespace DotNetMigrations.UnitTests
         public void Validation_should_fail_if_Connection_is_null_or_empty()
         {
             //  arrange
-            var argSet = ArgumentSet.Parse(new string[] { string.Empty });
-            var args = new DatabaseCommandArguments();
+            var validator = new DotConsole.DataAnnotationValidator();
+            var cmd = new MockDatabaseCommand1();
 
             //  act
-            args.Parse(argSet);
+            bool valid = validator.ValidateParameters(cmd);
 
             //  assert
-            Assert.IsFalse(args.IsValid);
-            Assert.AreEqual(1, args.Errors.Count());
+            Assert.IsFalse(valid);
+            Assert.AreEqual(1, validator.ErrorMessages.Count());
         }
 
         [Test]
         public void Validation_should_succeed_if_Connection_has_value()
         {
             //  arrange
-            var argSet = ArgumentSet.Parse(new string[] { "-c", "my_connection" });
-            var args = new DatabaseCommandArguments();
+            var validator = new DotConsole.DataAnnotationValidator();
+            var cmd = new MockDatabaseCommand1();
 
             //  act
-            args.Parse(argSet);
+            bool valid = validator.ValidateParameters(cmd);
 
             //  assert
-            Assert.IsTrue(args.IsValid);
+            Assert.IsTrue(valid);
         }
     }
 }

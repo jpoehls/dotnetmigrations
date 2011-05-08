@@ -18,9 +18,6 @@ namespace DotNetMigrations.UnitTests.Commands
         [SetUp]
         public void Setup()
         {
-            _commandArgs = new MigrateCommandArgs();
-            _commandArgs.Connection = TestConnectionString;
-
             _mockLog = new MockLog1();
 
             _mockMigrationScripts = new List<IMigrationScriptFile>();
@@ -30,6 +27,7 @@ namespace DotNetMigrations.UnitTests.Commands
 
             _migrateCommand = new MigrateCommand(_mockMigrationDir.Object);
             _migrateCommand.Log = _mockLog;
+            _migrateCommand.Connection = TestConnectionString;
 
             //  setup the mock migration scripts
             var mockScript1 = new Mock<IMigrationScriptFile>();
@@ -74,7 +72,6 @@ namespace DotNetMigrations.UnitTests.Commands
 
         #endregion
 
-        private MigrateCommandArgs _commandArgs;
         private MigrateCommand _migrateCommand;
         private MockLog1 _mockLog;
         private Mock<IMigrationDirectory> _mockMigrationDir;
@@ -83,15 +80,22 @@ namespace DotNetMigrations.UnitTests.Commands
         private Mock<IMigrationScriptFile> _mockScriptWithBadTeardown;
 
         [Test]
+        public void Constructor_should_default_TargetVersion_to_negative_1()
+        {
+            //  assert
+            Assert.AreEqual(-1, _migrateCommand.TargetVersion);
+        }
+
+        [Test]
         public void Run_should_migrate_down_to_TargetVersion_if_less_than_current_schema_version()
         {
             //  arrange
             //  migrate up first
-            _migrateCommand.Run(_commandArgs);
+            _migrateCommand.Run();
 
             //  act
-            _commandArgs.TargetVersion = 1;
-            _migrateCommand.Run(_commandArgs);
+            _migrateCommand.TargetVersion = 1;
+            _migrateCommand.Run();
 
             //  assert
             using (var sql = new SqlDatabaseHelper(TestConnectionString))
@@ -113,7 +117,7 @@ namespace DotNetMigrations.UnitTests.Commands
             //  arrange
 
             //  act
-            _migrateCommand.Run(_commandArgs);
+            _migrateCommand.Run();
 
             //  assert
             using (var sql = new SqlDatabaseHelper(TestConnectionString))
@@ -134,13 +138,13 @@ namespace DotNetMigrations.UnitTests.Commands
         {
             //  arrange
             //  migrate to version 1 first
-            _commandArgs.TargetVersion = 1;
-            _migrateCommand.Run(_commandArgs);
+            _migrateCommand.TargetVersion = 1;
+            _migrateCommand.Run();
 
-            _commandArgs.TargetVersion = 2;
+            _migrateCommand.TargetVersion = 2;
 
             //  act
-            _migrateCommand.Run(_commandArgs);
+            _migrateCommand.Run();
 
             //  assert
             using (var sql = new SqlDatabaseHelper(TestConnectionString))
@@ -161,12 +165,12 @@ namespace DotNetMigrations.UnitTests.Commands
         {
             //  arrange
             //  migrate up first
-            _migrateCommand.Run(_commandArgs);
+            _migrateCommand.Run();
 
-            _commandArgs.TargetVersion = 0;
+            _migrateCommand.TargetVersion = 0;
 
             //  act
-            _migrateCommand.Run(_commandArgs);
+            _migrateCommand.Run();
 
             //  assert
             using (var sql = new SqlDatabaseHelper(TestConnectionString))
@@ -188,16 +192,16 @@ namespace DotNetMigrations.UnitTests.Commands
         {
             //  arrange
             //  migrate up first
-            _migrateCommand.Run(_commandArgs);
+            _migrateCommand.Run();
 
-            _commandArgs.TargetVersion = 0;
+            _migrateCommand.TargetVersion = 0;
 
             _mockMigrationScripts.Add(_mockScriptWithBadSetup.Object);
 
             //  act
             try
             {
-                _migrateCommand.Run(_commandArgs);
+                _migrateCommand.Run();
             }
             catch (MigrationException)
             {
@@ -224,14 +228,14 @@ namespace DotNetMigrations.UnitTests.Commands
             //  arrange
             _mockMigrationScripts.Add(_mockScriptWithBadTeardown.Object);
             //  migrate up first
-            _migrateCommand.Run(_commandArgs);
+            _migrateCommand.Run();
 
-            _commandArgs.TargetVersion = 0;
+            _migrateCommand.TargetVersion = 0;
 
             //  act
             try
             {
-                _migrateCommand.Run(_commandArgs);
+                _migrateCommand.Run();
             }
             catch (MigrationException)
             {
@@ -261,7 +265,7 @@ namespace DotNetMigrations.UnitTests.Commands
             //  act
             try
             {
-                _migrateCommand.Run(_commandArgs);
+                _migrateCommand.Run();
             }
             catch (MigrationException ex)
             {
@@ -281,7 +285,7 @@ namespace DotNetMigrations.UnitTests.Commands
             _mockMigrationScripts.Clear();
 
             //  act
-            _migrateCommand.Run(_commandArgs);
+            _migrateCommand.Run();
         }
 
         [Test]
@@ -291,7 +295,7 @@ namespace DotNetMigrations.UnitTests.Commands
             _mockMigrationScripts.Clear();
 
             //  act
-            _migrateCommand.Run(_commandArgs);
+            _migrateCommand.Run();
 
             //  assert
             Assert.AreEqual("No migration scripts were found.\r\n", _mockLog.Output);
@@ -301,10 +305,10 @@ namespace DotNetMigrations.UnitTests.Commands
         public void Run_should_log_message_if_schema_is_already_at_TargetVersion()
         {
             //  arrange
-            _commandArgs.TargetVersion = 0;
+            _migrateCommand.TargetVersion = 0;
 
             //  act
-            _migrateCommand.Run(_commandArgs);
+            _migrateCommand.Run();
 
             //  assert
             Assert.IsTrue(Regex.IsMatch(_mockLog.Output, @"Database is at version:\s*0\r\n"));
@@ -316,7 +320,7 @@ namespace DotNetMigrations.UnitTests.Commands
             //  arrange
 
             //  act
-            _migrateCommand.Run(_commandArgs);
+            _migrateCommand.Run();
 
             //  assert
             Assert.IsTrue(_mockLog.Output.StartsWith("Database is at version:".PadRight(30) + 0 + "\r\n"));
@@ -328,7 +332,7 @@ namespace DotNetMigrations.UnitTests.Commands
             //  arrange
 
             //  act
-            _migrateCommand.Run(_commandArgs);
+            _migrateCommand.Run();
 
             //  assert
             Assert.IsTrue(_mockLog.Output.Contains("Migrated up to version:".PadRight(30) + 2 + "\r\n"));
@@ -339,13 +343,13 @@ namespace DotNetMigrations.UnitTests.Commands
         {
             //  arrange
             //  migrate up first
-            _migrateCommand.Run(_commandArgs);
+            _migrateCommand.Run();
 
-            _commandArgs.TargetVersion = 0;
+            _migrateCommand.TargetVersion = 0;
             _mockLog.Clear();
 
             //  act
-            _migrateCommand.Run(_commandArgs);
+            _migrateCommand.Run();
 
             //  assert
             Assert.IsTrue(_mockLog.Output.Contains("Migrated down to version:".PadRight(30) + 0 + "\r\n"));

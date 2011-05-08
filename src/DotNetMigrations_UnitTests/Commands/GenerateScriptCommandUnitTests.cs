@@ -20,11 +20,10 @@ namespace DotNetMigrations.UnitTests.Commands
 
             var cmd = new GenerateScriptCommand(mockMigrationDir.Object);
             cmd.Log = new MockLog1();
-            var cmdArgs = new GenerateScriptCommandArgs();
-            cmdArgs.MigrationName = "my_name";
+            cmd.MigrationName = "my_name";
 
             //  act
-            cmd.Run(cmdArgs);
+            cmd.Run();
 
             //  assert
             mockMigrationDir.Verify(dir => dir.CreateBlankScript("my_name"));
@@ -40,14 +39,43 @@ namespace DotNetMigrations.UnitTests.Commands
             var cmd = new GenerateScriptCommand(mockMigrationDir.Object);
             var mockLog = new MockLog1();
             cmd.Log = mockLog;
-            var cmdArgs = new GenerateScriptCommandArgs();
-            cmdArgs.MigrationName = "my_name";
+            cmd.MigrationName = "my_name";
 
             //  act
-            cmd.Run(cmdArgs);
+            cmd.Run();
 
             //  assert
             mockLog.Output.Contains(" 1234_my_name.sql ");
+        }
+
+        [Test]
+        public void Validation_should_fail_if_MigrationName_is_null_or_empty()
+        {
+            //  arrange
+            var validator = new DotConsole.DataAnnotationValidator();
+            var cmd = new GenerateScriptCommand();
+
+            //  act
+            bool valid = validator.ValidateParameters(cmd);
+
+            //  assert
+            Assert.IsFalse(valid);
+            Assert.AreEqual(1, validator.ErrorMessages.Count());
+        }
+
+        [Test]
+        public void Validation_should_succeed_if_MigrationName_has_value()
+        {
+            //  arrange
+            var validator = new DotConsole.DataAnnotationValidator();
+            var cmd = new GenerateScriptCommand();
+            cmd.MigrationName = "something";
+
+            //  act
+            bool valid = validator.ValidateParameters(cmd);
+
+            //  assert
+            Assert.IsTrue(valid);
         }
     }
 }

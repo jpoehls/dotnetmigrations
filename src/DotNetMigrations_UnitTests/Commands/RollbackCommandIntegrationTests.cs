@@ -13,17 +13,9 @@ namespace DotNetMigrations.UnitTests.Commands
     [TestFixture]
     public class RollbackCommandIntegrationTests : DatabaseIntegrationTests
     {
-        private DatabaseCommandArguments _commandArgs;
         private RollbackCommand _rollbackCommand;
-        private Mock<DatabaseCommandBase<MigrateCommandArgs>> _mockMigrateCommand;
+        private Mock<MigrateCommand> _mockMigrateCommand;
         private MockLog1 _mockLog;
-
-        [TestFixtureSetUp]
-        public void FixtureSetup()
-        {
-            _commandArgs = new DatabaseCommandArguments();
-            _commandArgs.Connection = TestConnectionString;
-        }
 
         #region Setup/Teardown
 
@@ -32,11 +24,12 @@ namespace DotNetMigrations.UnitTests.Commands
         {
             _mockLog = new MockLog1();
 
-            _mockMigrateCommand = new Mock<DatabaseCommandBase<MigrateCommandArgs>>();
+            _mockMigrateCommand = new Mock<MigrateCommand>();
             _mockMigrateCommand.SetupProperty(x => x.Log);
 
             _rollbackCommand = new RollbackCommand(_mockMigrateCommand.Object);
             _rollbackCommand.Log = _mockLog;
+            _rollbackCommand.Connection = TestConnectionString;
 
             CreateDatabase();
         }
@@ -62,10 +55,10 @@ namespace DotNetMigrations.UnitTests.Commands
             }
 
             bool runCalled = false;
-            _mockMigrateCommand.Protected().Setup("Run", ItExpr.IsAny<MigrateCommandArgs>()).Callback(() => runCalled = true);
+            _mockMigrateCommand.Protected().Setup("Run").Callback(() => runCalled = true);
 
             //  act
-            _rollbackCommand.Run(_commandArgs);
+            _rollbackCommand.Run();
 
             //  assert
             Assert.IsTrue(runCalled);
@@ -77,7 +70,7 @@ namespace DotNetMigrations.UnitTests.Commands
             //  arrange
 
             //  act
-            _rollbackCommand.Run(_commandArgs);
+            _rollbackCommand.Run();
 
             //  assert
             Assert.IsTrue(_mockLog.Output.Contains("No rollback is necessary. Database schema is already at version 0."));
@@ -88,10 +81,10 @@ namespace DotNetMigrations.UnitTests.Commands
         {
             //  arrange
             bool runCalled = false;
-            _mockMigrateCommand.Protected().Setup("Run", ItExpr.IsAny<MigrateCommandArgs>()).Callback(() => runCalled = true);
+            _mockMigrateCommand.Protected().Setup("Run").Callback(() => runCalled = true);
 
             //  act
-            _rollbackCommand.Run(_commandArgs);
+            _rollbackCommand.Run();
 
             //  assert
             Assert.IsFalse(runCalled);
@@ -111,12 +104,12 @@ namespace DotNetMigrations.UnitTests.Commands
                 sql.ExecuteNonQuery("insert into [schema_migrations] ([version]) values (2)");
             }
 
-            _mockMigrateCommand.Protected().Setup("Run", ItExpr.IsAny<MigrateCommandArgs>())
-                .Callback((MigrateCommandArgs args) =>
+            _mockMigrateCommand.Protected().Setup("Run")
+                .Callback((MigrateCommand args) =>
                 Assert.AreEqual(2, args.TargetVersion));
 
             //  act
-            _rollbackCommand.Run(_commandArgs);
+            _rollbackCommand.Run();
 
             //  assert
             _mockMigrateCommand.Verify();
@@ -135,7 +128,7 @@ namespace DotNetMigrations.UnitTests.Commands
             }
 
             //  act
-            _rollbackCommand.Run(_commandArgs);
+            _rollbackCommand.Run();
 
             //  assert
             Assert.AreSame(_rollbackCommand.Log, _mockMigrateCommand.Object.Log);
@@ -145,12 +138,12 @@ namespace DotNetMigrations.UnitTests.Commands
         public void Run_should_set_MigrateCommandArgs_Connection_to_its_own_Connection()
         {
             //  arrange
-            _mockMigrateCommand.Protected().Setup("Run", ItExpr.IsAny<MigrateCommandArgs>())
-                .Callback((MigrateCommandArgs args) =>
-                Assert.AreEqual(_commandArgs.Connection, args.Connection));
+            _mockMigrateCommand.Protected().Setup("Run")
+                .Callback((MigrateCommand args) =>
+                Assert.AreEqual(_rollbackCommand.Connection, args.Connection));
 
             //  act
-            _rollbackCommand.Run(_commandArgs);
+            _rollbackCommand.Run();
 
             //  assert
             _mockMigrateCommand.Verify();

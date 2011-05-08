@@ -59,6 +59,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DotConsole">
+      <HintPath>..\..\lib\DotConsole.dll</HintPath>
+    </Reference>
     <Reference Include="Moq, Version=3.1.416.3, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\Moq.dll</HintPath>
@@ -68,10 +71,7 @@
       <HintPath>..\..\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition, Version=2009.22.10.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\System.ComponentModel.Composition.dll</HintPath>
-    </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -96,14 +96,9 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="ArgumentAttributeUnitTests.cs" />
-    <Compile Include="ArgumentSetUnitTests.cs" />
-    <Compile Include="CommandArgumentsUnitTests.cs" />
     <Compile Include="CommandBaseUnitTests.cs" />
-    <Compile Include="CommandHelpWriterUnitTests.cs" />
-    <Compile Include="Commands\GenerateScriptCommandArgsUnitTests.cs" />
-    <Compile Include="Commands\MigrateCommandArgsUnitTests.cs" />
     <Compile Include="Migrations\SequentialNumberVersionUnitTests.cs" />
+    <Compile Include="Mocks\MockDatabaseCommand1.cs" />
     <Compile Include="SeedDirectoryUnitTests.cs" />
     <Compile Include="StringExtensionsUnitTests.cs" />
     <Compile Include="DatabaseCommandArgumentsUnitTests.cs" />
@@ -122,9 +117,7 @@
     <Compile Include="Data\DatabaseInitializerIntegrationTests.cs" />
     <Compile Include="DisposableDirectory.cs" />
     <Compile Include="Migrations\VersionStrategyFactoryUnitTests.cs" />
-    <Compile Include="Mocks\MockCommandArgs.cs" />
     <Compile Include="Mocks\MockLog1.cs" />
-    <Compile Include="Repositories\CommandRepositoryUnitTests.cs" />
     <Compile Include="Mocks\MockCommand1.cs" />
     <Compile Include="Repositories\LogRepositoryUnitTests.cs" />
     <Compile Include="SqlDatabaseHelper.cs" />

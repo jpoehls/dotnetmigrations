@@ -22,6 +22,7 @@ namespace DotNetMigrations.UnitTests.Commands
             _mockMigrationDir = new Mock<IMigrationDirectory>();
             _versionCommand = new VersionCommand(_mockMigrationDir.Object);
             _versionCommand.Log = _mockLog;
+            _versionCommand.Connection = TestConnectionString;
             CreateDatabase();
         }
 
@@ -34,16 +35,8 @@ namespace DotNetMigrations.UnitTests.Commands
         #endregion
 
         private Mock<IMigrationDirectory> _mockMigrationDir;
-        private DatabaseCommandArguments _commandArgs;
         private VersionCommand _versionCommand;
         private MockLog1 _mockLog;
-
-        [TestFixtureSetUp]
-        public void SetupFixture()
-        {
-            _commandArgs = new DatabaseCommandArguments();
-            _commandArgs.Connection = TestConnectionString;
-        }
 
         [Test]
         public void Run_should_create_schema_migrations_table_if_it_doesnt_exist()
@@ -52,7 +45,7 @@ namespace DotNetMigrations.UnitTests.Commands
             _mockMigrationDir.Setup(dir => dir.GetScripts()).Returns(Enumerable.Empty<IMigrationScriptFile>);
 
             //  act
-            _versionCommand.Run(_commandArgs);
+            _versionCommand.Run();
 
             //  assert
             using (var sql = new SqlDatabaseHelper(TestConnectionString))
@@ -78,7 +71,7 @@ namespace DotNetMigrations.UnitTests.Commands
                 sql.ExecuteNonQuery("insert into [schema_migrations] ([version]) values (1234)");
 
                 //  act
-                _versionCommand.Run(_commandArgs);
+                _versionCommand.Run();
 
                 //  assert
                 Assert.IsTrue(_mockLog.Output.Contains("Database is at version:".PadRight(30) + "1234"));
@@ -92,7 +85,7 @@ namespace DotNetMigrations.UnitTests.Commands
             _mockMigrationDir.Setup(dir => dir.GetScripts()).Returns(Enumerable.Empty<IMigrationScriptFile>);
 
             //  act
-            _versionCommand.Run(_commandArgs);
+            _versionCommand.Run();
 
             //  assert
             Assert.IsTrue(_mockLog.Output.Contains("Database is at version:".PadRight(30) + "0"));
@@ -111,7 +104,7 @@ namespace DotNetMigrations.UnitTests.Commands
             _mockMigrationDir.Setup(dir => dir.GetScripts()).Returns(scriptFiles);
 
             //  act
-            _versionCommand.Run(_commandArgs);
+            _versionCommand.Run();
 
             //  assert
             Assert.IsTrue(_mockLog.Output.Contains("Scripts are at version:".PadRight(30) + "3"));
@@ -124,7 +117,7 @@ namespace DotNetMigrations.UnitTests.Commands
             _mockMigrationDir.Setup(dir => dir.GetScripts()).Returns(Enumerable.Empty<IMigrationScriptFile>);
 
             //  act
-            _versionCommand.Run(_commandArgs);
+            _versionCommand.Run();
 
             //  assert
             Assert.IsTrue(_mockLog.Output.Contains("Your database is up-to-date!"));
