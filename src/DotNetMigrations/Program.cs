@@ -44,7 +44,7 @@ namespace DotNetMigrations
 
         private readonly bool _keepConsoleOpen;
 
-        public ICommandLocator CommandLocator { get { return _commander.Router.Locator; } }
+        public ICommandLocator CommandLocator { get { return _commander.Locator; } }
 
         private Program()
             : this(new ConfigurationManagerWrapper())
@@ -66,7 +66,10 @@ namespace DotNetMigrations
             {
                 catalog.Catalogs.Add(new DirectoryCatalog(pluginDirectory));
             }
+
             _commander = Commander.Standard(catalog);
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
+            Commander.ApplicationName = string.Format("DotNetMigrations {0}.{1} - http://dotnetmigrations.zduck.com", version.Major, version.Minor);
            
             string logFullErrorsSetting = configManager.AppSettings[AppSettingKeys.LogFullErrors];
             bool.TryParse(logFullErrorsSetting, out _logFullErrors);
