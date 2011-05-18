@@ -39,7 +39,7 @@ namespace DotNetMigrations.Commands
         /// <summary>
         /// Executes the Command's logic.
         /// </summary>
-        protected override void Run(DatabaseCommandArguments args)
+        protected override void Execute(DatabaseCommandArguments args)
         {
             long currentVersion = GetDatabaseVersion();
             long previousVersion = GetPreviousDatabaseVersion(currentVersion);

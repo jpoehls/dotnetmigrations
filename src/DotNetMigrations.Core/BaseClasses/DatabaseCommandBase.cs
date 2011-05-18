@@ -99,5 +99,6 @@ namespace DotNetMigrations.Core
 
             return currentVersion;
         }
+		
     }
 }

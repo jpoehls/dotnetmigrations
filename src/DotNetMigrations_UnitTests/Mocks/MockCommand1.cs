@@ -20,7 +20,7 @@ namespace DotNetMigrations.UnitTests.Mocks
 
         public bool RunShouldThrowException { get; set; }
 
-        protected override void Run(MockCommandArgs args)
+        protected override void Execute(MockCommandArgs args)
         {
             if (RunShouldThrowException)
             {

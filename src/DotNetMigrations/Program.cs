@@ -206,10 +206,7 @@ namespace DotNetMigrations
         private static bool TestConsole()
         {
             try
-            {
-#pragma warning disable 168
-                var x = Console.CursorLeft;
-#pragma warning restore 168
+            {	
                 return true;
             }
             catch (IOException)

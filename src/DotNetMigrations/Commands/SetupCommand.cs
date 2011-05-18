@@ -33,7 +33,7 @@ namespace DotNetMigrations.Commands
             _seedCommand = seedCommand;
         }
 
-        protected override void Run(SeedCommandArgs args)
+        protected override void Execute(SeedCommandArgs args)
         {
             // migrate the schema first
             _migrateCommand.Log = this.Log;

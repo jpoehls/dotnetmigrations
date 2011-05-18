@@ -27,7 +27,7 @@ namespace DotNetMigrations.Commands
             _seedDirectory = seedDirectory;
         }
 
-        protected override void Run(SeedCommandArgs args)
+        protected override void Execute(SeedCommandArgs args)
         {
             var seedScripts = _seedDirectory.GetScripts(args.Set);
 

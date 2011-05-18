@@ -38,7 +38,7 @@ namespace DotNetMigrations.Commands
         /// <summary>
         /// Creates the .sql file and sends the final message.
         /// </summary>
-        protected override void Run(GenerateScriptCommandArgs args)
+        protected override void Execute(GenerateScriptCommandArgs args)
         {
             string path = _migrationDirectory.CreateBlankScript(args.MigrationName);
 

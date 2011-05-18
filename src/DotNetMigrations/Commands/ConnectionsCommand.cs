@@ -35,7 +35,7 @@ namespace DotNetMigrations.Commands
             get { return "Allows you to list, add or edit the saved connection strings."; }
         }
 
-        protected override void Run(ConnectionsCommandArgs args)
+        protected override void Execute(ConnectionsCommandArgs args)
         {
             //  if no Action was specified, use 'list' as the default
             if (string.IsNullOrEmpty(args.Action))

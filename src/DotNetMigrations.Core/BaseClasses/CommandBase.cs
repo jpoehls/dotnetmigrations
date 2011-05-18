@@ -54,7 +54,7 @@ namespace DotNetMigrations.Core
 
         #endregion
 
-        protected abstract void Run(TArgs args);
+        protected abstract void Execute(TArgs args);
         public event EventHandler<CommandEventArgs<TArgs>> CommandStarting;
         public event EventHandler<CommandEventArgs<TArgs>> CommandEnded;
 

@@ -42,7 +42,7 @@ namespace DotNetMigrations.Commands
         /// <summary>
         /// Executes the Command's logic.
         /// </summary>
-        protected override void Run(MigrateCommandArgs args)
+        protected override void Execute(MigrateCommandArgs args)
         {
             IOrderedEnumerable<IMigrationScriptFile> files = _migrationDirectory.GetScripts()
                 .OrderByDescending(x => x.Version);

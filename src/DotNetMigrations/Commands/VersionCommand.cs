@@ -38,7 +38,7 @@ namespace DotNetMigrations.Commands
         /// <summary>
         /// Executes the Command's logic.
         /// </summary>
-        protected override void Run(DatabaseCommandArguments args)
+        protected override void Execute(DatabaseCommandArguments args)
         {
             // Obtain Latest Script Version
             long scriptVersion = GetLatestScriptVersion();
