@@ -47,7 +47,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>"$(ProjectDir)nuget\nuget.exe" pack "$(ProjectDir)dotnetmigrations.nuspec" -o $(TargetDir)</PostBuildEvent>
+    <PostBuildEvent>xcopy "$(SolutionDir)src\DotNetMigrations\bin\$(ConfigurationName)" "$(ProjectDir)bin\packages\" /Y
+"$(ProjectDir)nuget\nuget.exe" pack "$(ProjectDir)dotnetmigrations.nuspec" -o $(TargetDir)</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

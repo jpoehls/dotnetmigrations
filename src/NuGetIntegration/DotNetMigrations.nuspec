@@ -15,9 +15,9 @@
     <tags>database migration</tags>
   </metadata>
   <files>
-    <file src="..\..\src\DotNetMigrations\bin\Debug\DotNetMigrations.Core.dll" />
-    <file src="..\..\src\DotNetMigrations\bin\Debug\System.ComponentModel.Composition.dll" />
-    <file src="..\..\src\DotNetMigrations\bin\Debug\db.exe.config" />
-    <file src="..\..\src\DotNetMigrations\bin\Debug\db.exe" />
+    <file src="..\..\src\NuGetIntegration\bin\packages\DotNetMigrations.Core.dll" />
+    <file src="..\..\src\NuGetIntegration\bin\packages\System.ComponentModel.Composition.dll" />
+    <file src="..\..\src\NuGetIntegration\bin\packages\db.exe.config" />
+    <file src="..\..\src\NuGetIntegration\bin\packages\db.exe" />
   </files>
 </package>
