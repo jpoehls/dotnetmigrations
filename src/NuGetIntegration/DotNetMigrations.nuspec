@@ -1,0 +1,23 @@
+﻿<?xml version="1.0"?>
+<package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <id>DotNetMigrations</id>
+    <version>0.7</version>
+    <title>DotNetMigrations</title>
+    <authors>Joshua Poehls</authors>
+    <owners>Joshua Poehls</owners>
+    <description>DotNetMigrations is a database migration framework that assists in managing and versioning database changes. It was originally designed as a straight port of the rails functionality located in the Ruby on Rails framework; however, has recently moved into a more open framework thanks to the power of the Managed Extensibility Framework.</description>
+    <summary>DotNetMigrations is a database migration framework that assists in managing and versioning database changes. It was originally designed as a straight port of the rails functionality located in the Ruby on Rails framework; however, has recently moved into a more open framework thanks to the power of the Managed Extensibility Framework.</summary>
+    <language>en-US</language>
+    <projectUrl>https://github.com/jpoehls/dotnetmigrations</projectUrl>
+    <licenseUrl>https://github.com/jpoehls/dotnetmigrations/blob/master/LICENSE.txt</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <tags>database migration</tags>
+  </metadata>
+  <files>
+    <file src="..\..\src\DotNetMigrations\bin\Debug\DotNetMigrations.Core.dll" />
+    <file src="..\..\src\DotNetMigrations\bin\Debug\System.ComponentModel.Composition.dll" />
+    <file src="..\..\src\DotNetMigrations\bin\Debug\db.exe.config" />
+    <file src="..\..\src\DotNetMigrations\bin\Debug\db.exe" />
+  </files>
+</package>
