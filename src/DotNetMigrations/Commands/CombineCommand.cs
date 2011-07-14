@@ -33,7 +33,7 @@ namespace DotNetMigrations.Commands
 			get { return "Combines a range of migrations into a single upgrade script."; }
 		}
 
-		protected override void Run(CombineCommandArgs args)
+		protected override void Execute(CombineCommandArgs args)
 		{
 			var allscripts = _migrationDirectory.GetScripts()
 				.OrderBy(x => x.Version);
