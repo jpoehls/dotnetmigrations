@@ -44,7 +44,7 @@ namespace DotNetMigrations.Core
             try
             {
                 InvokeCommandStarting(commandArgs);
-                Run(commandArgs);
+                Execute(commandArgs);
             }
             finally
             {
