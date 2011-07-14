@@ -62,23 +62,29 @@ namespace DotNetMigrations.Commands
                 targetVersion = files.Select(x => x.Version).First();
             }
 
+			Log.WriteLine("Transaction mode is: " + args.TransactionMode.ToString() + ".");
+			Log.WriteLine("");
+
             Log.WriteLine("Database is at version:".PadRight(30) + currentVersion);
+			Log.WriteLine("Target version:".PadRight(30) + targetVersion);
+			Log.WriteLine("");
 
             MigrationDirection direction;
             if (currentVersion < targetVersion)
             {
                 direction = MigrationDirection.Up;
-                MigrateUp(currentVersion, targetVersion, files);
+                MigrateUp(currentVersion, targetVersion, files, args.TransactionMode);
                 Log.WriteLine("Migrated up to version:".PadRight(30) + targetVersion);
             }
             else if (currentVersion > targetVersion)
             {
                 direction = MigrationDirection.Down;
-                MigrateDown(currentVersion, targetVersion, files);
+				MigrateDown(currentVersion, targetVersion, files, args.TransactionMode);
                 Log.WriteLine("Migrated down to version:".PadRight(30) + targetVersion);
             }
             else
             {
+				Log.WriteLine("Your database is up-to-date!");
                 return;
             }
 
@@ -111,13 +117,14 @@ namespace DotNetMigrations.Commands
         /// <param name="currentVersion">The current version of the database.</param>
         /// <param name="targetVersion">The targeted version of the database.</param>
         /// <param name="files">All migration script files.</param>
-        private void MigrateUp(long currentVersion, long targetVersion, IEnumerable<IMigrationScriptFile> files)
+		/// <param name="transmode">The manner in which the migrations should be wrapped in transaction(s).</param>
+		private void MigrateUp(long currentVersion, long targetVersion, IEnumerable<IMigrationScriptFile> files, MigrationTransactionMode transmode)
         {
             IEnumerable<KeyValuePair<IMigrationScriptFile, string>> scripts = files.OrderBy(x => x.Version)
                 .Where(x => x.Version > currentVersion && x.Version <= targetVersion)
                 .Select(x => new KeyValuePair<IMigrationScriptFile, string>(x, x.Read().Setup));
 
-            ExecuteMigrationScripts(scripts, UpdateSchemaVersionUp);
+            ExecuteMigrationScripts(scripts, UpdateSchemaVersionUp, transmode);
         }
 
         /// <summary>
@@ -126,34 +133,53 @@ namespace DotNetMigrations.Commands
         /// <param name="currentVersion">The current version of the database.</param>
         /// <param name="targetVersion">The targeted version of the database.</param>
         /// <param name="files">All migration script files.</param>
-        private void MigrateDown(long currentVersion, long targetVersion, IEnumerable<IMigrationScriptFile> files)
+		/// <param name="transmode">The manner in which the migrations should be wrapped in transaction(s).</param>
+		private void MigrateDown(long currentVersion, long targetVersion, IEnumerable<IMigrationScriptFile> files, MigrationTransactionMode transmode)
         {
             IEnumerable<KeyValuePair<IMigrationScriptFile, string>> scripts = files.OrderByDescending(x => x.Version)
                 .Where(x => x.Version <= currentVersion && x.Version > targetVersion)
                 .Select(x => new KeyValuePair<IMigrationScriptFile, string>(x, x.Read().Teardown));
 
-            ExecuteMigrationScripts(scripts, UpdateSchemaVersionDown);
+            ExecuteMigrationScripts(scripts, UpdateSchemaVersionDown, transmode);
         }
 
-        private void ExecuteMigrationScripts(IEnumerable<KeyValuePair<IMigrationScriptFile, string>> scripts, Action<DbTransaction, long> updateVersionAction)
+        private void ExecuteMigrationScripts(IEnumerable<KeyValuePair<IMigrationScriptFile, string>> scripts, Action<DbTransaction, long> updateVersionAction, MigrationTransactionMode transmode)
         {
-            using (DbTransaction tran = Database.BeginTransaction())
+			Log.WriteLine(string.Format("{0} migrations to run.", scripts.Count()));
+
+            using (DbTransaction outertran = (transmode == MigrationTransactionMode.PerRun ? Database.BeginTransaction() : null))
             {
                 IMigrationScriptFile currentScript = null;
                 try
                 {
                     foreach (var script in scripts)
                     {
-                        currentScript = script.Key;
-                        Database.ExecuteScript(tran, script.Value);
-                        updateVersionAction(tran, script.Key.Version);
+						Log.WriteLine(script.Key.FilePath);
+
+						using (DbTransaction innertran = (transmode == MigrationTransactionMode.PerMigration ? Database.BeginTransaction() : null))
+						{
+							try
+							{
+								currentScript = script.Key;
+								Database.ExecuteScript(outertran ?? innertran ?? null, script.Value);
+								updateVersionAction(outertran ?? innertran ?? null, script.Key.Version);
+
+								if (innertran != null) innertran.Commit();
+							}
+							catch (Exception)
+							{
+								// Just capture the exception, rollback the inner transaction (if one exists) and rethrow
+								if (innertran != null) innertran.Rollback();
+								throw;
+							}
+						}
                     }
 
-                    tran.Commit();
+					if (outertran != null) outertran.Commit();
                 }
                 catch (Exception ex)
                 {
-                    tran.Rollback();
+					if (outertran != null) outertran.Rollback();
 
                     string filePath = (currentScript == null) ? "NULL" : currentScript.FilePath;
                     throw new MigrationException("Error executing migration script: " + filePath, filePath, ex);
