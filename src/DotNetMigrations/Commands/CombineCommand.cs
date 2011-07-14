@@ -122,6 +122,8 @@ GO
 					// Update "version"
 					sw.WriteLine();
 					sw.WriteLine(string.Format("INSERT INTO [schema_migrations] ([version]) VALUES ({0})", script.Key.Version));
+					sw.WriteLine("GO");
+					sw.WriteLine();
 
 					if(args.TransactionMode == MigrationTransactionMode.PerMigration)
 					{
