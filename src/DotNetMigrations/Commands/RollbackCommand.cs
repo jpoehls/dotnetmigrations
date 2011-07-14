@@ -3,21 +3,24 @@ using System.Data.Common;
 using System.Linq;
 using DotNetMigrations.Core;
 using DotNetMigrations.Core.Data;
+using DotNetMigrations.Migrations;
 
 namespace DotNetMigrations.Commands
 {
     public class RollbackCommand : DatabaseCommandBase<DatabaseCommandArguments>
     {
         private readonly DatabaseCommandBase<MigrateCommandArgs> _migrateCommand;
+		private readonly IMigrationDirectory _migrationDirectory;
 
         public RollbackCommand()
-            : this(new MigrateCommand())
+            : this(new MigrateCommand(), new MigrationDirectory())
         {
         }
 
-        public RollbackCommand(DatabaseCommandBase<MigrateCommandArgs> migrateCommand)
+		public RollbackCommand(DatabaseCommandBase<MigrateCommandArgs> migrateCommand, IMigrationDirectory migrationDirectory)
         {
             _migrateCommand = migrateCommand;
+			_migrationDirectory = migrationDirectory;
         }
 
         /// <summary>
@@ -42,19 +45,29 @@ namespace DotNetMigrations.Commands
         protected override void Execute(DatabaseCommandArguments args)
         {
             long currentVersion = GetDatabaseVersion();
-            long previousVersion = GetPreviousDatabaseVersion(currentVersion);
 
-            if (previousVersion == -1)
-            {
-                Log.WriteLine("No rollback is necessary. Database schema is already at version 0.");
-                return;
-            }
+			if(currentVersion == 0)
+			{
+				Log.WriteLine("No rollback is necessary. Database schema is already at version 0.");
+				return;
+			}
+
+			var previousVersion = _migrationDirectory.GetScripts()
+				.OrderBy(x => x.Version)
+				.Where(x => x.Version < currentVersion)
+				.LastOrDefault();
+
+			if(previousVersion == null)
+			{
+				Log.WriteLine("No rollback is necessary. No earlier migration to run.");
+				return;
+			}
 
             _migrateCommand.Log = Log;
 
             var migrateCommandArgs = new MigrateCommandArgs();
             migrateCommandArgs.Connection = args.Connection;
-            migrateCommandArgs.TargetVersion = previousVersion;
+            migrateCommandArgs.TargetVersion = previousVersion.Version;
 
             _migrateCommand.Run(migrateCommandArgs);
         }

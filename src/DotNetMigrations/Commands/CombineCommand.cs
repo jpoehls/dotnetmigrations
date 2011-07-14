@@ -55,7 +55,7 @@ namespace DotNetMigrations.Commands
 
 			// Migrations that are to be combined
 			var scripts = allscripts
-				.Where(x => x.Version >= args.StartMigration && x.Version <= args.EndMigration)
+				.Where(x => x.Version > 0 && x.Version >= args.StartMigration && x.Version <= args.EndMigration)
 				.Select(x => new KeyValuePair<IMigrationScriptFile, string>(x, x.Read().Setup));
 
 			Log.WriteLine("Transaction mode is: " + args.TransactionMode.ToString() + ".");
@@ -122,6 +122,8 @@ GO
 					// Update "version"
 					sw.WriteLine();
 					sw.WriteLine(string.Format("INSERT INTO [schema_migrations] ([version]) VALUES ({0})", script.Key.Version));
+					sw.WriteLine("GO");
+					sw.WriteLine();
 
 					if(args.TransactionMode == MigrationTransactionMode.PerMigration)
 					{
