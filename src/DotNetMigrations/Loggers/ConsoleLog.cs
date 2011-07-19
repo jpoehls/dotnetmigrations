@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using DotNetMigrations.Core;
+using System.IO;
 
 namespace DotNetMigrations.Loggers
 {
@@ -33,7 +34,16 @@ namespace DotNetMigrations.Loggers
         public override void Write(string message)
         {
             //  remaining usable space on the current line
-            int remainingBufferLength = Console.BufferWidth - Console.CursorLeft;
+			int remainingBufferLength = 0;
+			try
+			{
+				remainingBufferLength = Console.BufferWidth - Console.CursorLeft;
+			}
+			catch(IOException)
+			{
+				// console width and position cannot always be found (when running as part of a TeamCity build for instance)
+				remainingBufferLength = message.Length;
+			}
 
             //  if the message fits on the current line, write it
             if (message.Length <= remainingBufferLength)
