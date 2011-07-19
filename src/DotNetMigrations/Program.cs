@@ -185,16 +185,24 @@ namespace DotNetMigrations
         /// </remarks>
         private static bool ProgramLaunchedInSeparateConsoleWindow()
         {
-            //  if no debugger is attached
-            if (!Debugger.IsAttached && TestConsole())
-                //  and the cursor position appears untouched
-                if (Console.CursorLeft == 0 && Console.CursorTop == 1)
-                    //  and there are no arguments
-                    //  (we allow for 1 arg because the first arg appears
-                    //   to always be the path to the executable being run)
-                    if (Environment.GetCommandLineArgs().Length <= 1)
-                        //  then assume we were launched into a separate console window
-                        return true;
+			try
+			{
+				//  if no debugger is attached
+				if(!Debugger.IsAttached && TestConsole())
+					//  and the cursor position appears untouched
+					if(Console.CursorLeft == 0 && Console.CursorTop == 1)
+						//  and there are no arguments
+						//  (we allow for 1 arg because the first arg appears
+						//   to always be the path to the executable being run)
+						if(Environment.GetCommandLineArgs().Length <= 1)
+							//  then assume we were launched into a separate console window
+							return true;
+			}
+			catch(IOException)
+			{
+				// if launched from inside some build runners (e.g. TeamCity) Console.CursorLeft will fail because of how the handles are attached
+				return false;
+			}
 
             //  looks like we were launched from command line, good!
             return false;
