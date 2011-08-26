@@ -50,7 +50,7 @@ namespace DotNetMigrations.UnitTests.Commands
         #endregion
 
         [Test]
-        public void Run_should_call_MigrateCommand_Run_if_there_is_a_previous_version_to_rollback_to()
+        public void Run_should_call_MigrateCommand_Execute_if_there_is_a_previous_version_to_rollback_to()
         {
             //  arrange
             InitializeDatabase();
@@ -62,7 +62,7 @@ namespace DotNetMigrations.UnitTests.Commands
             }
 
             bool runCalled = false;
-            _mockMigrateCommand.Protected().Setup("Run", ItExpr.IsAny<MigrateCommandArgs>()).Callback(() => runCalled = true);
+            _mockMigrateCommand.Protected().Setup("Execute", ItExpr.IsAny<MigrateCommandArgs>()).Callback(() => runCalled = true);
 
             //  act
             _rollbackCommand.Run(_commandArgs);
@@ -84,11 +84,11 @@ namespace DotNetMigrations.UnitTests.Commands
         }
 
         [Test]
-        public void Run_should_not_call_MigrateCommand_Run_if_there_is_no_previous_version_to_rollback_to()
+        public void Run_should_not_call_MigrateCommand_Execute_if_there_is_no_previous_version_to_rollback_to()
         {
             //  arrange
             bool runCalled = false;
-            _mockMigrateCommand.Protected().Setup("Run", ItExpr.IsAny<MigrateCommandArgs>()).Callback(() => runCalled = true);
+            _mockMigrateCommand.Protected().Setup("Execute", ItExpr.IsAny<MigrateCommandArgs>()).Callback(() => runCalled = true);
 
             //  act
             _rollbackCommand.Run(_commandArgs);
@@ -111,7 +111,7 @@ namespace DotNetMigrations.UnitTests.Commands
                 sql.ExecuteNonQuery("insert into [schema_migrations] ([version]) values (2)");
             }
 
-            _mockMigrateCommand.Protected().Setup("Run", ItExpr.IsAny<MigrateCommandArgs>())
+            _mockMigrateCommand.Protected().Setup("Execute", ItExpr.IsAny<MigrateCommandArgs>())
                 .Callback((MigrateCommandArgs args) =>
                 Assert.AreEqual(2, args.TargetVersion));
 
@@ -145,7 +145,7 @@ namespace DotNetMigrations.UnitTests.Commands
         public void Run_should_set_MigrateCommandArgs_Connection_to_its_own_Connection()
         {
             //  arrange
-            _mockMigrateCommand.Protected().Setup("Run", ItExpr.IsAny<MigrateCommandArgs>())
+            _mockMigrateCommand.Protected().Setup("Execute", ItExpr.IsAny<MigrateCommandArgs>())
                 .Callback((MigrateCommandArgs args) =>
                 Assert.AreEqual(_commandArgs.Connection, args.Connection));
 
