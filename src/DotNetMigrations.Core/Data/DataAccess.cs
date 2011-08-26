@@ -73,7 +73,7 @@ namespace DotNetMigrations.Core.Data
         /// </summary>
         public void ExecuteScript(DbTransaction tran, string script)
         {
-            const string providerVariableName = "##DNM:PROVIDER##";
+            const string providerVariableName = "/*DNM:PROVIDER*/";
             
             var batches = new ScriptSplitter(script);
             foreach (var batch in batches)

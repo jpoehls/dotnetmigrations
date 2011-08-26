@@ -86,5 +86,28 @@ namespace DotNetMigrations.UnitTests.Data
             //  assert
             Assert.IsTrue(cmd.Connection.State == ConnectionState.Open);
         }
+
+        [Test]
+        public void ExecuteScript_should_replace_DNM_PROVIDER_token_in_script_with_the_current_ADO_provider_name()
+        {
+            //throw new NotImplementedException();
+            //  arrange
+            using (var helper = new SqlDatabaseHelper(TestConnectionString))
+            {
+                helper.ExecuteNonQuery("CREATE TABLE [providers] ([name] [nvarchar](100))");
+
+                // act
+                _subject.OpenConnection();
+                using (var tran = _subject.BeginTransaction())
+                {
+                    _subject.ExecuteScript(tran, "INSERT INTO [providers] ([name]) VALUES ('/*DNM:PROVIDER*/')");
+                    tran.Commit();
+                }
+                
+                //  assert
+                var providerNameInserted = helper.ExecuteScalar<string>("SELECT [name] FROM [providers]");
+                Assert.AreEqual("System.Data.SqlServerCe.3.5", providerNameInserted);
+            }
+        }
     }
 }
