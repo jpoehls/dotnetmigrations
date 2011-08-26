@@ -1,3 +1,13 @@
+= 0.83 / IN PROGRESS...
+
+    * Added preliminary support for Mono. (Not guaranteed or tested well. Let us know what happens.)
+    * Fixed issue #21 with migrations not working past version 9.
+    
+    Upgrade Notes:
+    * Run the following against your database to ensure issue #21 is fixed.
+      This will change the [schema_migrations].[version] column from [varchar] to [int].
+      `ALTER TABLE [schema_migrations] ALTER COLUMN [version] [int] NOT NULL`
+
 = 0.82 / 2011-04-12
 
     * Added support for post migration actions that plugins can use
