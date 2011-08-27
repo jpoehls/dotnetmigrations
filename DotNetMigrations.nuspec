@@ -3,7 +3,7 @@
   <metadata>
     <id>DotNetMigrations</id>
     <version>$version$</version>
-    <title>DotNetMigrations $version$</title>
+    <title>DotNetMigrations</title>
     <authors>Joshua Poehls</authors>
     <owners>Joshua Poehls</owners>
     <licenseUrl>https://github.com/jpoehls/dotnetmigrations/blob/master/license.txt</licenseUrl>
