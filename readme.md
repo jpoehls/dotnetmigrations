@@ -48,6 +48,24 @@ has since grown wings and taken its own path in several areas.
 
 ## Changelog
 
+- **0.85** (2011-08-27)
+
+    This releases fixes the breaks in versions 0.83 and 0.84.
+
+    **WARNING!** You must manually modify your `[schema_migrations]` table
+    in order for this release to run. You need to make the following modifications.
+
+    1. DROP the primary key constraint from the `[schema_migrations].[version]` column.
+    2. Run this SQL: `ALTER TABLE [schema_migrations] ADD [id] INT NOT NULL IDENTITY(1,1) CONSTRAINT [PK_schema_migrations] PRIMARY KEY`
+
+    A new `[id]` column will be added and used to locate the max version number in the migration table.  
+    This works because migrations are always inserted in sequential order so the IDs will also be in
+    the correct order.
+
+    This release also removes support for upgrading from the legacy `[schema_info]` table used by
+    very early versions of DotNetMigrations. This really shouldn't matter to anyone at this point but if
+    it does then just run an older version of DNM to perform the upgrade and then switch to the latest DNM release.
+
 - **0.84** (2011-08-27) `4834af1d7a41be0175083afcca5231b8dcb1713f`
 
   * First release to be published to NuGet! (thanks Darren Cauthon!)
