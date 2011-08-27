@@ -48,6 +48,9 @@ has since grown wings and taken its own path in several areas.
   * First release to be published to NuGet! (thanks Darren Cauthon!)
 
 - **0.83** (2011-08-26) `a86b7318122251fe54930f2ebce4155b466ac1a5`
+  
+    **WARNING!** This release breaks support for the `uct_time` and `local_time` versioning strategies.
+    Only `seq_num` will work. If you use one of the time based strategies wait for **v0.85** before upgrading.         
 
   * Added preliminary support for Mono. (Thanks James Eggers!)
   * Fixed issue #21 with migrations not working past version 9.
@@ -61,6 +64,11 @@ has since grown wings and taken its own path in several areas.
     You must manually run the following SQL against your database to ensure issue #21 is fixed.
 
     `ALTER TABLE [schema_migrations] ALTER COLUMN [version] [int] NOT NULL`
+    
+    ***Note** that this is the change that will break the `utc_time` and `local_time` versioning strategies
+    since timestamps are too large to fit into an `[int]` column. If you are not using `seq_num` then
+    **DO NOT** run this alter command and your migrations should continue to execute like they did in
+    the previous version.
 
 - **0.82** (2011-04-12) `5efb6c28dfdfd4a43e3014985ae9d8a74e1cb5e0`
 
