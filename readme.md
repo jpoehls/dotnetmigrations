@@ -16,13 +16,17 @@ has since grown wings and taken its own path in several areas.
 
 **Available on NuGet at http://www.nuget.org/List/Packages/DotNetMigrations**
 
-## Building from source
+# Release checklist
 
-1. Run `.\build.bat`.
-2. Look in the `@artifacts` folder.
-
-This is how we build for releases as well. The build script will update the
-NuGet packages and run all the unit tests just to make sure everything checks out.
+1. Make sure the `$public_version` number is correct in the `.\build.ps1` script.
+2. Make sure the changelog is up-to-date in the `.\readme.md` file.
+3. Commit any changes up to this point.
+4. Tag the release in Git with `git tag vX.Y.Z` where `X.Y.Z` is the `$public_version` from the build script.
+5. Run `.\build.bat`.
+6. Look in the `.\@artifacts` folder for the goods.
+7. Run the `.\@artifacts\PublishNuGetPackage.bat` script to publish to the NuGet Gallery.
+8. Add the hash of the tagged release from Git to the changelog entry for the release. Use this to get the hash: `git log -n1 -r "vX.Y.Z" --pretty=%H`
+9. Commit the changelog update.
 
 ## Contributors
 
