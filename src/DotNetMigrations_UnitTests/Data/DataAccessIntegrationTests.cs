@@ -108,5 +108,35 @@ namespace DotNetMigrations.UnitTests.Data
                 Assert.AreEqual("System.Data.SqlServerCe.3.5", providerNameInserted);
             }
         }
+
+        [Test]
+        public void ExecuteScript_should_use_CommandTimeout_specified_in_the_connection_string()
+        {
+            // arrange
+            _subject = DataAccessFactory.Create(TestConnectionString + ";CommandTimeout=1");
+
+            // act
+            _subject.OpenConnection();
+            using (var tran = _subject.BeginTransaction())
+            {
+                try
+                {
+                    _subject.ExecuteScript(tran, "WaitFor Delay '00:00:01'");
+                }
+                catch(Exception ex)
+                {
+                    // assert
+
+                    // Sql Server Compact (which is being used for these tests) does not
+                    // support CommandTimeout values other than 0. So we will assume
+                    // that if it barfs it is because our non-zero CommandTimeout was successfully (attempted to be) set.
+                    Assert.IsInstanceOfType(typeof (ArgumentException), ex);
+                    Assert.AreEqual("SqlCeCommand.CommandTimeout does not support non-zero values.", ex.Message);
+                    return;
+                }
+            }
+
+            Assert.Fail("Expected command timeout exception to be thrown.");
+        }
     }
 }

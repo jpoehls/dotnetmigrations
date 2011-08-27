@@ -9,11 +9,13 @@ namespace DotNetMigrations.Core.Data
         private readonly DbConnection _connection;
         private readonly DbProviderFactory _factory;
         private readonly string _provider;
+        private readonly int _commandTimeout;
 
-        public DataAccess(DbProviderFactory factory, string connectionString, string provider)
+        public DataAccess(DbProviderFactory factory, string connectionString, string provider, int commandTimeout)
         {
             _factory = factory;
             _provider = provider;
+            _commandTimeout = commandTimeout;
             _connection = GetConnection(connectionString);
         }
 
@@ -74,16 +76,17 @@ namespace DotNetMigrations.Core.Data
         public void ExecuteScript(DbTransaction tran, string script)
         {
             const string providerVariableName = "/*DNM:PROVIDER*/";
-            
+
             var batches = new ScriptSplitter(script);
             foreach (var batch in batches)
             {
                 // replace the provider name token in the script
                 var bakedBatch = batch.Replace(providerVariableName, _provider, StringComparison.OrdinalIgnoreCase);
-                
+
                 using (var cmd = CreateCommand())
                 {
                     cmd.CommandText = bakedBatch;
+                    cmd.CommandTimeout = _commandTimeout;
                     cmd.Transaction = tran;
                     cmd.ExecuteNonQuery();
                 }
