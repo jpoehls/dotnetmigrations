@@ -38,7 +38,7 @@ NuGet packages and run all the unit tests just to make sure everything checks ou
 
 - **0.83** (2011-08-26) `a86b7318122251fe54930f2ebce4155b466ac1a5`
 
-  * Added preliminary support for Mono. (Not guaranteed or tested well. Let us know what happens.)
+  * Added preliminary support for Mono. (Thanks James Eggers!)
   * Fixed issue #21 with migrations not working past version 9.
   * **Breaking change!** The `##DNM:PROVIDER##` token is now `/*DNM:PROVIDER*/`
     The new token format will help ensure that your SQL scripts will run without errors
