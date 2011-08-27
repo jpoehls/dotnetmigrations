@@ -105,7 +105,7 @@ namespace DotNetMigrations.UnitTests.Data
                 
                 //  assert
                 var providerNameInserted = helper.ExecuteScalar<string>("SELECT [name] FROM [providers]");
-                Assert.AreEqual("System.Data.SqlServerCe.3.5", providerNameInserted);
+                Assert.AreEqual("System.Data.SqlServerCe.4.0", providerNameInserted);
             }
         }
 

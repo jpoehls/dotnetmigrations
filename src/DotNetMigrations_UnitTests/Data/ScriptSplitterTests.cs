@@ -245,13 +245,13 @@ CREATE TABLE [<username,varchar,dbo>].[blog_Gost]";
         }
 
         [Test]
-        [ExpectedException(ExceptionType = typeof (SqlParseException))]
         public void SlashStarCommentAfterGoThrowsException()
         {
             const string script = @"PRINT 'blah'
 GO /* blah */";
 
-            new ScriptSplitter(script).ToList();
+            // assert
+            Assert.Throws<SqlParseException>(() => new ScriptSplitter(script).ToList());
         }
     }
 }

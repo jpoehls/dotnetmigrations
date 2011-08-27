@@ -38,7 +38,7 @@ namespace DotNetMigrations.UnitTests.Migrations
             IVersionStrategy strategy = _subject.GetStrategy();
 
             //  assert
-            Assert.IsInstanceOfType(typeof (LocalTimestampVersion), strategy);
+            Assert.IsInstanceOfType(typeof(LocalTimestampVersion), strategy);
         }
 
         [Test]
@@ -51,7 +51,7 @@ namespace DotNetMigrations.UnitTests.Migrations
             IVersionStrategy strategy = _subject.GetStrategy();
 
             //  assert
-            Assert.IsInstanceOfType(typeof (UtcTimestampVersion), strategy);
+            Assert.IsInstanceOfType(typeof(UtcTimestampVersion), strategy);
         }
 
         [Test]
@@ -68,22 +68,22 @@ namespace DotNetMigrations.UnitTests.Migrations
         }
 
         [Test]
-        [ExpectedException(ExceptionType = typeof (ApplicationException))]
         public void GetStrategy_should_throw_ApplicationException_if_config_setting_is_invalidS()
         {
             //  arrange
             _configManager.AppSettings[AppSettingKeys.VersionStrategy] = "i am not a valid option";
 
             //  act
-            _subject.GetStrategy();
+            //  assert
+            Assert.Throws<ApplicationException>(() => _subject.GetStrategy());
         }
 
         [Test]
-        [ExpectedException(ExceptionType = typeof (ApplicationException))]
         public void GetStrategy_should_throw_ApplicationException_if_config_setting_is_missing()
         {
             //  act
-            _subject.GetStrategy();
+            //  assert
+            Assert.Throws<ApplicationException>(() => _subject.GetStrategy());
         }
     }
 }

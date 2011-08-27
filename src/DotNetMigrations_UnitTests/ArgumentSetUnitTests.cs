@@ -13,7 +13,7 @@ namespace DotNetMigrations.UnitTests
         public void ContainsName_should_be_case_insensitive()
         {
             //  arrange
-            var args = new[] {"-HELP", "migrate"};
+            var args = new[] { "-HELP", "migrate" };
             ArgumentSet set = ArgumentSet.Parse(args);
 
             //  act
@@ -27,7 +27,7 @@ namespace DotNetMigrations.UnitTests
         public void ContainsName_should_return_true_if_name_exists()
         {
             //  arrange
-            var args = new[] {"-help", "migrate"};
+            var args = new[] { "-help", "migrate" };
             ArgumentSet set = ArgumentSet.Parse(args);
 
             //  act
@@ -41,7 +41,7 @@ namespace DotNetMigrations.UnitTests
         public void GetByName_should_return_value_of_argument_with_given_name()
         {
             //  arrange
-            var args = new[] {"-help", "migrate"};
+            var args = new[] { "-help", "migrate" };
             ArgumentSet set = ArgumentSet.Parse(args);
 
             //  act
@@ -53,22 +53,21 @@ namespace DotNetMigrations.UnitTests
         }
 
         [Test]
-        [ExpectedException(ExceptionType=typeof(KeyNotFoundException))]
         public void GetByName_should_throw_KeyNotFoundException_if_name_doesnt_exist()
         {
             //  arrange
-            var args = new[] {"blah"};
+            var args = new[] { "blah" };
             ArgumentSet set = ArgumentSet.Parse(args);
 
             //  act
-            set.GetByName("help");
+            Assert.Throws<KeyNotFoundException>(() => set.GetByName("help"));
         }
 
         [Test]
         public void Parse_should_find_anonymous_arguments_between_named_arguments()
         {
             //  arrange
-            var args = new[] {"-help", "migrate", "joshua", "david", "-c", "connection"};
+            var args = new[] { "-help", "migrate", "joshua", "david", "-c", "connection" };
 
             //  act
             ArgumentSet set = ArgumentSet.Parse(args);
@@ -84,7 +83,7 @@ namespace DotNetMigrations.UnitTests
         public void Parse_should_find_named_arguments_with_no_value()
         {
             //  arrange
-            var args = new[] {"-help", "-me"};
+            var args = new[] { "-help", "-me" };
 
             //  act
             ArgumentSet set = ArgumentSet.Parse(args);
@@ -99,7 +98,7 @@ namespace DotNetMigrations.UnitTests
         public void Parse_should_match_dash_names()
         {
             //  arrange
-            var args = new[] {"-help", "migrate"};
+            var args = new[] { "-help", "migrate" };
 
             //  act
             ArgumentSet set = ArgumentSet.Parse(args);
@@ -112,7 +111,7 @@ namespace DotNetMigrations.UnitTests
         public void Parse_should_match_forward_slash_names()
         {
             //  arrange
-            var args = new[] {"/help", "migrate"};
+            var args = new[] { "/help", "migrate" };
 
             //  act
             ArgumentSet set = ArgumentSet.Parse(args);
@@ -125,7 +124,7 @@ namespace DotNetMigrations.UnitTests
         public void Parse_should_match_multiple_named_arguments_and_values()
         {
             //  arrange
-            var args = new[] {"-help", "migrate", "-c", "connection"};
+            var args = new[] { "-help", "migrate", "-c", "connection" };
 
             //  act
             ArgumentSet set = ArgumentSet.Parse(args);
@@ -137,11 +136,10 @@ namespace DotNetMigrations.UnitTests
         }
 
         [Test]
-        [ExpectedException(ExceptionType = typeof (ArgumentNullException))]
         public void Parse_should_throw_ArgumentNullException_if_args_param_is_null()
         {
             //  act
-            ArgumentSet.Parse(null);
+            Assert.Throws<ArgumentNullException>(() => ArgumentSet.Parse(null));
         }
     }
 }

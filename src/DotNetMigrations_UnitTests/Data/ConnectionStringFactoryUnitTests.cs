@@ -41,14 +41,13 @@ namespace DotNetMigrations.UnitTests.Data
         }
 
         [Test]
-        [ExpectedException(ExceptionType = typeof (ArgumentException))]
         public void GetConnectionString_should_throw_ArgumentException_when_name_doesnt_exist()
         {
             //  arrange
             const string fakeConnStrName = "{7DF4669C-86DE-459e-B5B2-53F1512B5536}";
 
             //  act
-            _subject.GetConnectionString(fakeConnStrName);
+            Assert.Throws<ArgumentException>(() => _subject.GetConnectionString(fakeConnStrName));
         }
 
         [Test]

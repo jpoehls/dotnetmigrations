@@ -13,7 +13,7 @@ namespace DotNetMigrations.UnitTests
         protected DatabaseIntegrationTests()
         {
             _testDatabaseFile = Path.Combine(Path.GetTempPath(), "DotNetMigrationsTestDb.sdf");
-            TestConnectionString = string.Format("Data Source={0};Persist Security Info=False;Provider=System.Data.SqlServerCe.3.5", _testDatabaseFile);
+            TestConnectionString = string.Format("Data Source={0};Persist Security Info=False;Provider=System.Data.SqlServerCe.4.0", _testDatabaseFile);
         }
 
         protected string TestConnectionString { get; private set; }
