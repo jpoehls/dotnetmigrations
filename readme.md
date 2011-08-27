@@ -32,7 +32,7 @@ tests just to make sure everything checks out.
 
 ## Changelog
 
-- **0.83** (2011-08-26)
+- **0.83** (2011-08-26) `a86b7318122251fe54930f2ebce4155b466ac1a5`
 
   * Added preliminary support for Mono. (Not guaranteed or tested well. Let us know what happens.)
   * Fixed issue #21 with migrations not working past version 9.
@@ -47,14 +47,14 @@ tests just to make sure everything checks out.
 
     `ALTER TABLE [schema_migrations] ALTER COLUMN [version] [int] NOT NULL`
 
-- **0.82** (2011-04-12)
+- **0.82** (2011-04-12) `5efb6c28dfdfd4a43e3014985ae9d8a74e1cb5e0`
 
     * Added support for post migration actions that plugins can use
     to inject functionality that should run after a migration completes.
     (This was added to support the new PersistentMigrate [pmigrate] command
     in the dotnetmigrations-contrib project.)
 
-- **0.81** (2011-04-11)
+- **0.81** (2011-04-11) `f762dce9614150a7e159238a8860ef9b76fb82d2`
 
   * New `seed` command that executes scripts in the `.\seeds\` folder.
 
@@ -65,7 +65,7 @@ tests just to make sure everything checks out.
             > db migrate myConnection
             > db seed myConnection
 
-- **0.80** (2011-03-30)
+- **0.80** (2011-03-30) `896915d7a75df1c4939fbcc4b01bc0efe3cbadf4`
 
   * New sequential number `seq_num` versioning strategy
 
@@ -76,7 +76,7 @@ tests just to make sure everything checks out.
     doesn't have any `BEGIN_SETUP`, `END_SETUP`, `BEGIN_TEARDOWN`, or `END_TEARDOWN`
     tokens then the entire script is assumed to be a Setup with no Teardown.
 
-- **0.70** (2010-08-28)
+- **0.70** (2010-08-28) `950f6d5a6ca99a175a4d176208d3cdd08f52dd80`
 
     This release brings yet another significant rewrite. Building
     on the MEF integration and innovations of 0.6, many improvements
