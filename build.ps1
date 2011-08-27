@@ -3,6 +3,10 @@
 
 $framework = '4.0'
 
+function Get-GitVersion {
+  return (git log -n1 --pretty=%H)
+}
+
 properties {
 	# version advertised. also used as the tag name in git.
 	$public_version = "0.83"
@@ -13,7 +17,7 @@ properties {
 	$artifact_dir = if ($checkout_dir.length -gt 0) { "$checkout_dir\@artifacts" } else { "$source_dir\@artifacts" }
 	$configuration = "Release"
 	$build_number = if ("$env:BUILD_NUMBER".length -gt 0) { "$env:BUILD_NUMBER" } else { "0" }
-	$build_vcs_number = if ("$env:BUILD_VCS_NUMBER".length -gt 0) { "$env:BUILD_VCS_NUMBER" } else { "0" }
+	$build_vcs_number = if ("$env:BUILD_VCS_NUMBER".length -gt 0) { "$env:BUILD_VCS_NUMBER" } else { Get-GitVersion }
     $version = "$public_version.$build_number"
     $info_version = "$version (rev $build_vcs_number)"
 }
