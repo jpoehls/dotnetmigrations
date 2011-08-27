@@ -8,8 +8,6 @@ TODO
 * unit test DatabaseCommandBase
 	1. GetDatabaseVersion() (can use one of the VersionCommand tests almost exactly for this)
 
-* make the build script assign a version (including GIT repo version) to the AssemblyInfo.cs files
-
 * tag the git repo with each release (and push tag to github)
 
 * add tests for ConnectionsCommand
