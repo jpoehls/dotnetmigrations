@@ -16,8 +16,8 @@ has since grown wings and taken its own path in several areas.
 
 ## Building from source
 
-1. run `.\build.bat`
-2. look in the `@artifacts` folder
+1. Run `.\build.bat`.
+2. Look in the `@artifacts` folder.
 
 This is how we build for releases as well. The build script will run all the unit
 tests just to make sure everything checks out.
