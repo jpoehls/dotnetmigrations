@@ -99,7 +99,7 @@ task Init -depends Clean {
     $year = [DateTime]::Now.ToString("yyyy")
 
 	Generate-Assembly-Info `
-        -File "$source_dir\src\SharedAssemblyInfo.cs" `
+        -File "$source_dir\src\CommonAssemblyInfo.cs" `
         -Title "DotNetMigrations $info_version" `
         -Description "" `
         -Company "" `

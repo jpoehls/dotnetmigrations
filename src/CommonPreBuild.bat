@@ -4,11 +4,11 @@ REM ----------------------------------------------------------------------------
 REM   Creates an empty assembly info file if needed
 REM ----------------------------------------------------------------------------
 
-set AssmInfoFile=SharedAssemblyInfo.cs
+set AssmInfoFile=CommonAssemblyInfo.cs
 set AssmInfoDir=%~dp0
 set AssmInfoPath=%AssmInfoDir%%AssmInfoFile%
 
-IF NOT EXIST %~dp0SharedAssemblyInfo.cs (
+IF NOT EXIST %~dp0CommonAssemblyInfo.cs (
   ECHO Creating empty %AssmInfoFile% in %AssmInfoDir%
   ECHO // > %AssmInfoPath%
 ) ELSE (

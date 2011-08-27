@@ -7,4 +7,4 @@ _ReSharper*
 @build
 @artifacts
 *.sln.cache
-src/SharedAssemblyInfo.cs
+src/CommonAssemblyInfo.cs
