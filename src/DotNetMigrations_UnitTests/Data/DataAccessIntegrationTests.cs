@@ -88,9 +88,8 @@ namespace DotNetMigrations.UnitTests.Data
         }
 
         [Test]
-        public void ExecuteScript_should_replace_DNM_PROVIDER_token_in_script_with_the_current_ADO_provider_name()
+        public void ExecuteScript_should_perform_case_insensitive_replace_DNM_PROVIDER_token_in_script_with_the_current_ADO_provider_name(string token)
         {
-            //throw new NotImplementedException();
             //  arrange
             using (var helper = new SqlDatabaseHelper(TestConnectionString))
             {
@@ -100,7 +99,7 @@ namespace DotNetMigrations.UnitTests.Data
                 _subject.OpenConnection();
                 using (var tran = _subject.BeginTransaction())
                 {
-                    _subject.ExecuteScript(tran, "INSERT INTO [providers] ([name]) VALUES ('/*DNM:PROVIDER*/')");
+                    _subject.ExecuteScript(tran, "INSERT INTO [providers] ([name]) VALUES ('/*dNm:PrOvIdEr*/')");
                     tran.Commit();
                 }
                 
