@@ -9,7 +9,7 @@ function Get-GitVersion {
 
 properties {
 	# version advertised. also used as the tag name in git.
-	$public_version = "0.84"
+	$public_version = "0.84.0"
 
 	$source_dir = Resolve-Path ./
 	$build_dir = "$source_dir\@build"
@@ -22,7 +22,13 @@ properties {
     $info_version = "$version (rev $build_vcs_number)"
 }
 
-task default -depends Compile, RunTests, ZipBinaries, ZipSource 
+task default -depends Compile, RunTests, ZipBinaries, ZipSource, NuGet
+
+task NuGet {
+  TeamCity-ReportBuildStart "NuGet"
+
+  exec { & "$source_dir\.nuget\NuGet.exe" pack ""$source_dir\DotNetMigrations.nuspec"" -Verbose -OutputDirectory ""$artifact_dir"" -Properties version=$public_version }
+}
 
 task ZipBinaries {
     TeamCity-ReportBuildStart "ZipBinaries"
