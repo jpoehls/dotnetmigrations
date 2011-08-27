@@ -14,6 +14,8 @@ has since grown wings and taken its own path in several areas.
 
 **View our CI builds on the [CodeBetter TeamCity server](http://teamcity.codebetter.com/project.html?projectId=project97]).**
 
+**Available on NuGet at http://www.nuget.org/List/Packages/DotNetMigrations**
+
 ## Building from source
 
 1. Run `.\build.bat`.
@@ -26,13 +28,14 @@ NuGet packages and run all the unit tests just to make sure everything checks ou
 
 `git log --format='%aN' | sort -u`
 
+* Darren Cauthon
 * James Eggers
 * Joshua Poehls
 * Kieran Benton
 
 ## Changelog
 
-- **0.84** (IN PROGRESS)
+- **0.84** (2011-08-27)
 
   * First release to be published to NuGet! (thanks Darren Cauthon!)
 
