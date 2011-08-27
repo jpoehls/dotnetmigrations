@@ -9,7 +9,7 @@ function Get-GitVersion {
 
 properties {
 	# version advertised. also used as the tag name in git.
-	$public_version = "0.83"
+	$public_version = "0.84"
 
 	$source_dir = Resolve-Path ./
 	$build_dir = "$source_dir\@build"
