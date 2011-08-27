@@ -48,7 +48,7 @@ has since grown wings and taken its own path in several areas.
 
 ## Changelog
 
-- **0.85** (2011-08-27)
+- **0.85** (2011-08-27) `6ff0a1887128dded5533441be4b1de4658e6e223`
 
     This releases fixes the breaks in versions 0.83 and 0.84.
 
