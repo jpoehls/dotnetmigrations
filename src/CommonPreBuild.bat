@@ -1,7 +1,11 @@
+REM ----------------------------------------------------------------------------
+REM   CommonPreBuild.bat is run during the pre-build event of every project.
+REM ----------------------------------------------------------------------------
+
 @@ECHO OFF
 
 REM ----------------------------------------------------------------------------
-REM   Creates an empty assembly info file if needed
+REM   Create an empty CommonAssemblyInfo.cs file if it doesn't already exist.
 REM ----------------------------------------------------------------------------
 
 set AssmInfoFile=CommonAssemblyInfo.cs
