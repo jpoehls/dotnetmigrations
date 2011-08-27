@@ -19,8 +19,8 @@ has since grown wings and taken its own path in several areas.
 1. Run `.\build.bat`.
 2. Look in the `@artifacts` folder.
 
-This is how we build for releases as well. The build script will run all the unit
-tests just to make sure everything checks out.
+This is how we build for releases as well. The build script will update the
+NuGet packages and run all the unit tests just to make sure everything checks out.
 
 ## Contributors
 
@@ -31,6 +31,10 @@ tests just to make sure everything checks out.
 * Kieran Benton
 
 ## Changelog
+
+- **0.84** (IN PROGRESS)
+
+  * First release to be published to NuGet! (thanks Darren Cauthon!)
 
 - **0.83** (2011-08-26) `a86b7318122251fe54930f2ebce4155b466ac1a5`
 
