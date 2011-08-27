@@ -15,7 +15,7 @@ namespace DotNetMigrations.Core.Data
             csb.ConnectionString = connectionString;
             
             string provider = GetProvider(csb);
-            int commandTimeout = GetCommandTimeout(csb);
+            int? commandTimeout = GetCommandTimeout(csb);
             
             var da = new DataAccess(GetFactory(provider), csb.ConnectionString, provider, commandTimeout);
             return da;
@@ -52,27 +52,27 @@ namespace DotNetMigrations.Core.Data
 
         /// <summary>
         /// Gets the command timeout (in seconds) from
-        /// the connection string (if the CommandTimeout key is specified),
-        /// or a default value of 30 seconds.
+        /// the connection string (if the CommandTimeout key is specified).
         /// </summary>
-        private static int GetCommandTimeout(DbConnectionStringBuilder csb)
+        private static int? GetCommandTimeout(DbConnectionStringBuilder csb)
         {
             const string key = "CommandTimeout";
-            const int defaultValue = 30;
 
-            int value = defaultValue;
+            int? value = null;
             if (csb.ContainsKey(key))
             {
-                if (Int32.TryParse(csb[key].ToString(), out value))
+                int iValue;
+                if (Int32.TryParse(csb[key].ToString(), out iValue))
                 {
-                    // guard against negative values
-                    // uses the default timeout value if a negative is given
-                    value = Math.Max(defaultValue, value);
+                    // ignore negative values
+                    if (iValue >= 0)
+                    {
+                        value = iValue;
+                    }
                 }
-
                 csb.Remove(key);
             }
-
+            
             return value;
         }
     }

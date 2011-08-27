@@ -9,9 +9,9 @@ namespace DotNetMigrations.Core.Data
         private readonly DbConnection _connection;
         private readonly DbProviderFactory _factory;
         private readonly string _provider;
-        private readonly int _commandTimeout;
+        private readonly int? _commandTimeout;
 
-        public DataAccess(DbProviderFactory factory, string connectionString, string provider, int commandTimeout)
+        public DataAccess(DbProviderFactory factory, string connectionString, string provider, int? commandTimeout)
         {
             _factory = factory;
             _provider = provider;
@@ -85,9 +85,12 @@ namespace DotNetMigrations.Core.Data
 
                 using (var cmd = CreateCommand())
                 {
-                    cmd.CommandText = bakedBatch;
-                    cmd.CommandTimeout = _commandTimeout;
                     cmd.Transaction = tran;
+                    cmd.CommandText = bakedBatch;
+
+                    if (_commandTimeout.HasValue)
+                        cmd.CommandTimeout = _commandTimeout.Value;
+                    
                     cmd.ExecuteNonQuery();
                 }
             }
