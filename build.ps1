@@ -28,6 +28,12 @@ task NuGet {
   TeamCity-ReportBuildStart "NuGet"
 
   exec { & "$source_dir\.nuget\NuGet.exe" pack ""$source_dir\DotNetMigrations.nuspec"" -Verbose -OutputDirectory ""$artifact_dir"" -Properties version=$public_version }
+
+  "@echo off
+echo Publish the $public_version package to the NuGet Gallery?
+pause
+..\.nuget\NuGet.exe push .\@artifacts\DotNetMigrations.$public_version.nupkg
+pause" | Out-File $artifact_dir\PublishNuGetPackage.bat -Encoding OEM
 }
 
 task ZipBinaries {
@@ -39,8 +45,13 @@ task ZipBinaries {
     # exclude unit tests and debug symbols
     exec { ./tools/7zip/7za.exe a -tzip `"$artifact_dir\$zip_name`" `"$build_dir\*`" `
            `"-x!*.pdb`" `
+           `"-x!*migrate*`" `
+           `"-x!*x86*`" `
+           `"-x!*amd64*`" `
            `"-x!*Tests*`" `
            `"-x!Moq.*`" `
+           `"-x!pnunit.*`" `
+           `"-x!System.Data.SqlServerCe.dll`" `
            `"-x!nunit.*`" ` }
     
     TeamCity-PublishArtifact "@artifacts\$zip_name"
