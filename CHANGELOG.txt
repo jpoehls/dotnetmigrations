@@ -1,10 +1,12 @@
-= 0.83 / IN PROGRESS...
+= 0.83 / 2011-08-26
 
     * Added preliminary support for Mono. (Not guaranteed or tested well. Let us know what happens.)
     * Fixed issue #21 with migrations not working past version 9.
     * Breaking change! The ##DNM:PROVIDER## token is now /*DNM:PROVIDER*/
       The new token format will help ensure that your SQL scripts will run without errors
       outside of DNM.
+    * Added support for a `CommandTimeout` parameter in the connection strings.
+      This value will be used as the `DbCommand.CommandTimeout` value when the migration scripts are executed.
     
     Upgrade Notes:
     * Run the following against your database to ensure issue #21 is fixed.
