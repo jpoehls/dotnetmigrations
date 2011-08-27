@@ -60,12 +60,14 @@ namespace DotNetMigrations.Commands
         }
 
         /// <summary>
-        /// Retrieves the current schema version of the database.
+        /// Retrieves the previous schema version of the database.
         /// </summary>
         /// <returns>The current version of the database.</returns>
         private long GetPreviousDatabaseVersion(long currentVersion)
         {
-            string cmdText = string.Format("SELECT MAX([version]) FROM [schema_migrations] WHERE [version] <> {0}",
+            // note that we have to use 'IN' instead of '=' for the subquery
+            // becuase sql server compact doesn't support subqueries that return scalar values
+            string cmdText = string.Format("SELECT [version] FROM [schema_migrations] WHERE [id] IN (SELECT MAX([id]) FROM [schema_migrations] WHERE [version] <> {0})",
                                            currentVersion);
 
             long previousVersion;

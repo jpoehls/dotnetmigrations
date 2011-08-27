@@ -35,7 +35,7 @@ namespace DotNetMigrations.UnitTests.Repositories
             var cmdRepository = new CommandRepository();
 
             Assert.IsNotNull(cmdRepository.Commands);
-            Assert.AreEqual(2, cmdRepository.Commands.Count);
+            Assert.AreEqual(3, cmdRepository.Commands.Count);
         }
     }
 }

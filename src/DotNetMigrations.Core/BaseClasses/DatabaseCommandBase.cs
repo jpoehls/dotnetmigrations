@@ -70,7 +70,9 @@ namespace DotNetMigrations.Core
         /// <returns>The current version of the database.</returns>
         protected long GetDatabaseVersion()
         {
-            const string command = "SELECT MAX([version]) FROM [schema_migrations]";
+            // note that we have to use 'IN' instead of '=' for the subquery
+            // becuase sql server compact doesn't support subqueries that return scalar values
+            const string command = "SELECT [version] FROM [schema_migrations] WHERE [id] IN (SELECT MAX([id]) FROM [schema_migrations])";
 
             long currentVersion = -1;
 

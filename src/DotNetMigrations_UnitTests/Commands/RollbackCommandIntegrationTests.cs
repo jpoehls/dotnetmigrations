@@ -106,9 +106,9 @@ namespace DotNetMigrations.UnitTests.Commands
             //  insert some version numbers
             using (var sql = new SqlDatabaseHelper(TestConnectionString))
             {
-                sql.ExecuteNonQuery("insert into [schema_migrations] ([version]) values (3)");
                 sql.ExecuteNonQuery("insert into [schema_migrations] ([version]) values (1)");
                 sql.ExecuteNonQuery("insert into [schema_migrations] ([version]) values (2)");
+                sql.ExecuteNonQuery("insert into [schema_migrations] ([version]) values (3)");
             }
 
             _mockMigrateCommand.Protected().Setup("Execute", ItExpr.IsAny<MigrateCommandArgs>())

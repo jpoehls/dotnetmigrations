@@ -74,6 +74,8 @@ namespace DotNetMigrations.UnitTests.Commands
 
         #endregion
 
+        private const string SelectMaxVersionSql = "select [version] from [schema_migrations] where [id] IN (select max([id]) from [schema_migrations])";
+
         private MigrateCommandArgs _commandArgs;
         private MigrateCommand _migrateCommand;
         private MockLog1 _mockLog;
@@ -97,8 +99,7 @@ namespace DotNetMigrations.UnitTests.Commands
             using (var sql = new SqlDatabaseHelper(TestConnectionString))
             {
                 var version =
-                    sql.ExecuteScalar<long>(
-                        "select max(version) from schema_migrations");
+                    sql.ExecuteScalar<long>(SelectMaxVersionSql);
 
                 Assert.AreEqual(1, version, "schema version doesn't match TargetVersion");
 
@@ -119,8 +120,7 @@ namespace DotNetMigrations.UnitTests.Commands
             using (var sql = new SqlDatabaseHelper(TestConnectionString))
             {
                 var version =
-                    sql.ExecuteScalar<long>(
-                        "select max(version) from schema_migrations");
+                    sql.ExecuteScalar<long>(SelectMaxVersionSql);
 
                 Assert.AreEqual(2, version, "schema version doesn't match latest script version");
 
@@ -146,8 +146,7 @@ namespace DotNetMigrations.UnitTests.Commands
             using (var sql = new SqlDatabaseHelper(TestConnectionString))
             {
                 var version =
-                    sql.ExecuteScalar<long>(
-                        "select max(version) from schema_migrations");
+                    sql.ExecuteScalar<long>(SelectMaxVersionSql);
 
                 Assert.AreEqual(2, version, "schema version doesn't match TargetVersion");
 
@@ -172,8 +171,7 @@ namespace DotNetMigrations.UnitTests.Commands
             using (var sql = new SqlDatabaseHelper(TestConnectionString))
             {
                 var version =
-                    sql.ExecuteScalar<long>(
-                        "select max(version) from schema_migrations");
+                    sql.ExecuteScalar<long>(SelectMaxVersionSql);
 
                 Assert.AreEqual(0, version, "schema version doesn't match TargetVersion");
 
@@ -207,8 +205,7 @@ namespace DotNetMigrations.UnitTests.Commands
             using (var sql = new SqlDatabaseHelper(TestConnectionString))
             {
                 var version =
-                    sql.ExecuteScalar<long>(
-                        "select max(version) from schema_migrations");
+                    sql.ExecuteScalar<long>(SelectMaxVersionSql);
 
                 Assert.AreEqual(0, version, "schema version doesn't match the original schema version");
 
@@ -241,8 +238,7 @@ namespace DotNetMigrations.UnitTests.Commands
             using (var sql = new SqlDatabaseHelper(TestConnectionString))
             {
                 var version =
-                    sql.ExecuteScalar<long>(
-                        "select max(version) from schema_migrations");
+                    sql.ExecuteScalar<long>(SelectMaxVersionSql);
 
                 Assert.AreEqual(4, version, "schema version doesn't match the original schema version");
 

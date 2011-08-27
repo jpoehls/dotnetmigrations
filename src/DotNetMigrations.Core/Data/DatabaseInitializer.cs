@@ -144,7 +144,7 @@ namespace DotNetMigrations.Core.Data
         /// </summary>
         private void CreateMigrationTable()
         {
-            const string createTableCommand = "CREATE TABLE [schema_migrations]([version] [int] NOT NULL PRIMARY KEY)";
+            const string createTableCommand = "CREATE TABLE [schema_migrations]([id] INT NOT NULL IDENTITY(1,1) CONSTRAINT [PK_schema_migrations] PRIMARY KEY, [version] [nvarchar](14) NOT NULL)";
             const string firstRecordCommand = "INSERT INTO [schema_migrations] ([version]) VALUES (0)";
 
             using (var tran = _dataAccess.BeginTransaction())
