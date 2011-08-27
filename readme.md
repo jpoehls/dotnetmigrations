@@ -16,6 +16,12 @@ has since grown wings and taken its own path in several areas.
 
 **Available on NuGet at http://www.nuget.org/List/Packages/DotNetMigrations**
 
+# Build prerequisites
+
+- PowerShell 2.0
+- .NET Framework 4.0
+- Git must be installed and in your path
+
 # Release checklist
 
 1. Make sure the `$public_version` number is correct in the `.\build.ps1` script.
@@ -30,7 +36,6 @@ has since grown wings and taken its own path in several areas.
 9. Run the `.\@artifacts\PublishNuGetPackage.bat` script to publish to the NuGet Gallery.
 10. Uploaded the zipped binaries from `.\@artifacts` to Github.
 11. Spread the word!
-
 
 ## Contributors
 
