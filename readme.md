@@ -39,7 +39,7 @@ has since grown wings and taken its own path in several areas.
 
 ## Changelog
 
-- **0.84** (2011-08-27)
+- **0.84** (2011-08-27) `4834af1d7a41be0175083afcca5231b8dcb1713f`
 
   * First release to be published to NuGet! (thanks Darren Cauthon!)
 
