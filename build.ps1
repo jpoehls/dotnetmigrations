@@ -1,6 +1,8 @@
 . .\tools\psake\psake_ext.ps1
 . .\tools\psake\teamcity.ps1
 
+$framework = '4.0'
+
 properties {
 	# version advertised. also used as the tag name in git.
 	$public_version = "0.83"
@@ -70,7 +72,8 @@ task RunTests {
         exec { & $nunitLauncher v2.0 x86 NUnit-2.4.8 $build_dir\DotNetMigrations.UnitTests.dll }
     } else {
         # run tests using our own copy of NUnit
-        exec { & "$source_dir\tools\nunit\nunit-console.exe" $build_dir\DotNetMigrations.UnitTests.dll /labels /xml=$artifact_dir\TestResults.xml } `
+        $nunitExe = (Get-ChildItem $source_dir\packages\NUnit.* -Recurse -Include nunit-console.exe).FullName
+        exec { & "$nunitExe" $build_dir\DotNetMigrations.UnitTests.dll /labels /xml=$artifact_dir\TestResults.xml } `
             "Oops! Build failed due to some failing tests."
     }
     
@@ -79,6 +82,12 @@ task RunTests {
 
 task Compile -depends Init {
     TeamCity-ReportBuildStart "Compile"
+  "Updating NuGet packages"
+  if (-not(Test-Path $source_dir\packages)) {
+    New-Item $source_dir\packages -ItemType directory
+  }
+  exec { & "$source_dir\.nuget\NuGet.exe" update ""$source_dir\DotNetMigrations.sln"" -Verbose -RepositoryPath ""$source_dir\packages"" }
+
 	"Building version $version for $configuration"
 	
 	# build the solution
