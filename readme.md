@@ -23,7 +23,8 @@ has since grown wings and taken its own path in several areas.
 3. Commit any changes up to this point.
 4. Tag the release in Git with `git tag vX.Y.Z` where `X.Y.Z` is the `$public_version` from the build script.
 5. Run `.\build.bat`.
-6. Add the hash of the tagged release from Git to the changelog entry for the release. Use this to get the hash: `git log -n1 -r "vX.Y.Z" --pretty=%H`
+6. Add the hash of the tagged release from Git to the changelog entry for the release.  
+   Use this to get the hash: `git log -n1 -r "vX.Y.Z" --pretty=%H`
 7. Commit the changelog update.
 8. Look in the `.\@artifacts` folder for the goods.
 9. Run the `.\@artifacts\PublishNuGetPackage.bat` script to publish to the NuGet Gallery.
