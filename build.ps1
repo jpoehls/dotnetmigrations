@@ -32,7 +32,7 @@ task NuGet {
   "@echo off
 echo Publish the $public_version package to the NuGet Gallery?
 pause
-..\.nuget\NuGet.exe push .\@artifacts\DotNetMigrations.$public_version.nupkg
+..\.nuget\NuGet.exe push .\DotNetMigrations.$public_version.nupkg
 pause" | Out-File $artifact_dir\PublishNuGetPackage.bat -Encoding OEM
 }
 
