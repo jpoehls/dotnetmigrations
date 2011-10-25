@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,122 +6,130 @@ using DotNetMigrations.Core;
 
 namespace DotNetMigrations.Migrations
 {
-    public class MigrationDirectory : IMigrationDirectory
-    {
-        private const string DefaultMigrationScriptPath = @".\migrate\";
-        private const string ScriptFileNamePattern = "*.sql";
-        private readonly IConfigurationManager _configurationManager;
+	public class MigrationDirectory : IMigrationDirectory
+	{
+		private const string DefaultMigrationScriptPath = @".\migrate\";
+		private const string ScriptFileNamePattern = "*.sql";
+		private readonly IConfigurationManager _configurationManager;
 
-        public MigrationDirectory()
-            : this(new ConfigurationManagerWrapper())
-        {
-        }
+		public MigrationDirectory()
+			: this(new ConfigurationManagerWrapper())
+		{
+		}
 
-        public MigrationDirectory(IConfigurationManager configurationManager)
-        {
-            _configurationManager = configurationManager;
-        }
+		public MigrationDirectory(IConfigurationManager configurationManager)
+		{
+			_configurationManager = configurationManager;
+		}
 
-        /// <summary>
-        /// Verify the path exists and creates it if it's missing.
-        /// </summary>
-        /// <param name="path">The path to verify.</param>
-        private static void VerifyAndCreatePath(string path)
-        {
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-        }
+		/// <summary>
+		/// Provides a way of getting and setting the path to place the migration scripts.
+		/// </summary>
+		public string Path { get; set; }
 
-        /// <summary>
-        /// Returns the migration script path from the
-        /// config file (if available) or the default path.
-        /// </summary>
-        public string GetPath(ILogger log)
-        {
-            string path = _configurationManager.AppSettings[AppSettingKeys.MigrateFolder];
+		/// <summary>
+		/// Verify the path exists and creates it if it's missing.
+		/// </summary>
+		/// <param name="path">The path to verify.</param>
+		private static void VerifyAndCreatePath(string path)
+		{
+			if (!Directory.Exists(path))
+			{
+				Directory.CreateDirectory(path);
+			}
+		}
 
-            if (string.IsNullOrEmpty(path))
-            {
-                if (log != null)
-                {
-                    log.WriteWarning(
-                        "The " + AppSettingKeys.MigrateFolder + " setting was not present in the configuration file so the default " +
-                        DefaultMigrationScriptPath + " folder will be used instead.");
-                }
-                path = DefaultMigrationScriptPath;
-            }
+		/// <summary>
+		/// Returns the migration script path from the
+		/// config file (if available) or the default path.
+		/// </summary>
+		public string GetPath(ILogger log)
+		{
+			if (string.IsNullOrWhiteSpace(Path))
+			{
+				Path = _configurationManager.AppSettings[AppSettingKeys.MigrateFolder];
+			}
 
-            VerifyAndCreatePath(path);
+			if (string.IsNullOrEmpty(Path))
+			{
+				if (log != null)
+				{
+					log.WriteWarning(
+						"The " + AppSettingKeys.MigrateFolder + " setting was not present in the configuration file so the default " +
+						DefaultMigrationScriptPath + " folder will be used instead.");
+				}
+				Path = DefaultMigrationScriptPath;
+			}
 
-            return path;
-        }
+			VerifyAndCreatePath(Path);
 
-        /// <summary>
-        /// Returns a list of all the migration script file paths
-        /// sorted by version number (ascending).
-        /// </summary>
-        public IEnumerable<IMigrationScriptFile> GetScripts()
-        {
-            string[] files = Directory.GetFiles(GetPath(null), ScriptFileNamePattern);
+			return Path;
+		}
 
-            return files.Select(x => (IMigrationScriptFile)new MigrationScriptFile(x)).OrderBy(x => x.Version);
-        }
+		/// <summary>
+		/// Returns a list of all the migration script file paths
+		/// sorted by version number (ascending).
+		/// </summary>
+		public IEnumerable<IMigrationScriptFile> GetScripts()
+		{
+			string[] files = Directory.GetFiles(GetPath(null), ScriptFileNamePattern);
 
-        /// <summary>
-        /// Creates a blank migration script with the given name.
-        /// </summary>
-        /// <param name="migrationName">name of the migration script</param>
-        /// <returns>The path to the new migration script.</returns>
-        public string CreateBlankScript(string migrationName)
-        {
-            long version = GetNewVersionNumber();
-            var path = GetPath(null);
-            path = Path.Combine(path, version + "_" + SanitizeMigrationName(migrationName) + ".sql");
+			return files.Select(x => (IMigrationScriptFile)new MigrationScriptFile(x)).OrderBy(x => x.Version);
+		}
 
-            var contents = new MigrationScriptContents(null, null);
-            
-            var file = new MigrationScriptFile(path);
-            file.Write(contents);
+		/// <summary>
+		/// Creates a blank migration script with the given name.
+		/// </summary>
+		/// <param name="migrationName">name of the migration script</param>
+		/// <returns>The path to the new migration script.</returns>
+		public string CreateBlankScript(string migrationName)
+		{
+			long version = GetNewVersionNumber();
+			var path = GetPath(null);
+			path = System.IO.Path.Combine(path, version + "_" + SanitizeMigrationName(migrationName) + ".sql");
 
-            return path;
-        }
+			var contents = new MigrationScriptContents(null, null);
+			
+			var file = new MigrationScriptFile(path);
+			file.Write(contents);
 
-        /// <summary>
-        /// Returns a file name friendly version of the given
-        /// migration name.
-        /// </summary>
-        private static string SanitizeMigrationName(string migrationName)
-        {
-            const char invalidCharReplacement = '-';
+			return path;
+		}
 
-            //  replace the invalid characters
-            var invalidChars = Path.GetInvalidFileNameChars();
-            foreach (var c in invalidChars)
-            {
-                migrationName = migrationName.Replace(c, invalidCharReplacement);
-            }
+		/// <summary>
+		/// Returns a file name friendly version of the given
+		/// migration name.
+		/// </summary>
+		private static string SanitizeMigrationName(string migrationName)
+		{
+			const char invalidCharReplacement = '-';
 
-            //  trim whitespace
-            migrationName = migrationName.Trim();
+			//  replace the invalid characters
+			var invalidChars = System.IO.Path.GetInvalidFileNameChars();
+			foreach (var c in invalidChars)
+			{
+				migrationName = migrationName.Replace(c, invalidCharReplacement);
+			}
 
-            //  replace whitespace with an underscore
-            const string whitespaceReplacement = "_";
-            migrationName = Regex.Replace(migrationName, @"\s+", whitespaceReplacement, RegexOptions.Compiled);
+			//  trim whitespace
+			migrationName = migrationName.Trim();
 
-            return migrationName;
-        }
+			//  replace whitespace with an underscore
+			const string whitespaceReplacement = "_";
+			migrationName = Regex.Replace(migrationName, @"\s+", whitespaceReplacement, RegexOptions.Compiled);
 
-        /// <summary>
-        /// Generates a new version number for assignment.
-        /// </summary>
-        private long GetNewVersionNumber()
-        {
-            var factory = new VersionStrategyFactory(_configurationManager);
-            IVersionStrategy strategy = factory.GetStrategy();
-            long version = strategy.GetNewVersionNumber(this);
-            return version;
-        }
-    }
+			return migrationName;
+		}
+
+		/// <summary>
+		/// Generates a new version number for assignment.
+		/// </summary>
+		private long GetNewVersionNumber()
+		{
+			var factory = new VersionStrategyFactory(_configurationManager);
+			IVersionStrategy strategy = factory.GetStrategy();
+			long version = strategy.GetNewVersionNumber(this);
+			return version;
+		}
+	}
 }
