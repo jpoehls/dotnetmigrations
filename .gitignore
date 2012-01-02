@@ -10,3 +10,4 @@ _ReSharper*
 *.sln.cache
 src/CommonAssemblyInfo.cs
 packages
+localtests

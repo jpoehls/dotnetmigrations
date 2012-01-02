@@ -4,7 +4,7 @@
     <id>DotNetMigrations</id>
     <version>$version$</version>
     <title>DotNetMigrations</title>
-    <authors>Joshua Poehls</authors>
+    <authors>Joshua Poehls,Darren Cauthon,James Eggers,Kieran Benton</authors>
     <owners>Joshua Poehls</owners>
     <licenseUrl>https://github.com/jpoehls/dotnetmigrations/blob/master/license.txt</licenseUrl>
     <projectUrl>https://github.com/jpoehls/dotnetmigrations</projectUrl>
@@ -12,11 +12,14 @@
     <description>DotNetMigrations is a database migration framework that assists in managing and versioning database hanges. It was originally designed as a straight port of the rails functionality located in the Ruby on Rails framework; however, it has since grown wings and taken its own path in several areas.</description>
     <summary>DotNetMigrations is a database migration framework that assists in managing and versioning database hanges. It was originally designed as a straight port of the rails functionality located in the Ruby on Rails framework; however, it has since grown wings and taken its own path in several areas.</summary>
     <language>en-US</language>
-    <tags>database migration</tags>
+    <tags>database migration data-access migrate sql</tags>
   </metadata>
   <files>
-    <file src="@build\db.exe" target="tools\db.exe" />
-    <file src="@build\db.exe.config" target="tools\db.exe.config" />
-    <file src="@build\DotNetMigrations.Core.dll" target="tools\DotNetMigrations.Core.dll" />
+	<file src="@build\db.exe" target="tools" />
+	<file src="@build\DotNetMigrations.Core.dll" target="tools" />
+	<file src="@build\DotNetMigrations.Core.dll" target="lib\Net40" />
+	<file src="src\DotNetMigrations\app.config.transform" target="content" />
+	<file src="src\DotNetMigrations\web.config.transform" target="content" />
+	<file src="src\DotNetMigrations\NuGetReadme.txt" target="content\Migrations\README.txt" />
   </files>
 </package>

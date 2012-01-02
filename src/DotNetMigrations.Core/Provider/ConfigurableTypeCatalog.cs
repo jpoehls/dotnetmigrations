@@ -38,7 +38,7 @@ namespace DotNetMigrations.Core.Provider
 
         private static ConfigurableTypeSection GetSection(string sectionName)
         {
-            var config = ConfigurationManager.GetSection(sectionName) as ConfigurableTypeSection;
+            var config = ConfigurationManagerWrapper.GetSection(sectionName) as ConfigurableTypeSection;
 
             if (config == null)
             {
