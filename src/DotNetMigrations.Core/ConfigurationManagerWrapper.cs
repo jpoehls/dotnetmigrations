@@ -30,7 +30,7 @@ namespace DotNetMigrations.Core
 				throw new InvalidOperationException("No *.config file could be found that applies");
 			});
 
-		public NameValueCollection AppSettings
+		public static NameValueCollection AppSettings
 		{
 			get
 			{
@@ -44,7 +44,7 @@ namespace DotNetMigrations.Core
 			}
 		}
 
-		public ConnectionStringSettingsCollection ConnectionStrings
+		public static ConnectionStringSettingsCollection ConnectionStrings
 		{
 			get
 			{
@@ -56,5 +56,24 @@ namespace DotNetMigrations.Core
 		{
 			return config.Value.GetSection(sectionname);
 		}
+
+		#region IConfigurationManager Implementation
+
+		NameValueCollection IConfigurationManager.AppSettings
+		{
+			get { return ConfigurationManagerWrapper.AppSettings; }
+		}
+
+		ConnectionStringSettingsCollection IConfigurationManager.ConnectionStrings
+		{
+			get { return ConfigurationManagerWrapper.ConnectionStrings; }
+		}
+
+		ConfigurationSection IConfigurationManager.GetSection(string sectionname)
+		{
+			return ConfigurationManagerWrapper.GetSection(sectionname);
+		}
+
+		#endregion
 	}
 }

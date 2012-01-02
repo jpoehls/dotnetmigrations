@@ -19,6 +19,11 @@ namespace DotNetMigrations.UnitTests.Stubs
         public NameValueCollection AppSettings { get; private set; }
         public ConnectionStringSettingsCollection ConnectionStrings { get; private set; }
 
+		public ConfigurationSection GetSection(string sectionname)
+		{
+			return null;
+		}
+
         #endregion
-    }
+	}
 }

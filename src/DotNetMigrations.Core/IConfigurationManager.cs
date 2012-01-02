@@ -8,5 +8,6 @@ namespace DotNetMigrations.Core
     {
         NameValueCollection AppSettings { get; }
         ConnectionStringSettingsCollection ConnectionStrings { get; }
+		ConfigurationSection GetSection(string sectionname);
     }
 }
