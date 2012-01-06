@@ -62,11 +62,11 @@ namespace DotNetMigrations.Commands
                 targetVersion = files.Select(x => x.Version).First();
             }
 
-			Log.WriteLine("Transaction mode is: " + args.TransactionMode.ToString() + ".");
-			Log.WriteLine("");
-
             Log.WriteLine("Database is at version:".PadRight(30) + currentVersion);
 			Log.WriteLine("Target version:".PadRight(30) + targetVersion);
+			Log.WriteLine("");
+
+			Log.WriteLine("Transaction mode is: " + args.TransactionMode.ToString() + ".");
 			Log.WriteLine("");
 
             MigrationDirection direction;

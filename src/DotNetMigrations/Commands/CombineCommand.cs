@@ -9,7 +9,7 @@ using System.IO;
 
 namespace DotNetMigrations.Commands
 {
-	internal class CombineCommand : CommandBase<CombineCommandArgs>
+	public class CombineCommand : CommandBase<CombineCommandArgs>
 	{
 		private readonly IMigrationDirectory _migrationDirectory;
 
@@ -37,6 +37,9 @@ namespace DotNetMigrations.Commands
 		{
 			var allscripts = _migrationDirectory.GetScripts()
 				.OrderBy(x => x.Version);
+
+			// Special case if no "start migration" specified, use the first script
+			if(args.StartMigration == 0) args.StartMigration = allscripts.First().Version;
 
 			// Special case if no "end migration" specified, use the most recent script
 			if(args.EndMigration == long.MaxValue) args.EndMigration = allscripts.Last().Version;
