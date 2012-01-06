@@ -118,8 +118,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-	<None Include="App.config.transform" />
-	<None Include="Web.config.transform" />
+    <None Include="App.config.transform" />
+    <None Include="Init.ps1" />
+    <None Include="Web.config.transform" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DotNetMigrations.Core\DotNetMigrations.Core.csproj">
