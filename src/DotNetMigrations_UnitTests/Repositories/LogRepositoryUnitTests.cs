@@ -4,6 +4,7 @@ using DotNetMigrations.Core;
 using DotNetMigrations.Repositories;
 using DotNetMigrations.UnitTests.Mocks;
 using NUnit.Framework;
+using DotNetMigrations.UnitTests.Stubs;
 
 namespace DotNetMigrations.UnitTests.Repositories
 {
@@ -13,7 +14,8 @@ namespace DotNetMigrations.UnitTests.Repositories
         [Test]
         public void Should_Be_Able_Disposable()
         {
-            var logRepository = new LogRepository();
+			var configManager = new ConfigurationManagerWrapper();
+            var logRepository = new LogRepository(configManager);
 
             // Get a reference to our mock log
             var mock = logRepository.GetLog("MockLog") as MockLog1;
@@ -26,7 +28,8 @@ namespace DotNetMigrations.UnitTests.Repositories
         [Test]
         public void Should_Be_Able_To_Add_Logs_Manually()
         {
-            var logRepository = new LogRepository();
+			var configManager = new ConfigurationManagerWrapper();
+            var logRepository = new LogRepository(configManager);
             var mockLog2 = new MockLog1 {LogName = "MockLog2"};
             logRepository.Logs.Add(mockLog2);
 
@@ -36,7 +39,8 @@ namespace DotNetMigrations.UnitTests.Repositories
         [Test]
         public void Should_Be_Able_To_Retrieve_Logs_By_Name()
         {
-            var logRepository = new LogRepository();
+			var configManager = new ConfigurationManagerWrapper();
+			var logRepository = new LogRepository(configManager);
             ILogger mock = logRepository.GetLog("MockLog");
 
             Assert.IsTrue(mock is MockLog1);
@@ -45,7 +49,8 @@ namespace DotNetMigrations.UnitTests.Repositories
         [Test]
         public void Should_Be_Able_To_WriteError_Characters_To_All_Logs()
         {
-            var logRepository = new LogRepository();
+			var configManager = new ConfigurationManagerWrapper();
+			var logRepository = new LogRepository(configManager);
             var mockLog2 = new MockLog1 {LogName = "MockLog2"};
             logRepository.Logs.Add(mockLog2);
 
@@ -61,7 +66,8 @@ namespace DotNetMigrations.UnitTests.Repositories
         [Test]
         public void Should_Be_Able_To_WriteError_Characters_To_The_Log()
         {
-            var logRepository = new LogRepository();
+			var configManager = new ConfigurationManagerWrapper();
+			var logRepository = new LogRepository(configManager);
             logRepository.WriteError("Text1");
             logRepository.WriteError("Text2");
 
@@ -74,7 +80,8 @@ namespace DotNetMigrations.UnitTests.Repositories
         [Test]
         public void Should_Be_Able_To_WriteLines_Characters_To_All_Logs()
         {
-            var logRepository = new LogRepository();
+			var configManager = new ConfigurationManagerWrapper();
+			var logRepository = new LogRepository(configManager);
             var mockLog2 = new MockLog1 {LogName = "MockLog2"};
             logRepository.Logs.Add(mockLog2);
 
@@ -91,7 +98,8 @@ namespace DotNetMigrations.UnitTests.Repositories
         [Test]
         public void Should_Be_Able_To_WriteLines_Characters_To_The_Log()
         {
-            var logRepository = new LogRepository();
+			var configManager = new ConfigurationManagerWrapper();
+			var logRepository = new LogRepository(configManager);
             logRepository.WriteLine("Text1");
             logRepository.WriteLine("Text2");
 
@@ -104,7 +112,8 @@ namespace DotNetMigrations.UnitTests.Repositories
         [Test]
         public void Should_Be_Able_To_WriteWarning_Characters_To_All_Logs()
         {
-            var logRepository = new LogRepository();
+			var configManager = new ConfigurationManagerWrapper();
+			var logRepository = new LogRepository(configManager);
             var mockLog2 = new MockLog1 {LogName = "MockLog2"};
             logRepository.Logs.Add(mockLog2);
 
@@ -120,7 +129,8 @@ namespace DotNetMigrations.UnitTests.Repositories
         [Test]
         public void Should_Be_Able_To_WriteWarning_Characters_To_The_Log()
         {
-            var logRepository = new LogRepository();
+			var configManager = new ConfigurationManagerWrapper();
+			var logRepository = new LogRepository(configManager);
             logRepository.WriteWarning("Text1");
             logRepository.WriteWarning("Text2");
 
@@ -133,7 +143,8 @@ namespace DotNetMigrations.UnitTests.Repositories
         [Test]
         public void Should_Discover_And_Load_Local_Parts()
         {
-            var logRepository = new LogRepository();
+			var configManager = new ConfigurationManagerWrapper();
+			var logRepository = new LogRepository(configManager);
 
             Assert.AreEqual(1, logRepository.Logs.Count);
         }
@@ -141,7 +152,8 @@ namespace DotNetMigrations.UnitTests.Repositories
         [Test]
         public void Should_Dispose_Of_All_Logs()
         {
-            var logRepository = new LogRepository();
+			var configManager = new ConfigurationManagerWrapper();
+			var logRepository = new LogRepository(configManager);
             var mockLog2 = new MockLog1 {LogName = "MockLog2"};
             logRepository.Logs.Add(mockLog2);
 

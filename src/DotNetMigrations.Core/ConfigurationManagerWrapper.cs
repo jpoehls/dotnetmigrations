@@ -9,7 +9,7 @@ namespace DotNetMigrations.Core
 {
 	public class ConfigurationManagerWrapper : IConfigurationManager
 	{
-		protected static Lazy<Configuration> config = new Lazy<Configuration>(() =>
+		protected Lazy<Configuration> config = new Lazy<Configuration>(() =>
 			{
 				// If it exists - use the "local" configuration manager app settings
 				var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
@@ -30,7 +30,7 @@ namespace DotNetMigrations.Core
 				throw new InvalidOperationException("No *.config file could be found that applies");
 			});
 
-		public static NameValueCollection AppSettings
+		public NameValueCollection AppSettings
 		{
 			get
 			{
@@ -44,7 +44,7 @@ namespace DotNetMigrations.Core
 			}
 		}
 
-		public static ConnectionStringSettingsCollection ConnectionStrings
+		public ConnectionStringSettingsCollection ConnectionStrings
 		{
 			get
 			{
@@ -52,28 +52,9 @@ namespace DotNetMigrations.Core
 			}
 		}
 
-		public static ConfigurationSection GetSection(string sectionname)
+		public T GetSection<T>(string sectionname) where T : ConfigurationSection, new()
 		{
-			return config.Value.GetSection(sectionname);
+			return config.Value.GetSection(sectionname) as T;
 		}
-
-		#region IConfigurationManager Implementation
-
-		NameValueCollection IConfigurationManager.AppSettings
-		{
-			get { return ConfigurationManagerWrapper.AppSettings; }
-		}
-
-		ConnectionStringSettingsCollection IConfigurationManager.ConnectionStrings
-		{
-			get { return ConfigurationManagerWrapper.ConnectionStrings; }
-		}
-
-		ConfigurationSection IConfigurationManager.GetSection(string sectionname)
-		{
-			return ConfigurationManagerWrapper.GetSection(sectionname);
-		}
-
-		#endregion
 	}
 }

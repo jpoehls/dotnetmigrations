@@ -130,7 +130,7 @@ namespace DotNetMigrations.UnitTests.Data
                     // Sql Server Compact (which is being used for these tests) does not
                     // support CommandTimeout values other than 0. So we will assume
                     // that if it barfs it is because our non-zero CommandTimeout was successfully (attempted to be) set.
-                    Assert.IsInstanceOfType(typeof (ArgumentException), ex);
+                    Assert.IsInstanceOf<ArgumentException>(ex);
                     Assert.AreEqual("SqlCeCommand.CommandTimeout does not support non-zero values.", ex.Message);
                     return;
                 }

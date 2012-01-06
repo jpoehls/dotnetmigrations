@@ -7,24 +7,24 @@ namespace DotNetMigrations.Core.Provider
 {
     public class ConfigurableTypeCatalog : TypeCatalog
     {
-        public ConfigurableTypeCatalog()
-            : base(GetTypes())
+        public ConfigurableTypeCatalog(IConfigurationManager configManager)
+			: base(GetTypes(configManager))
         {
         }
 
-        public ConfigurableTypeCatalog(string sectionName)
-            : base(GetTypes(sectionName))
-        {            
+        public ConfigurableTypeCatalog(string sectionName, IConfigurationManager configManager)
+			: base(GetTypes(configManager, sectionName))
+        {
         }
 
-        private static IEnumerable<Type> GetTypes()
+		private static IEnumerable<Type> GetTypes(IConfigurationManager configManager)
         {
-            return GetTypes("mef.configurableTypes");
+            return GetTypes(configManager, "mef.configurableTypes");
         }
 
-        private static IEnumerable<Type> GetTypes(string sectionName)
+        private static IEnumerable<Type> GetTypes(IConfigurationManager configManager, string sectionName)
         {
-            var config = GetSection(sectionName);
+			var config = GetSection(configManager, sectionName);
 
             IList<Type> types = new List<Type>();
 
@@ -36,9 +36,9 @@ namespace DotNetMigrations.Core.Provider
             return types;
         }
 
-        private static ConfigurableTypeSection GetSection(string sectionName)
+		private static ConfigurableTypeSection GetSection(IConfigurationManager configManager, string sectionName)
         {
-            var config = ConfigurationManagerWrapper.GetSection(sectionName) as ConfigurableTypeSection;
+			var config = configManager.GetSection<ConfigurableTypeSection>(sectionName);
 
             if (config == null)
             {

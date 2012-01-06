@@ -5,7 +5,7 @@ namespace DotNetMigrations.Core.Provider
 {
     public class ConfigurableTypeCollection : ConfigurationElementCollection 
     {
-        protected override string  ElementName
+        protected override string ElementName
         {
             get
             {
@@ -25,6 +25,11 @@ namespace DotNetMigrations.Core.Provider
         {
             return new ConfigurableTypeElement();
         }
+
+		public void Add(ConfigurableTypeElement element)
+		{
+			BaseAdd(element);
+		}
 
         protected override object GetElementKey(ConfigurationElement element)
         {

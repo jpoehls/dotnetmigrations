@@ -111,6 +111,7 @@
     <Compile Include="CommandHelpWriterUnitTests.cs" />
     <Compile Include="Commands\GenerateScriptCommandArgsUnitTests.cs" />
     <Compile Include="Commands\MigrateCommandArgsUnitTests.cs" />
+    <Compile Include="ConfigurationManagerWrapperUnitTests.cs" />
     <Compile Include="Migrations\SequentialNumberVersionUnitTests.cs" />
     <Compile Include="SeedDirectoryUnitTests.cs" />
     <Compile Include="StringExtensionsUnitTests.cs" />

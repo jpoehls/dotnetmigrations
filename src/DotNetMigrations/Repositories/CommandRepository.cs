@@ -13,6 +13,7 @@ namespace DotNetMigrations.Repositories
     {
         private readonly AggregateCatalog catalog;
         private readonly CompositionContainer container;
+		private readonly IConfigurationManager configManager;
 
         /// <summary>
         /// A collection of the commands in the system.
@@ -23,9 +24,11 @@ namespace DotNetMigrations.Repositories
         /// <summary>
         /// Instantiates a new instance of the CommandRepository class.
         /// </summary>
-        public CommandRepository()
+		public CommandRepository(IConfigurationManager configManager)
         {
-            var pluginDirectory = ConfigurationManagerWrapper.AppSettings[AppSettingKeys.PluginFolder];
+			this.configManager = configManager;
+
+			var pluginDirectory = this.configManager.AppSettings[AppSettingKeys.PluginFolder];
 
             Commands = new List<ICommand>();
 
