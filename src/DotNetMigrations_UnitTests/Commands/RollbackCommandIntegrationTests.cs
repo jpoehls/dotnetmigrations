@@ -7,6 +7,8 @@ using DotNetMigrations.UnitTests.Mocks;
 using Moq;
 using Moq.Protected;
 using NUnit.Framework;
+using DotNetMigrations.Migrations;
+using System.Collections.Generic;
 
 namespace DotNetMigrations.UnitTests.Commands
 {
@@ -16,6 +18,8 @@ namespace DotNetMigrations.UnitTests.Commands
         private DatabaseCommandArguments _commandArgs;
         private RollbackCommand _rollbackCommand;
         private Mock<DatabaseCommandBase<MigrateCommandArgs>> _mockMigrateCommand;
+		private Mock<IMigrationDirectory> _mockMigrationDir;
+		private List<IMigrationScriptFile> _mockMigrationScripts;
         private MockLog1 _mockLog;
 
         [TestFixtureSetUp]
@@ -35,7 +39,12 @@ namespace DotNetMigrations.UnitTests.Commands
             _mockMigrateCommand = new Mock<DatabaseCommandBase<MigrateCommandArgs>>();
             _mockMigrateCommand.SetupProperty(x => x.Log);
 
-            _rollbackCommand = new RollbackCommand(_mockMigrateCommand.Object);
+			_mockMigrationScripts = new List<IMigrationScriptFile>();
+
+			_mockMigrationDir = new Mock<IMigrationDirectory>();
+			_mockMigrationDir.Setup(x => x.GetScripts()).Returns(() => _mockMigrationScripts);
+
+            _rollbackCommand = new RollbackCommand(_mockMigrateCommand.Object, _mockMigrationDir.Object);
             _rollbackCommand.Log = _mockLog;
 
             CreateDatabase();
