@@ -22,15 +22,15 @@ namespace DotNetMigrations
             }
         }
 
-        #region Void Main
+        #region int Main
 
         /// <summary>
         /// Application entry point
         /// </summary>
         /// <param name="args"></param>
-        private static void Main(string[] args)
+        private static int Main(string[] args)
         {
-            Current.Run(args);
+            return Current.Run(args);
         }
 
         #endregion
@@ -65,11 +65,11 @@ namespace DotNetMigrations
         /// <summary>
         /// Primary Program Execution
         /// </summary>
-        private void Run(string[] args)
+        private int Run(string[] args)
         {
             string executableName = Process.GetCurrentProcess().ProcessName + ".exe";
             ArgumentSet allArguments = ArgumentSet.Parse(args);
-
+            var failure = false;
             var helpWriter = new CommandHelpWriter(_logger);
 
             bool showHelp = allArguments.ContainsName("help");
@@ -99,6 +99,7 @@ namespace DotNetMigrations
                     _logger.WriteError("'{0}' is not a DotNetMigrations command.", commandName);
                     _logger.WriteLine(string.Empty);
                     _logger.WriteError("See '{0} -help' for a list of available commands.", executableName);
+                    failure = true;
                 }
             }
 
@@ -127,7 +128,7 @@ namespace DotNetMigrations
                     catch (Exception ex)
                     {
                         //_logger.WriteLine(string.Empty);
-
+                        failure = true;
                         if (_logFullErrors)
                         {
                             _logger.WriteError(ex.ToString());
@@ -156,6 +157,7 @@ namespace DotNetMigrations
                     WriteValidationErrors(command.CommandName, commandArgs.Errors);
                     _logger.WriteLine(string.Empty);
                     helpWriter.WriteCommandHelp(command, executableName);
+                    failure = true;
                 }
             }
 
@@ -170,6 +172,8 @@ namespace DotNetMigrations
                 Console.WriteLine("Press any key to exit...");
                 Console.Read();
             }
+
+            return failure ? 1 : 0;
         }
 
         /// <summary>
