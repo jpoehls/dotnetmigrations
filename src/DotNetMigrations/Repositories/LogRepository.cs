@@ -17,10 +17,10 @@ namespace DotNetMigrations.Repositories
         /// <summary>
         /// Instantiates a new instance of the LogRepository Class.
         /// </summary>
-        public LogRepository()
+        public LogRepository(IConfigurationManager configManager)
         {
             Logs = new List<ILogger>();
-            catalog = new ConfigurableTypeCatalog("dnm.logs");
+			catalog = new ConfigurableTypeCatalog("dnm.logs", configManager);
             container = new CompositionContainer(catalog);
             container.ComposeParts(this);
         }

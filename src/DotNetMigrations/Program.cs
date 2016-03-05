@@ -53,8 +53,8 @@ namespace DotNetMigrations
         /// </summary>
         private Program(IConfigurationManager configManager)
         {
-            _commandRepo = new CommandRepository();
-            _logger = new LogRepository();
+            _commandRepo = new CommandRepository(configManager);
+			_logger = new LogRepository(configManager);
 
             string logFullErrorsSetting = configManager.AppSettings[AppSettingKeys.LogFullErrors];
             bool.TryParse(logFullErrorsSetting, out _logFullErrors);

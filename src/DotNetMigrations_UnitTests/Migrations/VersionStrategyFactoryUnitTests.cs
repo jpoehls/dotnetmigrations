@@ -38,7 +38,7 @@ namespace DotNetMigrations.UnitTests.Migrations
             IVersionStrategy strategy = _subject.GetStrategy();
 
             //  assert
-            Assert.IsInstanceOfType(typeof(LocalTimestampVersion), strategy);
+			Assert.IsInstanceOf<LocalTimestampVersion>(strategy);
         }
 
         [Test]
@@ -51,7 +51,7 @@ namespace DotNetMigrations.UnitTests.Migrations
             IVersionStrategy strategy = _subject.GetStrategy();
 
             //  assert
-            Assert.IsInstanceOfType(typeof(UtcTimestampVersion), strategy);
+            Assert.IsInstanceOf<UtcTimestampVersion>(strategy);
         }
 
         [Test]
@@ -64,7 +64,7 @@ namespace DotNetMigrations.UnitTests.Migrations
             IVersionStrategy strategy = _subject.GetStrategy();
 
             //  assert
-            Assert.IsInstanceOfType(typeof(SequentialNumberVersion), strategy);
+            Assert.IsInstanceOf<SequentialNumberVersion>(strategy);
         }
 
         [Test]

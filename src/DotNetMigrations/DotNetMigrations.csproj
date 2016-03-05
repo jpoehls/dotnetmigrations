@@ -118,6 +118,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="App.config.transform" />
+    <None Include="Init.ps1" />
+    <None Include="Web.config.transform" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DotNetMigrations.Core\DotNetMigrations.Core.csproj">
@@ -156,6 +159,9 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="NuGetReadme.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
