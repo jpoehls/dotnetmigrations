@@ -109,6 +109,8 @@
     <Compile Include="CommandArgumentsUnitTests.cs" />
     <Compile Include="CommandBaseUnitTests.cs" />
     <Compile Include="CommandHelpWriterUnitTests.cs" />
+    <Compile Include="Commands\CombineCommandIntegrationTests.cs" />
+    <Compile Include="Commands\CombineCommandArgsUnitTests.cs" />
     <Compile Include="Commands\GenerateScriptCommandArgsUnitTests.cs" />
     <Compile Include="Commands\MigrateCommandArgsUnitTests.cs" />
     <Compile Include="Migrations\SequentialNumberVersionUnitTests.cs" />

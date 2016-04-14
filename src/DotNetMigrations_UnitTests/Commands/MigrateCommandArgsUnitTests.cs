@@ -25,5 +25,15 @@ namespace DotNetMigrations.UnitTests.Commands
             //  assert
             Assert.AreEqual(-1, args.TargetVersion);
         }
+
+		[Test]
+		public void Constructor_should_default_TransactionMode_to_PerRun()
+		{
+			//  act
+			var args = new MigrateCommandArgs();
+
+			//  assert
+			Assert.AreEqual(MigrationTransactionMode.PerRun, args.TransactionMode);
+		}
     }
 }
